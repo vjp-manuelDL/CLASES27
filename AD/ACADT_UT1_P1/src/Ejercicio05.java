@@ -11,7 +11,7 @@ public class Ejercicio05 {
             System.out.println("Contenido  de '2DAM' (Rutas absolutas):");
             System.out.println("-------------------------------------------------");
 
-            // 3. Llamamos al método recursivo para empezar el recorrido
+            // 3. Llamamos al metodo recursivo para empezar el recorrido
             listarContenido(carpeta);
 
         } else {
@@ -20,8 +20,7 @@ public class Ejercicio05 {
     }
 
     /**
-     * Método recursivo que lista el contenido de una carpeta y sus subcarpetas.
-     * @param carpeta El directorio actual a inspeccionar.
+     * Metodo recursivo que lista el contenido de una carpeta y sus subcarpetas
      */
     public static void listarContenido(File carpeta) {
         // Obtenemos un array con todos los archivos y carpetas dentro del directorio actual
