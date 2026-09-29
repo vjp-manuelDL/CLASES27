@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<contactos>
+    <contacto>
+        <nombre>Ana</nombre>
+        <apellidos>García López</apellidos>
+        <email>ana@email.com</email>
+        <telefono>600111222</telefono>
+    </contacto>
+    <contacto>
+        <nombre>Luis</nombre>
+        <apellidos>Martín Ruiz</apellidos>
+        <email>luis@email.com</email>
+        <telefono>600333444</telefono>
+    </contacto>
+</contactos>
