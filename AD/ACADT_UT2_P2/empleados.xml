@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<empleados>
+    <empleado>
+        <nombre>José</nombre>
+        <apellido>González</apellido>
+        <sueldo>900</sueldo>
+    </empleado>
+    <empleado>
+        <nombre>Daniel</nombre>
+        <apellido>Martín</apellido>
+        <sueldo>1500</sueldo>
+    </empleado>
+    <empleado>
+        <nombre>Maria</nombre>
+        <apellido>Jimenez</apellido>
+        <sueldo>2100</sueldo>
+    </empleado>
+</empleados>

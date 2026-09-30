@@ -1,0 +1,10 @@
+<libros>
+    <libro>
+        <titulo>El Quijote</titulo>
+        <autor>Cervantes</autor>
+    </libro>
+    <libro>
+        <titulo>1984</titulo>
+        <autor>George Orwell</autor>
+    </libro>
+</libros>

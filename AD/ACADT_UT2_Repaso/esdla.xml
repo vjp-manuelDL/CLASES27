@@ -1,0 +1,11 @@
+<esdla>
+    <titulo>El Señor de los Anillos</titulo>
+    <autor>
+        <nombre>J. R. R. Tolkien</nombre>
+    </autor>
+    <personajes>
+        <personaje>Frodo</personaje>
+        <personaje>Gandalf</personaje>
+        <personaje>Aragorn</personaje>
+    </personajes>
+</esdla>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><esdla>
+    <titulo>El Señor de los Anillos</titulo>
+    <autor><nombre>John Ronald Reuel Tolkien</nombre><diminutivo>J. R. R. Tolkien</diminutivo><nacimiento>1892</nacimiento><fallecimiento>1892</fallecimiento></autor>
+    <personajes>
+        <personaje>Frodo</personaje>
+        <personaje>Gandalf</personaje>
+        <personaje>Aragorn</personaje>
+    </personajes>
+<ciudad faccion="Gondor" nombre="Osgiliath"/></esdla>
