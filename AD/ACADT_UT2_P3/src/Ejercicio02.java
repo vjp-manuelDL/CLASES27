@@ -1,28 +1,42 @@
+import java.io.*;
+import java.util.List;
+import java.util.ListIterator;
 import com.thoughtworks.xstream.XStream;
-import java.io.FileInputStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.security.AnyTypePermission;
 
 public class Ejercicio02 {
-    public static void main(String[] args) {
+
+    public static void LeerXML() {
+        XStream xstream = new XStream(new DomDriver("UTF-8"));
+
+        xstream.addPermission(AnyTypePermission.ANY);
+        xstream.alias("DatosContacto", Contacto.class);
+        xstream.alias("Contactos", ListaContactos.class);
+        xstream.addImplicitCollection(ListaContactos.class, "lista");
+
         try {
-            // Preparamos XStream
-            XStream xstream = new XStream();
+            ListaContactos contactos;
+            contactos = (ListaContactos) xstream.fromXML(new FileInputStream("Contactos.xml"));
+            System.out.println("Numero de Contactos: " + contactos.getListaContactos().size());
+            List<Contacto> listaContactos = contactos.getListaContactos();
 
-            // Configuramos los alias igual que al guardar
-            xstream.alias("persona", Persona.class);
+            ListIterator<Contacto> iterador = listaContactos.listIterator();
+            while (iterador.hasNext()) {
+                Contacto c = iterador.next();
+                System.out.println(
+                        "Nombre: " + c.getNombre()
+                                + ", apellidos: " + c.getApellidos()
+                                + ", email: " + c.getEmail());
+            }
+            System.out.println("Fin de listado ");
 
-            // XStream por seguridad pide permiso para leer la clase
-            xstream.allowTypes(new Class[] {Persona.class});
-
-            // Leemos el XML y lo convertimos a objeto
-            Persona personaLeida = (Persona) xstream.fromXML(new FileInputStream("persona.xml"));
-
-            // Imprimimos los datos recuperados
-            System.out.println("Datos leidos del XML:");
-            System.out.println("Nombre: " + personaLeida.getNombre());
-            System.out.println("Apellido: " + personaLeida.getApellido());
-
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        LeerXML();
     }
 }

@@ -1,0 +1,17 @@
+<Contactos>
+  <DatosContacto>
+    <nombre>Ana</nombre>
+    <apellidos>García López</apellidos>
+    <email>ana@mail.com</email>
+  </DatosContacto>
+  <DatosContacto>
+    <nombre>Luis</nombre>
+    <apellidos>Martínez Ruiz</apellidos>
+    <email>luis@mail.com</email>
+  </DatosContacto>
+  <DatosContacto>
+    <nombre>María</nombre>
+    <apellidos>Fernández Sanz</apellidos>
+    <email>maria@mail.com</email>
+  </DatosContacto>
+</Contactos>

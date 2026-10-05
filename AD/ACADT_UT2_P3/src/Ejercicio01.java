@@ -1,24 +1,32 @@
+import java.io.*;
 import com.thoughtworks.xstream.XStream;
-import java.io.FileOutputStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class Ejercicio01 {
-    public static void main(String[] args) {
+
+    public static void CrearFicheroXML() {
+        // Creamos la lista de contactos manualmente (sin leer de .dat)
+        ListaContactos listaContactos = new ListaContactos();
+        listaContactos.add(new Contacto("Ana", "García López", "ana@mail.com", "600111222"));
+        listaContactos.add(new Contacto("Luis", "Martínez Ruiz", "luis@mail.com", "600333444"));
+        listaContactos.add(new Contacto("María", "Fernández Sanz", "maria@mail.com", "600555666"));
+
         try {
-            // Creamos un objeto de prueba pasándole solo nombre y apellido
-            Persona persona = new Persona("Juan", "Perez");
+            XStream xstream = new XStream(new DomDriver("UTF-8"));
+            xstream.alias("DatosContacto", Contacto.class);
+            xstream.alias("Contactos", ListaContactos.class);
+            xstream.addImplicitCollection(ListaContactos.class, "lista");
+            xstream.omitField(Contacto.class, "telefono");
 
-            // Preparamos XStream
-            XStream xstream = new XStream();
+            xstream.toXML(listaContactos, new FileOutputStream("Contactos.xml"));
+            System.out.println("Creado fichero XML....");
 
-            // Quitamos el nombre largo del paquete y lo llamamos solo "persona"
-            xstream.alias("persona", Persona.class);
-
-            // Convertimos a XML y guardamos en el archivo
-            xstream.toXML(persona, new FileOutputStream("persona.xml"));
-            System.out.println("Archivo persona.xml creado.");
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        CrearFicheroXML();
     }
 }
