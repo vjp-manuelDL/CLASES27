@@ -1,8 +1,5 @@
 package com.example.programadorapp.Ejercicio
 
-interface ProgramadorInterface
-
-    fun getProgrammerData (){
-
-    }
+interface ProgramadorInterface{
+    fun getProgrammerData (): ProgrammerData
 }

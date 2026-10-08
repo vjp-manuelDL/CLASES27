@@ -9,34 +9,33 @@ import org.w3c.dom.NodeList;
 public class Ejercicio04 {
     public static void main(String[] args) {
         try {
-            // 1. Aquí se construye el parser y se carga el documento Libros.xml
+            // 1. Aquí se crea la instancia de DocumentBuilderFactory para construir el parser
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new File("Libros.xml"));
-            doc.getDocumentElement().normalize();
 
-            // 2. Aquí se obtienen todos los nodos "libro"
-            NodeList listaLibros = doc.getElementsByTagName("libro");
+            // 2. Aquí se carga el documento XML desde el fichero
+            Document doc = builder.parse(new File("Contactos.xml"));
+            doc.getDocumentElement().normalize(); // Normaliza la estructura
 
-            System.out.println("--- LISTADO DE LIBROS ---");
-            // 3. Aquí se recorre la lista de nodos
-            for (int i = 0; i < listaLibros.getLength(); i++) {
-                Node nodo = listaLibros.item(i);
+            // 3. Aquí se crea una lista con todos los elementos "contacto"
+            NodeList listaNodos = doc.getElementsByTagName("contacto");
+
+            System.out.println("--- LISTADO DE CONTACTOS ---");
+            // 4. Aquí se recorre el NodeList usando un bucle para mostrar su contenido
+            for (int i = 0; i < listaNodos.getLength(); i++) {
+                Node nodo = listaNodos.item(i);
 
                 if (nodo.getNodeType() == Node.ELEMENT_NODE) {
                     Element elemento = (Element) nodo;
 
-                    // AQUÍ ESTÁ LA CLAVE: Se lee el atributo ISBN directamente del elemento
-                    String isbn = elemento.getAttribute("ISBN");
+                    // Extraemos el texto de cada etiqueta hija
+                    String nombre = elemento.getElementsByTagName("nombre").item(0).getTextContent();
+                    String apellidos = elemento.getElementsByTagName("apellidos").item(0).getTextContent();
+                    String email = elemento.getElementsByTagName("email").item(0).getTextContent();
+                    String telefono = elemento.getElementsByTagName("telefono").item(0).getTextContent();
 
-                    // Se leen los nodos hijos de forma normal
-                    String titulo = elemento.getElementsByTagName("titulo").item(0).getTextContent();
-                    String autor = elemento.getElementsByTagName("autor").item(0).getTextContent();
-                    String editorial = elemento.getElementsByTagName("editorial").item(0).getTextContent();
-
-                    System.out.println("ISBN: " + isbn);
-                    System.out.println("Título: " + titulo);
-                    System.out.println("Autor: " + autor + " | Editorial: " + editorial);
+                    System.out.println("Nombre: " + nombre + " " + apellidos);
+                    System.out.println("Email: " + email + " | Tel: " + telefono);
                     System.out.println("--------------------------");
                 }
             }
