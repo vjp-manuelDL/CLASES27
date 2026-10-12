@@ -1,35 +1,28 @@
-import com.thoughtworks.xstream.XStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 
 public class Ejercicio06 {
     public static void main(String[] args) {
-        try {
-            // Cargamos de nuevo el XML en memoria para pasarlo a JSON
-            XStream xstream = new XStream();
-            xstream.allowTypes(new Class[] { Esdla.class });
+        Esdla datos = Ejercicio04.cargarXML();
 
-            // Añadimos las mismas reglas que usamos en el Ejercicio04:
-            xstream.ignoreUnknownElements();
-            xstream.alias("esdla", Esdla.class);
-            xstream.alias("personaje", String.class);
+        if (datos != null) {
+            // a. Añadir nueva ciudad
+            datos.getCiudades().add(new Ciudad("Osgiliath", "Gondor"));
 
-            FileInputStream archivoXml = new FileInputStream("esdla.xml");
-            Esdla datosEsdla = (Esdla) xstream.fromXML(archivoXml);
-            archivoXml.close();
+            // b. Eliminar el primer personaje de la lista de hobbits (usando getPersonajes en plural)
+            if (datos.getPersonajes() != null && datos.getPersonajes().getHobbits() != null && !datos.getPersonajes().getHobbits().isEmpty()) {
+                datos.getPersonajes().getHobbits().remove(0);
+            }
 
-            // Guardamos a esdla.json en formato pretty
-            Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
-            FileWriter escritorJson = new FileWriter("esdla.json");
-            gsonPretty.toJson(datosEsdla, escritorJson);
-            escritorJson.close();
-
-            System.out.println("6. Fichero 'esdla.json' generado correctamente.");
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            // Guardar en esdla.json con formato pretty
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            try (FileWriter writer = new FileWriter("esdla.json")) {
+                gson.toJson(datos, writer);
+                System.out.println("Archivo 'esdla.json' generado correctamente.");
+            } catch (Exception e) {
+                System.out.println("Error al guardar JSON: " + e.getMessage());
+            }
         }
     }
 }

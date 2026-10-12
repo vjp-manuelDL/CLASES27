@@ -3,26 +3,26 @@ import com.google.gson.GsonBuilder;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Ejercicio01 {
     public static void main(String[] args) {
-        try {
-            Persona p = new Persona("Ana", "Gomez");
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String rutaArchivo = "empleado_guardado.json";
 
-            // Escribimos en el fichero
-            FileWriter escritor = new FileWriter("persona.json");
-            gson.toJson(p, escritor);
-            escritor.close();
-            System.out.println("Fichero persona.json escrito.");
+        // Escritura en fichero JSON
+        try (FileWriter writer = new FileWriter(rutaArchivo)) {
+            Empleado emp = new Empleado("Ana", "Gomez", 28, Arrays.asList("Directora"));
+            gson.toJson(emp, writer);
+            System.out.println("Archivo JSON escrito correctamente.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            // Leemos del fichero
-            FileReader lector = new FileReader("persona.json");
-            Persona pLeida = gson.fromJson(lector, Persona.class);
-            lector.close();
-
-            System.out.println("Leido -> Nombre: " + pLeida.getNombre() + ", Apellido: " + pLeida.getApellido());
-
+        // Lectura desde fichero JSON
+        try (FileReader reader = new FileReader(rutaArchivo)) {
+            Empleado empLeido = gson.fromJson(reader, Empleado.class);
+            System.out.println("Objeto leído del archivo: " + empLeido.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

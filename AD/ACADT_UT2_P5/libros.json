@@ -1,12 +1,10 @@
-{
-  "libro": [
-    {
-      "titulo": "El Quijote",
-      "autor": "Cervantes"
-    },
-    {
-      "titulo": "1984",
-      "autor": "George Orwell"
-    }
-  ]
-}
+[
+  {
+    "titulo": "El Quijote",
+    "autor": "Cervantes"
+  },
+  {
+    "titulo": "1984",
+    "autor": "George Orwell"
+  }
+]

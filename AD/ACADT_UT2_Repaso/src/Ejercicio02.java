@@ -1,30 +1,22 @@
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class Ejercicio02 {
-    public static void main(String[] args) {
-        copiarArchivo("origen.txt", "destino.txt");
+
+    public static void copiarArchivo(String rutaOrigen, String rutaDestino) {
+        Path origen = Paths.get(rutaOrigen);
+        Path destino = Paths.get(rutaDestino);
+
+        try {
+            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Archivo copiado con éxito de '" + rutaOrigen + "' a '" + rutaDestino + "'");
+        } catch (Exception e) {
+            System.out.println("Error al copiar el archivo: " + e.getMessage());
+        }
     }
 
-    // Metodo que recibe las rutas de origen y destino para copiar el contenido
-    public static void copiarArchivo(String rutaOrigen, String rutaDestino) {
-        try {
-            FileInputStream entrada = new FileInputStream(rutaOrigen);
-            FileOutputStream salida = new FileOutputStream(rutaDestino);
-
-            int byteLeido;
-            while ((byteLeido = entrada.read()) != -1) {
-                salida.write(byteLeido);
-            }
-
-            entrada.close();
-            salida.close();
-            System.out.println("Archivo copiado correctamente de " + rutaOrigen + " a " + rutaDestino);
-
-        } catch (IOException e) {
-            System.out.println("Error durante la copia del archivo.");
-            e.printStackTrace();
-        }
+    public static void main(String[] args) {
     }
 }

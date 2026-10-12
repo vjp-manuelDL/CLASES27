@@ -1,69 +1,60 @@
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Ejercicio03 {
     public static void main(String[] args) {
         try {
-            // 1. Cargamos las palabras tabu desde tabu.txt
-            List<String> palabrasTabu = new ArrayList<>();
-            BufferedReader lectorTabu = new BufferedReader(new FileReader("tabu.txt"));
-            String palabra;
-            while ((palabra = lectorTabu.readLine()) != null) {
-                if (!palabra.trim().isEmpty()) {
-                    palabrasTabu.add(palabra.trim().toLowerCase());
-                }
-            }
-            lectorTabu.close();
-
-            // 2. Accedemos a la carpeta "emails"
-            File carpetaEmails = new File("emails");
-            if (!carpetaEmails.exists()) {
-                System.out.println("La carpeta 'emails' no existe.");
+            if (!Files.exists(Paths.get("tabu.txt"))) {
+                System.out.println("Error: No se encuentra el archivo 'tabu.txt' en la raíz.");
                 return;
             }
 
-            File[] ficherosEmails = carpetaEmails.listFiles();
-            if (ficherosEmails == null) return;
+            // Leemos las palabras tabú con la codificación de Windows
+            List<String> palabrasTabu = Files.readAllLines(Paths.get("tabu.txt"), StandardCharsets.ISO_8859_1);
 
-            // 3. Analizamos cada email
-            for (int i = 0; i < ficherosEmails.length; i++) {
-                File archivoEmail = ficherosEmails[i];
-                if (archivoEmail.isFile()) {
-                    BufferedReader lectorEmail = new BufferedReader(new FileReader(archivoEmail));
-                    String linea;
-                    String remitente = "Desconocido";
-                    int contadorAlarmantes = 0;
+            // Ruta del correo a comprobar (puedes cambiarla para probar)
+            String rutaEmail = "emails/email1.txt";
 
-                    while ((linea = lectorEmail.readLine()) != null) {
-                        if (linea.toLowerCase().startsWith("remitente:")) {
-                            remitente = linea.substring(10).trim();
-                        }
+            File email = new File(rutaEmail);
+            if (!email.exists() || !email.isFile()) {
+                System.out.println("Error: No se encuentra el archivo de correo: " + rutaEmail);
+                return;
+            }
 
-                        // Limpiamos la linea de puntos, comas y simbolos, extrayendo solo las palabras
-                        String[] palabras = linea.toLowerCase().split("[^a-záéíóúñ0-9]+");
-                        for (int j = 0; j < palabras.length; j++) {
-                            if (palabrasTabu.contains(palabras[j])) {
-                                contadorAlarmantes++;
-                            }
-                        }
-                    }
-                    lectorEmail.close();
+            // Lectura del contenido del email
+            String contenido = new String(Files.readAllBytes(email.toPath()), StandardCharsets.ISO_8859_1).toLowerCase();
+            int contadorAlarmantes = 0;
 
-                    System.out.println("-> Archivo '" + archivoEmail.getName() + "' analizado. Palabras tabu encontradas: " + contadorAlarmantes);
-
-                    // Si supera las 3 palabras alarmantes, avisamos
-                    if (contadorAlarmantes > 3) {
-                        System.out.println("El trabajador " + remitente + " esta infringiendo las normativas de seguridad");
+            // Recorremos cada palabra tabú y contamos cuántas veces aparece repetida
+            for (String tabu : palabrasTabu) {
+                String palabra = tabu.trim().toLowerCase();
+                if (!palabra.isEmpty()) {
+                    Pattern pattern = Pattern.compile(Pattern.quote(palabra));
+                    Matcher matcher = pattern.matcher(contenido);
+                    while (matcher.find()) {
+                        contadorAlarmantes++; // Suma 1 por cada repetición encontrada
                     }
                 }
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            // Comprobación si supera las 3 palabras alarmantes en total
+            if (contadorAlarmantes > 3) {
+                String trabajador = email.getName()
+                        .replace("From-", "")
+                        .replace(".txt", "");
+
+                System.out.println("El trabajador " + trabajador + " está infringiendo las normativas de seguridad (Total: " + contadorAlarmantes + ")");
+            } else {
+                System.out.println("El trabajador del archivo " + email.getName() + " no infringe la normativa (palabras alarmantes: " + contadorAlarmantes + ").");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error procesando el email: " + e.getMessage());
         }
     }
 }

@@ -1,41 +1,40 @@
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class Ejercicio06 {
+
     public static void main(String[] args) {
-        // Preparamos nuestra lista de libros
-        List<Libro> miLista = new ArrayList<>();
-        miLista.add(new Libro("Cien anos de soledad", "Gabriel Garcia Marquez"));
-        miLista.add(new Libro("1984", "George Orwell"));
+        List<Libro> listaLibros = new ArrayList<>();
+        listaLibros.add(new Libro("El Quijote", "Miguel de Cervantes", 1605));
+        listaLibros.add(new Libro("Cien años de soledad", "Gabriel García Márquez", 1967));
 
-        // Llamamos al primer metodo para convertir la lista a JSON bonito
-        String jsonGenerado = serializarAJson(miLista);
+        // 1. Serializar la lista a JSON "pretty" usando un método
+        String jsonResultado = serializarLibros(listaLibros);
 
-        System.out.println("--- RESULTADO DE SERIALIZAR ---");
-        System.out.println(jsonGenerado);
+        System.out.println("--- JSON de Libros (Pretty) ---");
+        System.out.println(jsonResultado);
 
-        // Llamamos al segundo metodo pasandole el texto que acabamos de generar
-        deserializarDesdeJson(jsonGenerado);
+        System.out.println("\n--- Libros Deserializados ---");
+        // 2. Pasar el JSON como parámetro a otro método para deserializar
+        deserializarLibros(jsonResultado);
     }
 
-    // Metodo 1: Convierte una lista de libros a texto JSON
-    public static String serializarAJson(List<Libro> lista) {
-        Gson gsonBonito = new GsonBuilder().setPrettyPrinting().create();
-        return gsonBonito.toJson(lista);
+    public static String serializarLibros(List<Libro> libros) {
+        Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+        return prettyGson.toJson(libros);
     }
 
-    // Metodo 2: Recibe un texto JSON y lo convierte de vuelta a libros
-    public static void deserializarDesdeJson(String textoJson) {
+    public static void deserializarLibros(String json) {
         Gson gson = new Gson();
+        Type tipoListaLibros = new TypeToken<List<Libro>>(){}.getType();
+        List<Libro> librosDeserializados = gson.fromJson(json, tipoListaLibros);
 
-        // Lo leemos como un Array de libros
-        Libro[] librosRecuperados = gson.fromJson(textoJson, Libro[].class);
-
-        System.out.println("\n--- RESULTADO DE DESERIALIZAR ---");
-        for (int i = 0; i < librosRecuperados.length; i++) {
-            System.out.println("Libro recuperado: " + librosRecuperados[i].getTitulo());
+        for (Libro libro : librosDeserializados) {
+            System.out.println(libro.toString());
         }
     }
 }

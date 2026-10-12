@@ -4,20 +4,17 @@ import java.io.FileReader;
 
 public class Ejercicio07 {
     public static void main(String[] args) {
-        try {
-            Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
+        Gson gsonLectura = new Gson();
+        Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
 
-            // Leemos el fichero json creado anteriormente
-            FileReader lectorJson = new FileReader("esdla.json");
-            Esdla jsonRecuperado = gsonPretty.fromJson(lectorJson, Esdla.class);
-            lectorJson.close();
+        try (FileReader reader = new FileReader("esdla.json")) {
+            Esdla datosCargados = gsonLectura.fromJson(reader, Esdla.class);
 
-            System.out.println("7. Contenido de esdla.json cargado y mostrado en formato amigable:");
-            System.out.println(gsonPretty.toJson(jsonRecuperado));
+            System.out.println("--- Contenido de esdla.json ---");
+            System.out.println(gsonPretty.toJson(datosCargados));
 
         } catch (Exception e) {
-            System.out.println("Asegurate de haber ejecutado antes el ejercicio 6 para generar el json.");
-            e.printStackTrace();
+            System.out.println("Error al leer el archivo JSON: " + e.getMessage());
         }
     }
 }

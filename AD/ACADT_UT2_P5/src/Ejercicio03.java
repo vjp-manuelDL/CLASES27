@@ -1,38 +1,32 @@
-import com.thoughtworks.xstream.XStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.FileInputStream;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.security.AnyTypePermission;
+import java.io.File;
 import java.io.FileWriter;
+import java.util.List;
 
 public class Ejercicio03 {
     public static void main(String[] args) {
+        XStream xstream = new XStream();
+        xstream.addPermission(AnyTypePermission.ANY);
+
+        // Indicamos que la etiqueta raíz <libros> equivale a una Lista en Java
+        xstream.alias("libros", List.class);
+        // Indicamos que cada etiqueta <libro> equivale a nuestra clase Libro
+        xstream.alias("libro", Libro.class);
+
         try {
-            // 1. Leemos el XML con XStream
-            XStream xstream = new XStream();
-            xstream.allowTypes(new Class[] { ListaLibros.class, LibroXml.class });
-            xstream.alias("libros", ListaLibros.class);
-            xstream.alias("libro", LibroXml.class);
+            Object datosXml = xstream.fromXML(new File("libros-14.xml"));
 
-            // Esta linea le dice a XStream que la etiqueta "libro" dentro de ListaLibros es una coleccion
-            xstream.addImplicitCollection(ListaLibros.class, "libro");
-
-            FileInputStream archivoXml = new FileInputStream("libros-14.xml");
-            ListaLibros listaLeida = (ListaLibros) xstream.fromXML(archivoXml);
-            archivoXml.close();
-            System.out.println("XML leido con XStream.");
-
-            // 2. Escribimos el JSON con Gson
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            FileWriter escritorJson = new FileWriter("libros.json");
-
-            gson.toJson(listaLeida, escritorJson);
-            escritorJson.close();
-
-            System.out.println("Archivo libros.json creado con exito.");
+            try (FileWriter writer = new FileWriter("libros.json")) {
+                gson.toJson(datosXml, writer);
+                System.out.println("Archivo 'libros.json' generado exitosamente a partir del XML.");
+            }
 
         } catch (Exception e) {
-            System.out.println("Asegurate de tener el archivo libros-14.xml en la raiz.");
-            e.printStackTrace();
+            System.out.println("Se produjo un error en la conversión: " + e.getMessage());
         }
     }
 }

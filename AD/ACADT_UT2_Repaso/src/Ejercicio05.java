@@ -1,25 +1,25 @@
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import java.io.File;
 
 public class Ejercicio05 {
     public static void main(String[] args) {
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = dbf.newDocumentBuilder();
-            Document doc = builder.parse(new File("esdla.xml"));
-            doc.getDocumentElement().normalize();
+            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("esdla.xml");
 
-            // a. Modificar elemento autor
-            Element autor = (Element) doc.getElementsByTagName("autor").item(0);
-            if (autor != null) {
-                autor.setTextContent("");
+            // a. Modificar el elemento autor
+            NodeList listaAutores = doc.getElementsByTagName("autor");
+            if (listaAutores.getLength() > 0) {
+                Node nodoAutor = listaAutores.item(0);
+                nodoAutor.setTextContent("");
+
                 Element nombre = doc.createElement("nombre");
                 nombre.setTextContent("John Ronald Reuel Tolkien");
                 Element diminutivo = doc.createElement("diminutivo");
@@ -27,29 +27,44 @@ public class Ejercicio05 {
                 Element nacimiento = doc.createElement("nacimiento");
                 nacimiento.setTextContent("1892");
                 Element fallecimiento = doc.createElement("fallecimiento");
-                fallecimiento.setTextContent("1892");
+                fallecimiento.setTextContent("1973");
 
-                autor.appendChild(nombre);
-                autor.appendChild(diminutivo);
-                autor.appendChild(nacimiento);
-                autor.appendChild(fallecimiento);
+                nodoAutor.appendChild(nombre);
+                nodoAutor.appendChild(diminutivo);
+                nodoAutor.appendChild(nacimiento);
+                nodoAutor.appendChild(fallecimiento);
             }
 
-            // b. Añadir nueva ciudad "Osgiliath" y facción "Gondor"
-            Element nuevaCiudad = doc.createElement("ciudad");
-            nuevaCiudad.setAttribute("nombre", "Osgiliath");
-            nuevaCiudad.setAttribute("faccion", "Gondor");
-            doc.getDocumentElement().appendChild(nuevaCiudad);
+            // b. Añadir nueva ciudad (Osgiliath, Gondor)
+            NodeList listaRaiz = doc.getChildNodes();
+            if (listaRaiz.getLength() > 0) {
+                Node raiz = listaRaiz.item(0);
 
-            // Guardamos el DOM actualizado en "esdla_actualizado.xml"
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
-            DOMSource origen = new DOMSource(doc);
-            StreamResult destino = new StreamResult(new File("esdla_actualizado.xml"));
-            transformer.transform(origen, destino);
+                Element nuevaCiudad = doc.createElement("ciudad");
+                Element nombreC = doc.createElement("nombre");
+                nombreC.setTextContent("Osgiliath");
+                Element faccionC = doc.createElement("faccion");
+                faccionC.setTextContent("Gondor");
 
-            System.out.println("5. Fichero 'esdla_actualizado.xml' creado correctamente con DOM.");
+                nuevaCiudad.appendChild(nombreC);
+                nuevaCiudad.appendChild(faccionC);
+                raiz.appendChild(nuevaCiudad);
+            }
 
+            // c. Eliminar el último personaje de las listas
+            NodeList listaHobbits = doc.getElementsByTagName("hobbit");
+            if (listaHobbits.getLength() > 0) {
+                Node ultimoHobbit = listaHobbits.item(listaHobbits.getLength() - 1);
+                ultimoHobbit.getParentNode().removeChild(ultimoHobbit);
+            }
+
+            // Guardar cambios a esdla_actualizado.xml
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File("esdla_actualizado.xml"));
+            transformer.transform(source, result);
+
+            System.out.println("Archivo 'esdla_actualizado.xml' creado exitosamente.");
         } catch (Exception e) {
             e.printStackTrace();
         }
