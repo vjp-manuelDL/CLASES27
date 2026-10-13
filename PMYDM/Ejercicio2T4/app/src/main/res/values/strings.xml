@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Ejercicio2T4</string>
+    <string name="saludo">Bienvenido a mi app</string>
+    <string name="nombre">Manuel Delgado Lopes</string>
+</resources>
