@@ -9,16 +9,16 @@ public class Mago extends Personaje {
     @Override
     public String ataca(Personaje defender) {
         if (estaFlintcheado()) {
-            return getNombre() + " (Mago) está aturdido (flintcheado) y no puede lanzar hechizos.";
+            return getNombre() + " está aturdido y no puede lanzar hechizos.";
         }
 
         // Dodge del rival (La magia es casi imposible de esquivar: solo 5%)
         if (random.nextInt(100) < 5) {
-            return defender.getNombre() + " esquiva (DODGE) milagrosamente la magia de " + getNombre() + "!";
+            return defender.getNombre() + " esquiva milagrosamente la magia de " + getNombre() + "!";
         }
 
         if (random.nextInt(100) >= 80) {
-            return getNombre() + " (Mago) falla al canalizar su hechizo.";
+            return getNombre() + "falla al canalizar su hechizo.";
         }
 
         // Ignora defensa + Alta probabilidad de Crítico (35%)

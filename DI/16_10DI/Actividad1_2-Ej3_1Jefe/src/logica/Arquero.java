@@ -9,17 +9,17 @@ public class Arquero extends Personaje {
     @Override
     public String ataca(Personaje defender) {
         if (estaFlintcheado()) {
-            return getNombre() + " (Arquero) está aturdido (flintcheado) y pierde el turno.";
+            return getNombre() + " está aturdido (flintcheado) y pierde el turno.";
         }
 
         int probDodge = (defender instanceof Arquero) ? 25 : 10;
         if (random.nextInt(100) < probDodge) {
-            return defender.getNombre() + " ha logrado ESQUIVAR (DODGE) la flecha de " + getNombre() + "!";
+            return defender.getNombre() + " ha logrado ESQUIVAR la flecha de " + getNombre() + "!";
         }
 
         // Gran precisión (90% acierto)
         if (random.nextInt(100) >= 90) {
-            return getNombre() + " (Arquero) dispara pero la flecha se desvía.";
+            return getNombre() + " dispara pero la flecha se desvía.";
         }
 
         int danoCalculado = getFuerza() - defender.getDefensa();
@@ -39,7 +39,7 @@ public class Arquero extends Personaje {
         // 20% probabilidad de flintchear
         if (random.nextInt(100) < 20 && defender.vivo()) {
             defender.setFlintcheado(true);
-            msg += " ¡La flecha hace tambalearse al rival (FLINTCHEO)!";
+            msg += " ¡La flecha hace tambalearse al rival!";
         }
 
         return msg;
