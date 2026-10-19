@@ -10,18 +10,18 @@ public class Guerrero extends Personaje {
     public String ataca(Personaje defender) {
         // 1. Control de Flintcheo
         if (estaFlintcheado()) {
-            return getNombre() + " (Guerrero) está aturdido (flintcheado) y pierde el turno.";
+            return getNombre() + " está aturdido y pierde el turno.";
         }
 
         // 2. Control de Dodge (Esquiva del enemigo)
         int probDodge = (defender instanceof Arquero) ? 30 : 10;
         if (random.nextInt(100) < probDodge) {
-            return defender.getNombre() + " ha logrado ESQUIVAR (DODGE) el mandoble de " + getNombre() + "!";
+            return defender.getNombre() + " ha logrado ESQUIVAR el mandoble de " + getNombre() + "!";
         }
 
         // 3. Probabilidad de acierto
         if (random.nextInt(100) >= 75) {
-            return getNombre() + " (Guerrero) falla su potente ataque.";
+            return getNombre() + " falla su potente ataque.";
         }
 
         // 4. Daño base + Crítico (20% probabilidad)
