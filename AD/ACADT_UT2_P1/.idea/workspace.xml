@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0ab8d833-47ee-44a0-b784-9610391d30bf" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.000000142449908" />
+      <entry key="S5" value="1.0035347953953915" />
+      <entry key="S10" value="1.1356440064409876" />
+      <entry key="S30" value="2.809768465342202" />
+      <entry key="S60" value="4.541890896323395" />
+      <entry key="M2" value="5.973199897980775" />
+      <entry key="M5" value="7.103600637595106" />
+      <entry key="M10" value="7.536133694400741" />
+      <entry key="M15" value="7.687163387704219" />
+      <entry key="M30" value="7.841756910365873" />
+      <entry key="H1" value="7.920416819328168" />
+      <entry key="H2" value="7.9600923134849735" />
+      <entry key="H4" value="7.980017046340523" />
+      <entry key="D1" value="7.996665457261075" />
+      <entry key="W1" value="7.999523537460584" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.5823667932342279" />
+      <entry key="MS500" value="0.8975100506672614" />
+      <entry key="S2" value="0.9733295161540547" />
+      <entry key="S5" value="0.9927438702242624" />
+      <entry key="S10" value="1.1285199627932865" />
+      <entry key="S30" value="2.795494911289517" />
+      <entry key="S60" value="4.527519539826832" />
+      <entry key="M2" value="5.9628485593053435" />
+      <entry key="M5" value="7.0984298645223305" />
+      <entry key="M10" value="7.533348355457146" />
+      <entry key="M15" value="7.685259726522755" />
+      <entry key="M30" value="7.840781086362605" />
+      <entry key="H1" value="7.919922792287353" />
+      <entry key="H2" value="7.959843756398772" />
+      <entry key="H4" value="7.9798923800412895" />
+      <entry key="D1" value="7.9966446255306" />
+      <entry key="W1" value="7.999520560174222" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3K0ar8O3Emgx6YCOnQi1kUvNIQO" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Ejercicio01.executor": "Run",
+    "Application.Ejercicio02.executor": "Run",
+    "Application.Ejercicio03.executor": "Run",
+    "Application.Ejercicio04.executor": "Run",
+    "Application.Ejercicio05.executor": "Run",
+    "Application.Ejercicio06.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "C:/Users/alumno/IdeaProjects/ACADT_UT2_P1/src/Main.java",
+    "to.speed.mode.migration.done": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-a203e0a19954-intellij.indexing.shared.core-IU-262.10315.125" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.10315.125" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0ab8d833-47ee-44a0-b784-9610391d30bf" name="Changes" comment="" />
+      <created>1790697136445</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1790697136445</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Ejercicio01.java</url>
+          <line>11</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
