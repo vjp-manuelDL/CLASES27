@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">T4EJ2</string>
+    <string name="saludo">Soy un titulo</string>
+    <string name="encabezado">Encabezado grande</string>
+    <string name="cuerpo">Cuerpo del texto</string>
+    <string name="etiqueta">etiqueta pequeña</string>
+</resources>
