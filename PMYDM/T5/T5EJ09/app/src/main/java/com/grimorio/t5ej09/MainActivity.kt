@@ -1,5 +1,3 @@
-// Archivo: app/src/main/java/com/grimorio/t5ej09/MainActivity.kt
-
 package com.grimorio.t5ej09
 
 import android.os.Bundle
@@ -45,7 +43,7 @@ fun PantallaPrincipal() {
         // Mitad superior: Layout Box para apilar el Texto sobre la Imagen
         Box(
             modifier = Modifier
-                .weight(1f)
+                .weight(0.5f)
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
@@ -61,7 +59,7 @@ fun PantallaPrincipal() {
             Text(
                 text = "INVITACIÓN",
                 style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.tertiary
             )
         }
 

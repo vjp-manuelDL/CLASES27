@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">T6E1</string>
+    <string name="movil">Iphone 3</string>
+    <string name="carac">Caracteristicas Tecnicas</string>
+    <string name="bateria">Bateria: 2000mAh</string>
+    <string name="pantalla">Pantalla: 4 pulgadas</string>
+    <string name="conec">Conectividad: Wifi </string>
+    <string name="desc">Descripcion</string>">Imagen iphone 3</string>
+</resources>
