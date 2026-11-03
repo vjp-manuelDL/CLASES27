@@ -13,13 +13,11 @@ public class Ejercicio01 {
             int opcionPrincipal = 0;
             // Menu principal que redirige a la gestión de empleados o departamentos
             while (opcionPrincipal != 3) {
-                System.out.println("\n==================================");
-                System.out.println("       MENÚ PRINCIPAL - UT3       ");
-                System.out.println("==================================");
-                System.out.println("1. Gestión empleados");
-                System.out.println("2. Gestión de departamentos");
+                System.out.println("---MENU PRINCIPAL---");
+                System.out.println("1. Gestion empleados");
+                System.out.println("2. Gestion de departamentos");
                 System.out.println("3. Salir");
-                System.out.print("Elige una opción: ");
+                System.out.print("Elige una opcion: ");
                 opcionPrincipal = scanner.nextInt();
 
                 if (opcionPrincipal == 1) {
@@ -47,17 +45,17 @@ public class Ejercicio01 {
     private static void menuEmpleados(Connection conexion, Scanner scanner) throws SQLException {
         int opcion = 0;
         while (opcion != 10) {
-            System.out.println("\n--- MENÚ DE EMPLEADOS ---");
+            System.out.println("\n--- MENU DE EMPLEADOS ---");
             System.out.println("1. Consultar todos los empleados");
-            System.out.println("2. Consultar empleados por emp_no");
+            System.out.println("2. Consultar empleados por numero");
             System.out.println("3. Consultar empleados con salario superior a X");
             System.out.println("4. Consultar empleados con salario igual o inferior a X");
             System.out.println("5. Añadir nuevo empleado");
             System.out.println("6. Modificar empleado");
             System.out.println("7. Borrar empleado");
             System.out.println("8. Listar todos los empleados de un departamento");
-            System.out.println("10. Volver al menú principal");
-            System.out.print("Elige una opción: ");
+            System.out.println("10. Volver al menu principal");
+            System.out.print("Elige una opcion: ");
             opcion = scanner.nextInt();
 
             // 1. Mostrar todos los empleados
@@ -92,7 +90,7 @@ public class Ejercicio01 {
             }
             // 4. Empleados con salario menor o igual a X
             else if (opcion == 4) {
-                System.out.print("Introduce el salario máximo: ");
+                System.out.print("Introduce el salario maximo: ");
                 float salario = scanner.nextFloat();
                 PreparedStatement pstmt = conexion.prepareStatement("SELECT * FROM empleados WHERE salario <= ?");
                 pstmt.setFloat(1, salario);
@@ -174,7 +172,7 @@ public class Ejercicio01 {
             }
             // 8. Listar empleados pertenecientes a un departamento concreto
             else if (opcion == 8) {
-                System.out.print("Introduce el número de departamento: ");
+                System.out.print("Introduce el numero de departamento: ");
                 int deptNo = scanner.nextInt();
 
                 PreparedStatement pstmt = conexion.prepareStatement("SELECT * FROM empleados WHERE dept_no = ?");
@@ -195,15 +193,15 @@ public class Ejercicio01 {
     private static void menuDepartamentos(Connection conexion, Scanner scanner) throws SQLException {
         int opcion = 0;
         while (opcion != 10) {
-            System.out.println("\n--- MENÚ DE DEPARTAMENTOS ---");
+            System.out.println("\n--- MENU DE DEPARTAMENTOS ---");
             System.out.println("1. Listar todos los departamentos");
             System.out.println("2. Insertar Departamento");
             System.out.println("3. Modificar Departamento");
             System.out.println("4. Eliminar Departamento");
-            System.out.println("5. Ver información de un departamento (por ID)");
+            System.out.println("5. Ver informacion de un departamento (por ID)");
             System.out.println("6. Subir sueldo a todos los empleados de un departamento");
-            System.out.println("10. Volver al menú principal");
-            System.out.print("Elige una opción: ");
+            System.out.println("10. Volver al menu principal");
+            System.out.print("Elige una opcion: ");
             opcion = scanner.nextInt();
 
             // 1. Listar todos los departamentos
@@ -263,7 +261,7 @@ public class Ejercicio01 {
                 ResultSet rsCheck = checkStmt.executeQuery();
 
                 if (rsCheck.next() && rsCheck.getInt(1) > 0) {
-                    System.out.println("❌ No se puede borrar: El departamento tiene " + rsCheck.getInt(1) + " empleado(s) asignado(s).");
+                    System.out.println(" No se puede borrar: El departamento tiene " + rsCheck.getInt(1) + " empleado(s) asignado(s).");
                 } else {
                     PreparedStatement delStmt = conexion.prepareStatement("DELETE FROM departamentos WHERE dept_no = ?");
                     delStmt.setInt(1, deptNo);
@@ -276,7 +274,7 @@ public class Ejercicio01 {
             }
             // 5. Consultar un departamento por su ID
             else if (opcion == 5) {
-                System.out.print("Introduce el ID (dept_no) del departamento: ");
+                System.out.print("Introduce el ID (numero) del departamento: ");
                 int deptNo = scanner.nextInt();
 
                 PreparedStatement pstmt = conexion.prepareStatement("SELECT * FROM departamentos WHERE dept_no = ?");
@@ -284,8 +282,8 @@ public class Ejercicio01 {
                 ResultSet rs = pstmt.executeQuery();
                 if (rs.next()) {
                     System.out.println("Nº Dept: " + rs.getInt("dept_no") +
-                            " | Nombre: " + rs.getString("dnombre") +
-                            " | Localidad: " + rs.getString("loc"));
+                            "  Nombre: " + rs.getString("dnombre") +
+                            "  Localidad: " + rs.getString("loc"));
                 } else {
                     System.out.println("No se encontró ningún departamento con ese ID.");
                 }
