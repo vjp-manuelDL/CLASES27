@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><title>PSP UT1: Hilos y sincronización en Java</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#fff;--fg:#1d2330;--mut:#5a6478;--ac:#2f5d9b;--card:#f3f6fb;--code:#f0f2f6;--bd:#d5dbe6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181f;--fg:#e4e8ef;--mut:#9aa5b8;--ac:#7fb0ee;--card:#1c222c;--code:#0f1319;--bd:#2c3442;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14181f;--fg:#e4e8ef;--mut:#9aa5b8;--ac:#7fb0ee;--card:#1c222c;--code:#0f1319;--bd:#2c3442;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:16px}
+h1{color:var(--ac);margin:.3em 0}h2{color:var(--ac);border-bottom:2px solid var(--bd);padding-bottom:4px;margin-top:2em}h3{margin:1.4em 0 .3em}
+nav{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 14px;font-size:14px}nav a{color:var(--ac);margin-right:10px;white-space:nowrap}
+pre{background:var(--code);border:1px solid var(--bd);border-radius:8px;padding:10px;overflow-x:auto;font:13px/1.45 ui-monospace,Menlo,Consolas,monospace}
+.box{background:var(--card);border-left:4px solid var(--ac);padding:6px 12px;border-radius:6px;margin:10px 0}
+table{border-collapse:collapse;display:block;overflow-x:auto}td,th{border:1px solid var(--bd);padding:4px 8px;text-align:left;font-size:14px}th{background:var(--card)}
+details{border:1px solid var(--bd);border-radius:8px;margin:8px 0;padding:4px 12px}summary{cursor:pointer;font-weight:600;padding:4px 0}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em}
+</style></head><body><main>
+<h1>PSP · UT1: Hilos y sincronización en Java</h1>
+<p style="color:var(--mut)">Resumen de teoría, ejemplos de código y ejercicios resueltos (2º DAM). Cada clase va en su propio fichero <code>.java</code>.</p>
+<nav><a href="#t1">1. Procesos</a><a href="#t2">2. Hilos</a><a href="#t3">3. Creación</a><a href="#t4">4. Prioridades/daemon</a><a href="#t5">5. Monitores</a><a href="#t6">6. Productor-consumidor</a><a href="#ej">Ejercicios</a><a href="#auto">Autoevaluación</a></nav>
+
+<h2 id="t1">1. Programas, procesos y concurrencia</h2>
+<ul>
+<li><b>Programa</b>: conjunto de instrucciones, algo estático (como una <i>clase</i>). <b>Proceso</b>: programa en ejecución, algo dinámico (como un <i>objeto</i>); puede haber varios procesos del mismo programa.</li>
+<li><b>Imagen de memoria</b>: código, datos (constantes y estáticas), pila (<i>stack</i>: argumentos y locales) y memoria dinámica (<i>heap</i>). Las <b>tablas de control de procesos</b> guardan el estado (registros, páginas, E/S…).</li>
+</ul>
+<h3>1.1 Ciclo de vida de un proceso</h3>
+<p>Creado → <b>Listo</b> → (el planificador/<i>scheduler</i> le da CPU) <b>Ejecución</b> → <b>Terminado</b>. De Ejecución puede volver a Listo (fin de <i>cuantum</i> o abandono voluntario) o pasar a <b>Bloqueado</b> (espera E/S, otro proceso, tiempo…) y, al ocurrir el suceso, vuelve a Listo. Cambiar de estado = <i>cambio de contexto</i>.</p>
+<h3>1.2 Programación concurrente</h3>
+<ul><li><b>Concurrentes</b>: las ejecuciones se solapan/intercalan (no tienen por qué ser simultáneas). <b>Paralelismo</b>: se ejecutan realmente a la vez. La concurrencia es paralelismo potencial.</li>
+<li>Ejemplo de los albañiles: <i>secuencial</i> (1 albañil, pared a pared), <i>paralelo</i> (2 albañiles, mitad de tiempo), <i>concurrente</i> (1 albañil alternando 2 ladrillos en cada pared).</li></ul>
+<h3>1.2.1 Ventajas y problemas</h3>
+<p>Ventaja principal: velocidad de ejecución. Riesgo: compartir recursos (memoria) → errores difíciles de depurar:</p>
+<ul><li><b>Exclusión mutua</b> (sección crítica): solo un proceso accede a la vez (ej.: impresora).</li>
+<li><b>Condición de sincronización</b>: un proceso debe esperar a que ocurra un evento.</li>
+<li><b>Interbloqueo</b> (<i>deadlock</i>): todos esperan un evento que nunca llegará.</li></ul>
+
+<h2 id="t2">2. Procesos e hilos en Java</h2>
+<h3>2.1 ¿Qué nos permite Java?</h3>
+<p>Cada ejecución de un programa Java (<i>Run As → Java Application</i>) es un proceso; lanzar varias a la vez muestra procesos concurrentes.</p>
+<pre><code>package es.iesvjp.psp;
+
+public class Ejemplo1 {
+    public static void main(String[] args) {
+        System.out.println("Este es un proceso que cuenta hasta 100");
+        for (int i = 1; i &lt;= 100; i++) {
+            System.out.println(i);
+            try { Thread.sleep(50); }            // pausa de 50 ms
+            catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}</code></pre>
+<h3>2.2 Hilos</h3>
+<ul><li><b>Hilo</b>: secuencia de control dentro de un proceso que ejecuta sus instrucciones de forma independiente. Hay concurrencia a dos niveles: entre procesos y entre hilos de un mismo proceso.</li>
+<li>Proceso = entidad <b>pesada</b> (estructura en el núcleo, cambios de contexto costosos). Hilo = entidad <b>ligera</b> (espacio de usuario, comparte código y datos del proceso, cambio de contexto barato).</li>
+<li>Dos niveles de hilos: los de usuario (los que creamos con la API de Java) y los del sistema que les dan soporte.</li></ul>
+<h3>2.2.1 Estados de un hilo</h3>
+<p><b>Nuevo</b> (<code>new</code>) → <code>start()</code> → <b>Listo</b> ⇄ <b>Ejecución</b> (planificador / <code>yield()</code> o fin de cuanto). Desde Ejecución pasa a: <i>Bloqueado</i> (E/S), <i>Dormido</i> (<code>sleep()</code>), <i>Espera por synchronized</i> (cerrojo ocupado), <i>Espera por wait</i> (hasta <code>notify()/notifyAll()</code>) o <b>Terminado</b>. Al cumplirse la condición vuelve a Listo.</p>
+<h3>2.3 Hilos en Java</h3>
+<p>Al empezar existe el <b>hilo principal</b> (<code>main()</code>). Si creamos más, varios hilos pueden ejecutar el mismo método del mismo objeto a la vez. El <i>objeto</i> es estático; quien ejecuta sus métodos es el <i>hilo</i>.</p>
+<h3>2.3.1 Constructores y métodos</h3>
+<table><tr><th>Constructor</th><th>Función</th></tr>
+<tr><td><code>Thread()</code></td><td>Nuevo hilo con nombre automático «Thread-n»</td></tr>
+<tr><td><code>Thread(String name)</code></td><td>Le asigna nombre</td></tr>
+<tr><td><code>Thread(Runnable target)</code></td><td><code>target</code> contiene el <code>run()</code> que se invocará con <code>start()</code></td></tr>
+<tr><td><code>Thread(Runnable, String)</code></td><td>Ambos</td></tr></table>
+<table><tr><th>Método</th><th>Función</th></tr>
+<tr><td><code>start()</code></td><td>Comienza la ejecución (la MVJ llama a <code>run()</code>)</td></tr>
+<tr><td><code>run()</code></td><td>Cuerpo del hilo (único método de <code>Runnable</code>)</td></tr>
+<tr><td><code>isAlive()</code></td><td>true si ha empezado y no ha terminado</td></tr>
+<tr><td><code>sleep(ms)</code></td><td>Duerme el hilo actual; lanza <code>InterruptedException</code></td></tr>
+<tr><td><code>yield()</code></td><td>Cede la CPU: pasa de Ejecución a Listo</td></tr>
+<tr><td><code>join()</code> / <code>join(ms)</code></td><td>Espera a que el hilo muera (como mucho ms)</td></tr>
+<tr><td><code>getName/setName</code>, <code>getId</code></td><td>Nombre e identificador</td></tr>
+<tr><td><code>getPriority/setPriority</code></td><td>Prioridad</td></tr>
+<tr><td><code>interrupt()</code>, <code>interrupted()</code></td><td>Interrumpe / comprueba interrupción</td></tr>
+<tr><td><code>currentThread()</code></td><td>Referencia al hilo en ejecución (similar a <code>this</code>)</td></tr>
+<tr><td><code>setDaemon(b)</code>, <code>isDaemon()</code></td><td>Marca / comprueba demonio</td></tr>
+<tr><td><code>stop()</code></td><td>Obsoleto (<i>deprecated</i>)</td></tr></table>
+
+<h2 id="t3">2.4 Creación de hilos</h2>
+<p>Dos formas: heredar de <code>Thread</code> o implementar <code>Runnable</code>.</p>
+<h3>2.4.1 Heredando de Thread</h3>
+<pre><code>// ---- ThreadConHerencia.java ----
+package es.iesvjp.psp;
+
+public class ThreadConHerencia extends Thread {   // la clase ES un hilo
+    private int numHilo;
+    public ThreadConHerencia(int hilo) { this.numHilo = hilo; }
+    public int getNumHilo() { return numHilo; }
+
+    @Override
+    public void run() {                           // código que ejecutará el hilo
+        for (int i = 0; i &lt; 4; i++)
+            System.out.println("Hilo " + getNumHilo());
+    }
+}
+
+// ---- Main.java ----
+public class Main {
+    public static void main(String[] args) {
+        ThreadConHerencia thH1 = new ThreadConHerencia(1);
+        ThreadConHerencia thH2 = new ThreadConHerencia(2);
+        thH1.start();   // start() inicializa el hilo y llama a run()
+        thH2.start();
+        System.out.println("Fin del hilo principal"); // puede salir antes que los hilos
+    }
+}</code></pre>
+<p>La salida se intercala de forma impredecible (tres hilos: principal + 2).</p>
+<h3>Ejemplo del Reloj (hora y beep concurrentes)</h3>
+<pre><code>// ---- Hora.java ----
+package es.iesvjp.psp.hilos.Reloj;
+import java.time.LocalDateTime;
+
+public class Hora extends Thread {
+    @Override public void run() {
+        for (int i = 0; i &lt; 10; i++) {
+            System.out.println(LocalDateTime.now());   // muestra la hora
+            try { sleep(1000); }                       // espera 1 s
+            catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+// ---- Sonido.java ----
+public class Sonido extends Thread {
+    @Override public void run() {
+        for (int i = 0; i &lt; 10; i++) {
+            System.out.println("Beep!!");
+            java.awt.Toolkit.getDefaultToolkit().beep(); // sonido del sistema
+            try { sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+// ---- Reloj.java ----
+public class Reloj {
+    public static void main(String[] args) {
+        new Hora().start();     // lanza ambos hilos a la vez
+        new Sonido().start();
+    }
+}</code></pre>
+<h3>2.4.2 Implementando Runnable</h3>
+<pre><code>// ---- ThreadConRunnable.java ----
+public class ThreadConRunnable implements Runnable {   // NO es un hilo todavía
+    private String palabra;
+    public ThreadConRunnable(String _palabra) { this.palabra = _palabra; }
+    @Override public void run() {
+        for (int i = 0; i &lt; 10; i++) System.out.println(palabra);
+    }
+}
+// ---- MainRunnable.java ----
+public class MainRunnable {
+    public static void main(String[] args) {
+        ThreadConRunnable a = new ThreadConRunnable("Hilo 1");
+        ThreadConRunnable b = new ThreadConRunnable("Hilo 2");
+        Thread th1 = new Thread(a);   // el Thread recibe el Runnable
+        Thread th2 = new Thread(b);
+        th1.start(); th2.start();     // start() invoca a.run() y b.run()
+        System.out.println("Fin del hilo principal");
+    }
+}</code></pre>
+<h3>2.4.3 Comparación</h3>
+<div class="box">Runnable es <b>más apropiada</b>: Java no tiene herencia múltiple, y extender <code>Thread</code> impide heredar de otra clase. Con Runnable la clase puede heredar de otra y aun así ejecutar su <code>run()</code> en un hilo. Úsala siempre que sea posible.</div>
+
+<h2 id="t4">2.5 Planificación, prioridades y daemon</h2>
+<ul><li>Java busca portabilidad, así que el modelo de hilos es genérico: el planificador <i>prefiere</i> hilos de mayor prioridad, pero <b>no hay garantía</b>; los cuantos de tiempo pueden aplicarse o no.</li>
+<li>Regla del programador: asumir el peor caso. Los hilos pueden intercalarse en cualquier punto; si se necesita un orden, hay que programarlo (sincronización).</li></ul>
+<h3>2.5.1 Prioridades</h3>
+<p>De 1 (<code>MIN_PRIORITY</code>) a 10 (<code>MAX_PRIORITY</code>); por defecto 5 (<code>NORM_PRIORITY</code>), heredada del hilo creador. Se cambia con <code>setPriority()</code> en cualquier momento. <code>yield()</code> cede el paso a otros hilos listos.</p>
+<pre><code>// ---- Ejemplo2.java ----
+public class Ejemplo2 implements Runnable {
+    private String palabra;
+    public Ejemplo2(String _palabra) { this.palabra = _palabra; }
+    @Override public void run() {
+        for (int i = 0; i &lt; 100; i++) System.out.println(palabra);
+    }
+}
+// ---- Main2.java ----
+public class Main2 {
+    public static void main(String[] args) {
+        Thread th1 = new Thread(new Ejemplo2("Hilo 1"));
+        Thread th2 = new Thread(new Ejemplo2("Hilo 2"));
+        th1.start();
+        th1.setPriority(1);                  // bajamos la prioridad del hilo 1
+        System.out.println("Prioridad Hilo 1: " + th1.getPriority());
+        th2.start();                         // prioridad por defecto (5)
+        System.out.println("Prioridad Hilo 2: " + th2.getPriority());
+    }
+}</code></pre>
+<h3>2.5.2 Hilos daemon</h3>
+<p>Hilos «servicio» en segundo plano y de baja prioridad (ej.: <i>garbage collector</i>). La MVJ termina cuando acaban todos los hilos <b>no</b> daemon. Se marcan con <code>setDaemon(true)</code> <b>antes</b> de <code>start()</code>; se heredan del hilo creador y no pueden cambiarse una vez iniciado el hilo.</p>
+<pre><code>Thread servicio = new Thread(() -&gt; { while (true) { /* tarea de fondo */ } });
+servicio.setDaemon(true);   // antes de start()
+servicio.start();           // no impide que la JVM termine</code></pre>
+
+<h2 id="t5">2.6 Sincronización de hilos: monitores</h2>
+<ul><li><b>Condición de carrera</b>: el resultado depende de qué hilo «corre» más. Se evita con <b>exclusión mutua</b>.</li>
+<li><b>Monitor</b>: cerrojo exclusivo que tiene todo objeto Java. Solo un hilo es propietario a la vez; los demás esperan. Se accede con <code>synchronized</code> (método o bloque <code>synchronized(objeto){…}</code>); se libera al salir.</li>
+<li>Solo se sincronizan métodos y bloques, nunca variables ni clases. Cada objeto tiene un único cerrojo.</li>
+<li>Los métodos no sincronizados siguen accesibles por varios hilos.</li>
+<li><code>sleep()</code> <b>no</b> libera el cerrojo; <code>wait()</code> <b>sí</b> lo libera.</li></ul>
+<h3>Ejemplo: cuenta compartida (Ana y Juan)</h3>
+<pre><code>// ---- Cuenta.java ----
+package es.iesvjp.psp.hilos.Bancov1;
+
+public class Cuenta {
+    private double saldo;
+    public Cuenta(double saldo) { this.saldo = saldo; }
+    public double getSaldo() { return saldo; }
+
+    // SIN synchronized: dos hilos pueden comprobar el saldo a la vez y dejarlo en negativo.
+    // CON synchronized: la comprobación + retirada es atómica (solo un hilo a la vez).
+    public synchronized void retirar(double cantidad, String persona) {
+        if (getSaldo() &gt;= cantidad) {                       // ¿hay saldo?
+            System.out.println("Se va a retirar dinero. Saldo: " + getSaldo() + "€");
+            saldo = saldo - cantidad;                        // retira
+            System.out.println(persona + " retira " + cantidad + "€. (Saldo: " + getSaldo() + "€)");
+        } else {
+            System.out.println(persona + " no puede retirar " + cantidad + "€: saldo insuficiente (" + getSaldo() + "€)");
+        }
+        if (getSaldo() &lt; 0) System.out.println("SALDO NEGATIVO: " + getSaldo());
+    }
+}
+// ---- Persona.java ----
+public class Persona extends Thread {
+    private String nombre; private Cuenta cuenta;       // la cuenta es compartida
+    public Persona(String nombre, Cuenta cuenta) { this.nombre = nombre; this.cuenta = cuenta; }
+    public String getNombre() { return nombre; }
+    @Override public void run() {
+        for (int i = 0; i &lt; 4; i++) {
+            cuenta.retirar(10, getNombre());
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+// ---- Principal.java ----
+public class Principal {
+    public static void main(String[] args) {
+        Cuenta cuenta = new Cuenta(50);
+        new Persona("Ana", cuenta).start();
+        new Persona("Juan", cuenta).start();
+    }
+}</code></pre>
+
+<h2 id="t6">2.6.1 Comunicación entre hilos: productor-consumidor</h2>
+<ul><li>Problema: el productor produce más rápido de lo que se consume (se pierden datos) o el consumidor lee varias veces el mismo dato / no tiene nada que leer.</li>
+<li>Solución: la <b>Cola</b> compartida con <code>get()</code> y <code>put()</code> <code>synchronized</code> + coordinación con <code>wait()</code> (abandona el monitor y duerme), <code>notify()</code> (despierta a un hilo en espera) y <code>notifyAll()</code> (despierta a todos).</li>
+<li><code>wait/notify/notifyAll</code> exigen: estar en un método <code>synchronized</code> y capturar <code>InterruptedException</code>.</li>
+<li>Siempre <code>wait()</code> dentro de un <b><code>while</code></b> (no <code>if</code>) que re-comprueba la condición; y preferir <code>notifyAll()</code>.</li></ul>
+<pre><code>// ---- Cola.java ----
+package es.iesvjp.psp.hilos.ProductorConsumidor;
+
+public class Cola {
+    private int numero;
+    private boolean llena = false;                 // inicialmente vacía
+
+    public synchronized void put(int valor) {
+        while (llena) {                            // si está llena, el productor espera
+            try { wait(); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+        numero = valor; llena = true;              // deja el dato
+        System.out.println("=&gt;Productor produce: " + valor);
+        notifyAll();                               // avisa al consumidor
+    }
+    public synchronized int get() {
+        while (!llena) {                           // si está vacía, el consumidor espera
+            try { wait(); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+        llena = false;                             // coge el dato
+        System.out.println("&lt;=Consumidor consume: " + numero);
+        notifyAll();                               // avisa al productor
+        return numero;
+    }
+}
+// ---- Productor.java ----
+public class Productor extends Thread {
+    private Cola cola;
+    public Productor(Cola cola) { this.cola = cola; }
+    @Override public void run() {
+        for (int i = 1; i &lt;= 5; i++) {
+            cola.put(i);
+            try { sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+// ---- Consumidor.java ----
+public class Consumidor extends Thread {
+    private Cola cola;
+    public Consumidor(Cola cola) { this.cola = cola; }
+    @Override public void run() {
+        for (int i = 1; i &lt;= 5; i++) {
+            cola.get();
+            try { sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+// ---- Principal.java ----
+public class Principal {
+    public static void main(String[] args) {
+        Cola cola = new Cola();
+        new Productor(cola).start();
+        new Consumidor(cola).start();
+    }
+}</code></pre>
+
+<h2 id="ej">Ejercicios resueltos (completos)</h2>
+<p style="color:var(--mut)">Cada ejercicio es un proyecto con su propio paquete. Cada bloque <code>// ===== Fichero.java =====</code> es un fichero distinto, con su <code>package</code>, <code>import</code> y <code>main</code>. Pulsa para desplegar.</p>
+
+<details><summary>Ejercicio 1 · Reloj + aviso «Se te está acabando el tiempo» cada 5 s</summary><pre><code>// ===== Hora.java =====
+package es.iesvjp.psp.ejercicio1;
+import java.time.LocalDateTime;
+
+public class Hora extends Thread {
+    @Override public void run() {
+        try {
+            for (int i = 0; i &lt; 10; i++) {
+                System.out.println(LocalDateTime.now());   // muestra la hora
+                sleep(1000);                               // 1 s
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Sonido.java =====
+package es.iesvjp.psp.ejercicio1;
+
+public class Sonido extends Thread {
+    @Override public void run() {
+        try {
+            for (int i = 0; i &lt; 10; i++) {
+                System.out.println("Beep!!");
+                java.awt.Toolkit.getDefaultToolkit().beep();
+                sleep(1000);
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Aviso.java ===== (NUEVO hilo del ejercicio)
+package es.iesvjp.psp.ejercicio1;
+
+public class Aviso extends Thread {
+    @Override public void run() {
+        try {
+            for (int i = 0; i &lt; 2; i++) {                  // el reloj dura 10 s → 2 avisos
+                sleep(5000);                               // cada 5 s
+                System.out.println("Se te está acabando el tiempo");
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Reloj.java =====
+package es.iesvjp.psp.ejercicio1;
+
+public class Reloj {
+    public static void main(String[] args) {
+        new Hora().start();
+        new Sonido().start();
+        new Aviso().start();      // tercer hilo concurrente
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 2 · TIC y TAC (bucle infinito)</summary><pre><code>// ===== Tic.java =====
+package es.iesvjp.psp.ejercicio2;
+
+public class Tic extends Thread {
+    @Override public void run() {
+        while (true) {                                     // bucle infinito
+            System.out.println("TIC");
+            try { sleep(500); }                            // pausa para poder verlo
+            catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+
+// ===== Tac.java =====
+package es.iesvjp.psp.ejercicio2;
+
+public class Tac extends Thread {
+    @Override public void run() {
+        while (true) {
+            System.out.println("TAC");
+            try { sleep(500); }
+            catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio2;
+
+public class Main {
+    public static void main(String[] args) {
+        new Tic().start();
+        new Tac().start();
+    }
+}
+// ¿Salen ordenados? NO está garantizado: cada hilo duerme por su cuenta y el planificador decide
+// el orden; con el tiempo se desfasan. Se arregla con sincronización (ejercicio 13).</code></pre></details>
+
+<details><summary>Ejercicio 3 · Reloj implementando Runnable</summary><pre><code>// ===== Hora.java =====
+package es.iesvjp.psp.ejercicio3;
+import java.time.LocalDateTime;
+
+public class Hora implements Runnable {                    // ya NO extiende Thread
+    @Override public void run() {
+        try {
+            for (int i = 0; i &lt; 10; i++) {
+                System.out.println(LocalDateTime.now());
+                Thread.sleep(1000);                        // sleep es estático: hay que llamarlo con Thread.
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Sonido.java =====
+package es.iesvjp.psp.ejercicio3;
+
+public class Sonido implements Runnable {
+    @Override public void run() {
+        try {
+            for (int i = 0; i &lt; 10; i++) {
+                System.out.println("Beep!!");
+                java.awt.Toolkit.getDefaultToolkit().beep();
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Reloj.java =====
+package es.iesvjp.psp.ejercicio3;
+
+public class Reloj {
+    public static void main(String[] args) {
+        Thread hora = new Thread(new Hora());              // el Runnable se pasa a un Thread
+        Thread sonido = new Thread(new Sonido());
+        hora.start();
+        sonido.start();
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 4 · HOLA y ADIÓS (Runnable)</summary><pre><code>// ===== Hola.java =====
+package es.iesvjp.psp.ejercicio4;
+
+public class Hola implements Runnable {
+    @Override public void run() {
+        for (int i = 0; i &lt; 100; i++) System.out.println("HOLA");
+    }
+}
+
+// ===== Adios.java =====
+package es.iesvjp.psp.ejercicio4;
+
+public class Adios implements Runnable {
+    @Override public void run() {
+        for (int i = 0; i &lt; 100; i++) System.out.println("ADIÓS");
+    }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio4;
+
+public class Main {
+    public static void main(String[] args) {
+        new Thread(new Hola()).start();
+        new Thread(new Adios()).start();
+    }
+}
+// Resultado: sin sleep() cada hilo es tan corto que suele caber entero en un cuanto,
+// así que lo normal es ver 100 HOLA y luego 100 ADIÓS (o al revés). No está garantizado.</code></pre></details>
+
+<details><summary>Ejercicio 5 · PintaDiezVeces (5 hilos)</summary><pre><code>// ===== PintaDiezVeces.java =====
+package es.iesvjp.psp.ejercicio5;
+
+public class PintaDiezVeces extends Thread {
+    private String cadena;                                 // atributo inicializado en el constructor
+
+    public PintaDiezVeces(String cadena) { this.cadena = cadena; }
+
+    @Override public void run() {
+        for (int i = 0; i &lt; 10; i++)
+            System.out.println(cadena + " | ID=" + getId() + " | prioridad=" + getPriority()
+                               + " | nombre=" + getName());
+    }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio5;
+
+public class Main {
+    public static void main(String[] args) {
+        // 1) Ejecución en el hilo principal: run() directo (NO crea hilo nuevo)
+        new PintaDiezVeces("Principal").run();
+
+        // 2) Cinco hilos con cadenas distintas
+        String[] cadenas = {"Uno", "Dos", "Tres", "Cuatro", "Cinco"};
+        for (String c : cadenas) {
+            new PintaDiezVeces(c).start();                 // start() → nuevo hilo
+        }
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 6 · Carrera: tortuga, liebre y guepardo</summary><pre><code>// ===== CorredorAnimal.java =====
+package es.iesvjp.psp.ejercicio6;
+
+public class CorredorAnimal extends Thread {
+    public CorredorAnimal(String nombre) {
+        setName(nombre);                                   // el nombre del hilo es el del animal
+    }
+
+    @Override public void run() {
+        for (int i = 1; i &lt;= 100; i++) {
+            System.out.println(getName() + " " + i);
+            Thread.yield();                                // cede la CPU → transición más fluida
+        }
+        System.out.println("*** " + getName() + " ha llegado a la meta ***");
+    }
+}
+
+// ===== Carrera.java =====
+package es.iesvjp.psp.ejercicio6;
+
+public class Carrera {
+    public static void main(String[] args) {
+        CorredorAnimal tortuga  = new CorredorAnimal("Tortuga");
+        CorredorAnimal liebre   = new CorredorAnimal("Liebre");
+        CorredorAnimal guepardo = new CorredorAnimal("Guepardo");
+
+        tortuga.setPriority(Thread.MIN_PRIORITY);          // 1
+        liebre.setPriority(Thread.NORM_PRIORITY);          // 5
+        guepardo.setPriority(Thread.MAX_PRIORITY);         // 10
+
+        tortuga.start(); liebre.start(); guepardo.start();
+    }
+}
+// Esperable: gana el guepardo, pero las prioridades son solo una preferencia del planificador
+// y dependen del SO, por lo que no hay garantía.</code></pre></details>
+
+<details><summary>Ejercicio 7 · Tablas de multiplicar a fichero</summary><pre><code>// ===== PintaTabla.java =====
+package es.iesvjp.psp.ejercicio7;
+import java.io.*;
+
+public class PintaTabla extends Thread {
+    private int numero;
+    public PintaTabla(int numero) { this.numero = numero; }
+
+    @Override public void run() {
+        new File("TABLAS").mkdirs();                       // crea la carpeta TABLAS si no existe
+        try (PrintWriter pw = new PrintWriter(new FileWriter("TABLAS/" + numero + ".txt"))) {
+            pw.println("La tabla del " + numero + " es:");
+            pw.println("-------------------------");
+            for (int i = 0; i &lt;= 10; i++)
+                pw.println(numero + " x " + i + " = " + (numero * i));
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== GeneradorTablas.java =====
+package es.iesvjp.psp.ejercicio7;
+import java.util.Scanner;
+
+public class GeneradorTablas {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int opcion;
+        do {
+            System.out.println("Opciones:\n - 0: Generar una tabla\n - 1: Salir");
+            System.out.print("Introduce opción, del 0 al 1: ");
+            opcion = sc.nextInt();
+            if (opcion == 0) {
+                System.out.print("Introduce el número del cuál quieres generar la tabla: ");
+                int n = sc.nextInt();
+                new PintaTabla(n).start();                 // un hilo por cada tabla solicitada
+                System.out.println("Generando el fichero de la tabla del " + n);
+            }
+        } while (opcion != 1);
+        sc.close();
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 8 · Suma de matrices con 9 hilos</summary><pre><code>// ===== Principal.java =====
+package es.iesvjp.psp.ejercicio8;
+
+public class Principal {
+    // static → accesibles desde cualquier clase (los hilos Suma las usan)
+    public static int[][] matriz1 = {{1,2,3},{4,5,6},{7,8,9}};
+    public static int[][] matriz2 = {{4,2,1},{9,8,1},{1,1,0}};
+    public static int[][] matrizResultado = new int[3][3];
+
+    public static void main(String[] args) throws InterruptedException {
+        Suma[] hilos = new Suma[9];
+        for (int f = 0; f &lt; 3; f++) {
+            for (int c = 0; c &lt; 3; c++) {
+                hilos[f * 3 + c] = new Suma(f, c);         // un hilo por celda
+                hilos[f * 3 + c].start();
+            }
+        }
+        for (Suma h : hilos) h.join();                     // esperar a que terminen TODOS
+
+        for (int[] fila : matrizResultado) {               // ahora ya se puede pintar
+            for (int v : fila) System.out.print(v + "\t");
+            System.out.println();
+        }
+    }
+}
+
+// ===== Suma.java =====
+package es.iesvjp.psp.ejercicio8;
+
+public class Suma extends Thread {
+    private int fila, columna;
+    public Suma(int fila, int columna) { this.fila = fila; this.columna = columna; }
+
+    @Override public void run() {
+        try { sleep(1); }                                  // dormir 1 ms (enunciado)
+        catch (InterruptedException e) { e.printStackTrace(); }
+        Principal.matrizResultado[fila][columna] =
+            Principal.matriz1[fila][columna] + Principal.matriz2[fila][columna];
+        // Cada hilo escribe en una celda distinta → no hay condición de carrera
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 9 · Puente colgante (1 coche a la vez)</summary><pre><code>// ===== Puente.java ===== (objeto compartido por los 4 coches)
+package es.iesvjp.psp.ejercicio9;
+
+public class Puente {
+    // synchronized: solo un coche puede estar dentro del método (exclusión mutua)
+    public synchronized void cruzar(int coche) {
+        try {
+            for (int km = 6; km &lt;= 9; km++) {
+                System.out.println("      ***El coche-" + coche + " está atravesando el km " + km + " del puente");
+                Thread.sleep(200);
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Coche.java =====
+package es.iesvjp.psp.ejercicio9;
+
+public class Coche extends Thread {
+    private int id;
+    private Puente puente;                                 // misma instancia para todos los coches
+
+    public Coche(int id, Puente puente) { this.id = id; this.puente = puente; }
+
+    // Tramos de carretera normal: NO sincronizados, varios coches a la vez
+    private void recorrer(int inicio, int fin) {
+        try {
+            for (int km = inicio; km &lt;= fin; km++) {
+                System.out.println("El coche-" + id + " va por el km" + km + " de la carretera");
+                sleep((long) (Math.random() * 300));
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+
+    @Override public void run() {
+        recorrer(1, 5);                                    // 5 km buenos
+        puente.cruzar(id);                                 // 4 km de puente (de uno en uno)
+        recorrer(10, 12);                                  // 3 km buenos
+    }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio9;
+
+public class Main {
+    public static void main(String[] args) {
+        Puente puente = new Puente();                      // UN solo puente
+        for (int i = 0; i &lt; 4; i++) new Coche(i, puente).start();
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 10 · Múltiplos sin mezclar (objeto compartido)</summary><pre><code>// ===== Impresora.java ===== (objeto compartido: su monitor evita que se mezclen)
+package es.iesvjp.psp.ejercicio10;
+
+public class Impresora {
+    public synchronized void pintarMultiplos(int x) {
+        System.out.println("Soy el hilo " + x + " los primeros múltiplos son:");
+        for (int i = 1; i &lt;= 5; i++)
+            System.out.println("Múltiplo[" + i + "]: " + (x * i));
+        System.out.println("Fin de los múltiplos de " + x);
+    }
+}
+
+// ===== Multiplos.java =====
+package es.iesvjp.psp.ejercicio10;
+
+public class Multiplos extends Thread {
+    private Impresora impresora;
+
+    public Multiplos(String name, Impresora impresora) {
+        super(name);                                       // NAME = "1", "2" o "3"
+        this.impresora = impresora;
+    }
+
+    @Override public void run() {
+        impresora.pintarMultiplos(Integer.parseInt(getName()));
+    }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio10;
+
+public class Main {
+    public static void main(String[] args) {
+        Impresora impresora = new Impresora();             // un único objeto compartido
+        for (int i = 1; i &lt;= 3; i++)
+            new Multiplos(String.valueOf(i), impresora).start();
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 11 · Repartidores de flyers (1000 exactos)</summary><pre><code>// ===== Pila.java ===== (recurso compartido)
+package es.iesvjp.psp.ejercicio11;
+
+public class Pila {
+    private int flyers = 1000;
+
+    // Atómico: comprobar + restar en una sola operación → nunca se reparten de más
+    public synchronized boolean coger() {
+        if (flyers &gt; 0) { flyers--; return true; }
+        return false;                                      // pila vacía
+    }
+    public synchronized int quedan() { return flyers; }
+}
+
+// ===== Repartidor.java =====
+package es.iesvjp.psp.ejercicio11;
+
+public class Repartidor extends Thread {
+    private Pila pila;
+    private int repartidos = 0;                            // flyers entregados por este empleado
+
+    public Repartidor(String nombre, Pila pila) { super(nombre); this.pila = pila; }
+    public int getRepartidos() { return repartidos; }
+
+    @Override public void run() {
+        while (pila.coger()) repartidos++;                 // coge de uno en uno hasta que no quedan
+    }
+}
+
+// ===== Principal.java =====
+package es.iesvjp.psp.ejercicio11;
+
+public class Principal {
+    public static void main(String[] args) throws InterruptedException {
+        Pila pila = new Pila();
+        String[] nombres = {"Juan", "Marta", "Pedro", "María", "Lucía"};
+        Repartidor[] reps = new Repartidor[5];
+
+        for (int i = 0; i &lt; 5; i++) { reps[i] = new Repartidor(nombres[i], pila); reps[i].start(); }
+
+        int total = 0;
+        for (Repartidor r : reps) {
+            r.join();                                      // esperar a que termine cada uno
+            System.out.println("El repartidor " + r.getName() + " ha repartido " + r.getRepartidos() + " flyers.");
+            total += r.getRepartidos();
+        }
+        System.out.println("La suma de repartidos entre todos es: " + total);
+        System.out.println("Al final quedan " + pila.quedan() + " flyers.");
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 12 · Un productor y varios consumidores</summary><pre><code>// ===== Cola.java ===== (buffer de 1 posición, igual que en la teoría)
+package es.iesvjp.psp.ejercicio12;
+
+public class Cola {
+    private int numero;
+    private boolean llena = false;
+
+    public synchronized void put(int valor) {
+        while (llena) {                                    // no puede producir 2 seguidos
+            try { wait(); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+        numero = valor; llena = true;
+        System.out.println("=&gt;Productor produce: " + valor);
+        notifyAll();                                       // despierta a TODOS los consumidores
+    }
+
+    public synchronized int get(String quien) {
+        while (!llena) {                                   // no puede consumir si no se ha producido
+            try { wait(); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+        llena = false;
+        System.out.println("&lt;=" + quien + " consume: " + numero);
+        notifyAll();                                       // avisa al productor
+        return numero;
+    }
+}
+
+// ===== Productor.java =====
+package es.iesvjp.psp.ejercicio12;
+
+public class Productor extends Thread {
+    private Cola cola; private int cuantos;
+    public Productor(Cola cola, int cuantos) { this.cola = cola; this.cuantos = cuantos; }
+
+    @Override public void run() {
+        for (int i = 1; i &lt;= cuantos; i++) {
+            cola.put(i);
+            try { sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+
+// ===== Consumidor.java =====
+package es.iesvjp.psp.ejercicio12;
+
+public class Consumidor extends Thread {
+    private Cola cola; private int cuantos;
+    public Consumidor(String nombre, Cola cola, int cuantos) {
+        super(nombre); this.cola = cola; this.cuantos = cuantos;
+    }
+
+    @Override public void run() {
+        for (int i = 0; i &lt; cuantos; i++) {
+            cola.get(getName());
+            try { sleep(300); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+
+// ===== Principal.java =====
+package es.iesvjp.psp.ejercicio12;
+
+public class Principal {
+    public static void main(String[] args) {
+        Cola cola = new Cola();
+        new Productor(cola, 12).start();                   // produce 12 números...
+        new Consumidor("Consumidor-1", cola, 4).start();   // ...y entre 3 consumidores
+        new Consumidor("Consumidor-2", cola, 4).start();   // consumen los 12 (4+4+4)
+        new Consumidor("Consumidor-3", cola, 4).start();
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 13 · TIC TAC alternados con token</summary><pre><code>// ===== Token.java ===== (testigo compartido)
+package es.iesvjp.psp.ejercicio13;
+
+public class Token {
+    private boolean turnoTic = true;                       // empieza TIC
+
+    public synchronized void tic() {
+        while (!turnoTic) {                                // no es mi turno → espero
+            try { wait(); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+        System.out.println("TIC");
+        turnoTic = false;                                  // paso el turno a TAC
+        notifyAll();
+    }
+
+    public synchronized void tac() {
+        while (turnoTic) {
+            try { wait(); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+        System.out.println("TAC");
+        turnoTic = true;                                   // paso el turno a TIC
+        notifyAll();
+    }
+}
+
+// ===== Tic.java =====
+package es.iesvjp.psp.ejercicio13;
+
+public class Tic extends Thread {
+    private Token token;
+    public Tic(Token token) { this.token = token; }
+    @Override public void run() { for (int i = 0; i &lt; 10; i++) token.tic(); }
+}
+
+// ===== Tac.java =====
+package es.iesvjp.psp.ejercicio13;
+
+public class Tac extends Thread {
+    private Token token;
+    public Tac(Token token) { this.token = token; }
+    @Override public void run() { for (int i = 0; i &lt; 10; i++) token.tac(); }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio13;
+
+public class Main {
+    public static void main(String[] args) {
+        Token token = new Token();                         // el mismo token para ambos hilos
+        new Tic(token).start();
+        new Tac(token).start();                            // salida: TIC TAC TIC TAC ...
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 14 · iRelojes: TIC TAC TOC (wait / notifyAll)</summary><pre><code>// ===== Token.java =====
+package es.iesvjp.psp.ejercicio14;
+
+public class Token {
+    private int turno = 0;                                 // 0=TIC, 1=TAC, 2=TOC
+
+    // Método común: espera su turno, escribe y pasa el turno al siguiente
+    public synchronized void sonar(int miTurno, String sonido) {
+        while (turno != miTurno) {
+            try { wait(); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+        System.out.println(sonido);
+        turno = (turno + 1) % 3;                           // TIC → TAC → TOC → TIC
+        notifyAll();                                       // despierta a los demás
+    }
+}
+
+// ===== Tic.java ===== (Tac.java y Toc.java son iguales cambiando turno y texto)
+package es.iesvjp.psp.ejercicio14;
+
+public class Tic extends Thread {
+    private Token token;
+    public Tic(Token token) { this.token = token; }
+    @Override public void run() { for (int i = 0; i &lt; 10; i++) token.sonar(0, "TIC"); }
+}
+
+// ===== Tac.java =====
+package es.iesvjp.psp.ejercicio14;
+
+public class Tac extends Thread {
+    private Token token;
+    public Tac(Token token) { this.token = token; }
+    @Override public void run() { for (int i = 0; i &lt; 10; i++) token.sonar(1, "TAC"); }
+}
+
+// ===== Toc.java =====
+package es.iesvjp.psp.ejercicio14;
+
+public class Toc extends Thread {
+    private Token token;
+    public Toc(Token token) { this.token = token; }
+    @Override public void run() { for (int i = 0; i &lt; 10; i++) token.sonar(2, "TOC"); }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio14;
+
+public class Main {
+    public static void main(String[] args) {
+        Token token = new Token();
+        new Toc(token).start();                            // da igual el orden de arranque:
+        new Tac(token).start();                            // el token impone TIC → TAC → TOC
+        new Tic(token).start();
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 15 · Pintor de cadenas A/B (20 letras)</summary><pre><code>// ===== Controlador.java ===== (objeto compartido que aplica las reglas)
+package es.iesvjp.psp.ejercicio15;
+
+public class Controlador {
+    private char ultima = 'B';                             // así la primera letra es siempre 'A'
+    private int total = 0, as = 0, bs = 0;
+
+    public synchronized void pintar() {
+        if (total &gt;= 20) return;                           // solo 20 letras en total
+        // 'B' solo si la anterior fue 'A'; si no, 'A'. Si ambas son válidas, al azar (mezcla)
+        char letra = (ultima != 'A' || Math.random() &lt; 0.5) ? 'A' : 'B';
+        System.out.print(letra);
+        if (letra == 'A') as++; else bs++;
+        ultima = letra;
+        total++;
+    }
+
+    public synchronized void resumen() {
+        System.out.println("\n----------------\nA's: " + as + "\nB's: " + bs);
+    }
+}
+
+// ===== Letra.java ===== (un hilo por cada letra)
+package es.iesvjp.psp.ejercicio15;
+
+public class Letra extends Thread {
+    private Controlador controlador;
+    public Letra(Controlador controlador) { this.controlador = controlador; }
+    @Override public void run() { controlador.pintar(); }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio15;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Controlador controlador = new Controlador();
+        Letra[] hilos = new Letra[20];
+        for (int i = 0; i &lt; 20; i++) { hilos[i] = new Letra(controlador); hilos[i].start(); }
+        for (Letra h : hilos) h.join();                    // esperar antes de mostrar el resumen
+        controlador.resumen();
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 16 · Baño con máximo 3 personas</summary><pre><code>// ===== Bano.java ===== (recurso compartido con aforo limitado)
+package es.iesvjp.psp.ejercicio16;
+import java.util.concurrent.Semaphore;
+
+public class Bano {
+    private final Semaphore aforo = new Semaphore(3);      // 3 permisos = 3 personas como máximo
+    private int dentro = 0;
+
+    public void entrar(String nombre) throws InterruptedException {
+        if (!aforo.tryAcquire()) {                         // ¿no hay hueco?
+            System.out.println("¡" + nombre + " espera porque el baño está lleno!");
+            aforo.acquire();                               // se bloquea hasta que alguien salga
+        }
+        synchronized (this) {                              // contador protegido
+            dentro++;
+            System.out.println("Entra " + nombre + "---------- Hay " + dentro);
+        }
+    }
+
+    public void salir(String nombre) {
+        synchronized (this) {
+            dentro--;
+            System.out.println("          Sale " + nombre + "---------- Hay " + dentro);
+        }
+        aforo.release();                                   // libera un hueco
+    }
+}
+
+// ===== Persona.java =====
+package es.iesvjp.psp.ejercicio16;
+
+public class Persona extends Thread {
+    private Bano bano;
+    public Persona(String nombre, Bano bano) { super(nombre); this.bano = bano; }
+
+    @Override public void run() {
+        try {
+            for (int vez = 0; vez &lt; 3; vez++) {
+                bano.entrar(getName());
+                int ms = (int) (Math.random() * 20) + 1;   // tarda hasta 20 ms
+                sleep(ms);
+                System.out.println("        " + getName() + " permanece en el baño " + ms + " ms.");
+                bano.salir(getName());
+                sleep(500);                                // espera 0,5 s antes de volver
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio16;
+
+public class Main {
+    public static void main(String[] args) {
+        Bano bano = new Bano();
+        String[] nombres = {"Juan", "Marcos", "Ana", "Pedro", "María"};
+        for (String n : nombres) new Persona(n, bano).start();
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 17 · Puente levadizo (peatones y barco)</summary><pre><code>// ===== Puente.java ===== (monitor: barcos con prioridad, salvo si ya hay peatones dentro)
+package es.iesvjp.psp.ejercicio17;
+
+public class Puente {
+    private int peatones = 0;                              // peatones ahora mismo en el puente
+    private boolean barcoEsperando = false;
+
+    public synchronized void entraPeaton(String nombre) throws InterruptedException {
+        while (barcoEsperando) wait();                     // si un barco quiere pasar, nadie nuevo entra
+        peatones++;
+        System.out.println("Entra " + nombre + " por el puente. Hay " + peatones);
+    }
+
+    public synchronized void salePeaton(String nombre) {
+        peatones--;
+        System.out.println("      =&gt;Sale " + nombre + " del puente. Quedan " + peatones);
+        notifyAll();                                       // el barco puede estar esperando a que se vacíe
+    }
+
+    public synchronized void entraBarco(String nombre) throws InterruptedException {
+        barcoEsperando = true;                             // bloquea la entrada de nuevos peatones
+        System.out.println("*************** BARCO QUIERE PASAR ***************");
+        while (peatones &gt; 0) wait();                       // espera a que salgan los que están dentro
+        System.out.println("      " + nombre + " está cruzando....&lt;__P__&gt;");
+    }
+
+    public synchronized void saleBarco(String nombre) {
+        barcoEsperando = false;                            // el puente baja: los peatones pueden pasar
+        System.out.println("      El barco " + nombre + " salió del puente.");
+        notifyAll();
+    }
+}
+
+// ===== Peaton.java =====
+package es.iesvjp.psp.ejercicio17;
+
+public class Peaton extends Thread {
+    private Puente puente;
+    public Peaton(String nombre, Puente puente) { super(nombre); this.puente = puente; }
+
+    @Override public void run() {
+        try {
+            for (int i = 0; i &lt; 5; i++) {                  // cruza 5 veces
+                puente.entraPeaton(getName());
+                sleep((long) (Math.random() * 200));       // tarda en cruzar
+                puente.salePeaton(getName());
+                sleep((long) (Math.random() * 300));       // descansa antes de volver
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Barco.java =====
+package es.iesvjp.psp.ejercicio17;
+
+public class Barco extends Thread {
+    private Puente puente;
+    public Barco(String nombre, Puente puente) { super(nombre); this.puente = puente; }
+
+    @Override public void run() {
+        try {
+            for (int i = 0; i &lt; 5; i++) {                  // cruza 5 veces
+                sleep(500);
+                puente.entraBarco(getName());
+                sleep(300);                                // tiempo de travesía
+                puente.saleBarco(getName());
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio17;
+
+public class Main {
+    public static void main(String[] args) {
+        Puente puente = new Puente();
+        String[] nombres = {"María", "Ana", "Marcos", "Juan", "Pedro"};
+        for (String n : nombres) new Peaton(n, puente).start();   // 5 hilos peatón
+        new Barco("Titanic", puente).start();                     // 1 hilo barco
+    }
+}</code></pre></details>
+
+<details><summary>Ejercicio 18 · Fumadores y estanquero</summary><pre><code>// ===== Bano.java ===== (monitor con la repisa; 0 = vacía, n = falta el ingrediente n)
+package es.iesvjp.psp.ejercicio18;
+
+public class Bano {
+    private int repisa = 0;
+    private static final String[] NOMBRE = {"", "TABACO", "CERILLAS", "PAPEL"};
+
+    // Lo llama el estanquero
+    public synchronized void ponerIngredientes() throws InterruptedException {
+        while (repisa != 0) wait();                        // repisa llena o alguien fumando → espera
+        repisa = (int) (Math.random() * 3) + 1;            // elige qué ingrediente NO pone (1..3)
+        System.out.println("=&gt;El estanquero repone ingredientes: en la repisa NO está el " + NOMBRE[repisa]);
+        notifyAll();                                       // avisa a los fumadores
+    }
+
+    // Lo llama cada fumador con el ingrediente que posee
+    public synchronized void fumar(int ingrediente) throws InterruptedException {
+        while (repisa != ingrediente) wait();              // solo actúa si falta SU ingrediente
+        System.out.println("   El fumador " + ingrediente + " (" + NOMBRE[ingrediente]
+                           + ") tiene todos los ingredientes. Empieza a fumar");
+        Thread.sleep(300);                                 // fuma (sigue dentro del monitor: nadie más entra)
+        System.out.println("      El fumador " + ingrediente + " terminó de fumar. Abandona el baño");
+        repisa = 0;                                        // repisa vacía → toca al estanquero
+        notifyAll();
+    }
+}
+
+// ===== Estanquero.java =====
+package es.iesvjp.psp.ejercicio18;
+
+public class Estanquero extends Thread {
+    private Bano bano;
+    public Estanquero(Bano bano) { this.bano = bano; }
+
+    @Override public void run() {
+        try { while (true) bano.ponerIngredientes(); }     // ciclo infinito
+        catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Fumador.java =====
+package es.iesvjp.psp.ejercicio18;
+
+public class Fumador extends Thread {
+    private int ingrediente;                               // 1=tabaco, 2=cerillas, 3=papel
+    private Bano bano;
+
+    public Fumador(int ingrediente, Bano bano) { this.ingrediente = ingrediente; this.bano = bano; }
+
+    @Override public void run() {
+        try { while (true) bano.fumar(ingrediente); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+
+// ===== Main.java =====
+package es.iesvjp.psp.ejercicio18;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Bano bano = new Bano();
+        Estanquero estanquero = new Estanquero(bano);
+        Fumador f1 = new Fumador(1, bano), f2 = new Fumador(2, bano), f3 = new Fumador(3, bano);
+
+        estanquero.setDaemon(true); f1.setDaemon(true);    // daemon: la JVM termina cuando acabe main
+        f2.setDaemon(true); f3.setDaemon(true);
+        estanquero.start(); f1.start(); f2.start(); f3.start();
+
+        Thread.sleep(5000);                                // dejamos funcionar la simulación 5 s
+    }
+}</code></pre></details>
+
+<h2 id="auto">Autoevaluación (soluciones)</h2>
+<table><tr><th>Ej.</th><th>Respuesta</th></tr>
+<tr><td>1</td><td>Clase con sincronizados y no sincronizados: <b>F</b> · Método no sincronizado accesible por muchos hilos: <b>V</b> · <code>wait()</code> libera el monitor: <b>V</b> · <code>sleep()</code> libera el monitor: <b>F</b> · <code>wait/notify/notifyAll</code> siempre en código sincronizado: <b>V</b></td></tr>
+<tr><td>2</td><td>hilos, sincronizado, instancia, ejecutar, esperar</td></tr>
+<tr><td>3</td><td>exclusión mutua, sección crítica, procesos, de un proceso (<i>deunproceso</i>), bloquear, ejecutar… (esperan un tiempo <b>limitado</b>)</td></tr>
+<tr><td>4</td><td>1→e (<code>synchronized</code>) · 2→a (interfaz) · 3→d (preparado) · 4→c (interbloqueo) · 5→b (en espera)</td></tr>
+<tr><td>5</td><td>Siempre tiene estado: <b>V</b> · Proceso = aplicación: <b>F</b> · Scheduler da la CPU: <b>V</b> · «Secuenciales» cuando se solapan: <b>F</b> (serían <i>concurrentes</i>)</td></tr>
+<tr><td>6</td><td>Métodos: <b>sí</b> · Variables: <b>no</b> · Bloques de código: <b>sí</b> · Una clase: <b>no</b></td></tr></table>
+</main></body></html>
