@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexFlow Core · EasyAutomation</title>
+<meta name="description" content="NexFlow Core, de EasyAutomation: plataforma SaaS híbrida para conectar CRM, ERP, correo y bases de datos y automatizar los procesos repetitivos de tu empresa.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1520; --bg-2:#111b28; --panel:#172331; --panel-2:#1c2a3a;
+  --line:rgba(148,190,230,.13); --line-2:rgba(148,190,230,.26);
+  --text:#e8f0f8; --muted:#9db0c3; --dim:#6f8399;
+  --cyan:#3cc8f0; --blue:#2f8fe8; --orange:#f5a23a; --amber:#ffc56b; --green:#5ee0a0; --red:#ef6b7b; --violet:#b3a4ff;
+  --grad:linear-gradient(90deg,#3cc8f0,#2f8fe8);
+  --display:Sora,Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --radius:16px; --max:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.15;letter-spacing:-.02em}
+::selection{background:rgba(60,200,240,.35)}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+section{padding:110px 0;position:relative}
+.alt{background:var(--bg-2)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan)}
+.eyebrow::before{content:"";width:18px;height:2px;background:var(--orange);border-radius:2px}
+.sec-head{max-width:740px;margin-bottom:52px}
+.sec-head h2{font-size:clamp(1.9rem,3.6vw,2.7rem);margin:14px 0 16px}
+.sec-head p{color:var(--muted);font-size:1.07rem}
+.center{text-align:center;margin-left:auto;margin-right:auto}
+.center .eyebrow{justify-content:center}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 22px;border-radius:12px;font-weight:600;font-size:.96rem;transition:transform .2s,box-shadow .2s,background .2s,opacity .2s;cursor:pointer;border:0}
+.btn-primary{background:var(--grad);color:#06121d;box-shadow:0 8px 30px -8px rgba(60,200,240,.6)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 36px -8px rgba(60,200,240,.75)}
+.btn-ghost{border:1px solid var(--line-2);color:var(--text);background:transparent}
+.btn-ghost:hover{background:rgba(255,255,255,.05)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn-sm{padding:9px 14px;font-size:.85rem;border-radius:10px}
+.note{font-size:.8rem;color:var(--dim);margin-top:14px}
+.ico{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;flex:none}
+.ico svg{width:14px;height:14px}
+.ic-c{background:rgba(60,200,240,.15);color:var(--cyan)}
+.ic-o{background:rgba(245,162,58,.15);color:var(--orange)}
+.ic-g{background:rgba(94,224,160,.15);color:var(--green)}
+.ic-v{background:rgba(179,164,255,.15);color:var(--violet)}
+.ic-r{background:rgba(239,107,123,.15);color:var(--red)}
+
+/* spotlight cards */
+.spot{position:relative;isolation:isolate}
+.spot::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%),rgba(60,200,240,.13),transparent 45%);opacity:0;transition:opacity .3s;z-index:-1;pointer-events:none}
+.spot:hover::before{opacity:1}
+
+/* progress + nav */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--cyan),var(--orange));z-index:60;box-shadow:0 0 10px var(--cyan)}
+.nav{position:fixed;inset:0 0 auto 0;z-index:50;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.nav.scrolled{background:rgba(13,21,32,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.12rem}
+.brand img{height:34px;width:auto;border-radius:6px}
+.brand b{color:var(--cyan);font-weight:700}
+.nav-links{display:flex;gap:26px;font-size:.92rem;color:var(--muted)}
+.nav-links a{position:relative;padding:4px 0;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-links a.active::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;border-radius:2px;background:var(--grad)}
+.nav-cta{padding:10px 18px;font-size:.88rem}
+.menu-btn{display:none;background:none;border:0;color:var(--text);cursor:pointer;padding:6px}
+
+/* HERO */
+.hero{padding:150px 0 90px;overflow:hidden;min-height:100vh;display:flex;align-items:center}
+#net{position:absolute;inset:0;width:100%;height:100%;opacity:.55;pointer-events:none}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(700px 420px at 78% 30%,rgba(47,143,232,.22),transparent 60%),radial-gradient(520px 360px at 8% 85%,rgba(245,162,58,.10),transparent 60%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center;position:relative;z-index:1;width:100%}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border:1px solid var(--line-2);border-radius:99px;font-size:.84rem;color:var(--muted);background:rgba(255,255,255,.03)}
+.pill span{background:rgba(245,162,58,.16);color:var(--amber);padding:3px 10px;border-radius:99px;font-weight:600;font-size:.76rem}
+.hero h1{font-size:clamp(2.7rem,5.6vw,4.3rem);margin:22px 0 10px;font-weight:800}
+.slogan{font-family:var(--display);font-size:clamp(1.2rem,2.2vw,1.55rem);font-weight:600;margin-bottom:6px}
+.slogan em{font-style:normal;color:var(--orange)}
+.typer{font-family:var(--mono);font-size:1rem;color:var(--muted);margin-bottom:22px;min-height:1.6em}
+.typer b{color:var(--cyan);font-weight:500}
+.typer i{display:inline-block;width:2px;height:1.05em;background:var(--cyan);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.lead{color:var(--muted);font-size:1.08rem;max-width:540px;margin-bottom:32px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.hero-meta{display:flex;gap:28px;margin-top:40px;flex-wrap:wrap}
+.hero-meta div{font-size:.86rem;color:var(--dim)}
+.hero-meta strong{display:block;font-family:var(--display);font-size:1.05rem;color:var(--text)}
+
+/* Flow mock */
+.mock{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--line-2);border-radius:20px;box-shadow:0 40px 80px -30px rgba(0,0,0,.7);overflow:hidden}
+.tilt{transition:transform .25s ease;transform-style:preserve-3d;will-change:transform}
+.mock-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:.78rem;color:var(--dim)}
+.mock-bar i{width:10px;height:10px;border-radius:50%;background:#2c3c4f;display:inline-block}
+.mock-bar .title{margin-left:10px;color:var(--muted)}
+.live{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--green)}
+.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 1.8s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.flow{position:relative;height:380px}
+.flow>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+path.wire{fill:none;stroke:rgba(60,200,240,.35);stroke-width:2}
+path.wire.o{stroke:rgba(245,162,58,.4)}
+path.pulse{fill:none;stroke:var(--cyan);stroke-width:2.5;stroke-dasharray:6 160;animation:dash 2.6s linear infinite;filter:drop-shadow(0 0 4px var(--cyan))}
+path.pulse.o{stroke:var(--orange);filter:drop-shadow(0 0 4px var(--orange))}
+.flow.fast path.pulse{animation-duration:.9s}
+@keyframes dash{to{stroke-dashoffset:-166}}
+.node{position:absolute;z-index:1;background:#0f1924;border:1px solid var(--line-2);border-radius:12px;padding:10px 12px;font-size:.78rem;min-width:132px;box-shadow:0 10px 24px -12px rgba(0,0,0,.8);transition:border-color .3s,box-shadow .3s,transform .3s}
+.node .t{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.82rem}
+.node .s{color:var(--dim);font-size:.72rem;margin-top:2px}
+.node.trigger{border-color:rgba(60,200,240,.5)}
+.node .badge{position:absolute;top:-9px;right:10px;font-size:.62rem;background:var(--cyan);color:#06121d;font-weight:700;padding:1px 7px;border-radius:99px;letter-spacing:.04em}
+.node.hit{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(60,200,240,.18),0 0 28px rgba(60,200,240,.35)}
+.node.hit.o{border-color:var(--orange);box-shadow:0 0 0 3px rgba(245,162,58,.18),0 0 28px rgba(245,162,58,.35)}
+.node .ok{position:absolute;top:-8px;left:-8px;width:18px;height:18px;border-radius:50%;background:var(--green);color:#06121d;font-size:.7rem;font-weight:800;display:grid;place-items:center;transform:scale(0);transition:transform .25s}
+.node.done .ok{transform:scale(1)}
+.n1{left:4%;top:16%}.n2{left:31%;top:50%;transform:translateY(-50%)}.n3{right:4%;top:9%}.n4{right:4%;top:50%;transform:translateY(-50%)}.n5{right:4%;bottom:9%}.n6{left:4%;bottom:16%}
+.mock-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--line);font-size:.76rem;color:var(--dim);flex-wrap:wrap}
+.mock-foot b{color:var(--green);font-weight:600}
+.mini-btn{background:rgba(60,200,240,.12);color:var(--cyan);border:1px solid rgba(60,200,240,.35);border-radius:8px;padding:5px 10px;font-size:.74rem;font-weight:600;cursor:pointer;transition:background .2s}
+.mini-btn:hover{background:rgba(60,200,240,.22)}
+.mini-btn.o{background:rgba(245,162,58,.1);color:var(--orange);border-color:rgba(245,162,58,.35)}
+.caption{font-size:.8rem;color:var(--dim);margin-top:12px;text-align:center}
+
+/* MARQUEE */
+.marquee-sec{padding:44px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-2);overflow:hidden}
+.marquee-sec p.lbl{font-size:.8rem;color:var(--dim);text-transform:uppercase;letter-spacing:.16em;text-align:center;margin-bottom:22px}
+.marquee{position:relative;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab;touch-action:pan-x pan-y;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.marquee::-webkit-scrollbar{display:none}
+.marquee.drag{cursor:grabbing}
+.marquee.drag .conn{pointer-events:none}
+.marquee+.marquee{margin-top:14px}
+.track{display:flex;gap:14px;width:max-content;padding:4px 0}
+.conn{display:flex;align-items:center;gap:10px;padding:10px 16px 10px 10px;border:1px solid var(--line);border-radius:12px;background:var(--panel);white-space:nowrap;transition:border-color .2s,transform .2s;cursor:default}
+.conn:hover{border-color:var(--cyan);transform:translateY(-2px)}
+.conn .lg{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none}
+.conn .lg svg{width:18px;height:18px}
+.conn{user-select:none;-webkit-user-select:none}
+.conn b{font-weight:600;font-size:.88rem;display:block;line-height:1.2}
+.conn small{font-size:.7rem;color:var(--dim)}
+
+/* PROYECTO + animated logo */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.about p{color:var(--muted);margin-bottom:16px;font-size:1.04rem}
+.about p strong{color:var(--text)}
+.two-prod{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+.mini{padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--bg-2)}
+.mini h4{font-size:1rem;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.mini p{font-size:.9rem;margin:0}
+.logo-card{position:relative;border-radius:22px;overflow:hidden;border:1px solid var(--line-2);box-shadow:0 30px 70px -30px rgba(47,143,232,.5)}
+.logo-card img{width:100%}
+.logo-fx{position:absolute;inset:0;pointer-events:none}
+.logo-fx svg{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:screen}
+.glow{position:absolute;width:3.2%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);mix-blend-mode:screen;animation:twinkle 2.4s ease-in-out infinite}
+.glow.c{background:radial-gradient(circle,#ffffff 0 18%,#7ee8ff 30%,rgba(60,200,240,.5) 55%,transparent 72%)}
+.glow.o{background:radial-gradient(circle,#ffffff 0 18%,#ffd08a 30%,rgba(245,162,58,.5) 55%,transparent 72%)}
+@keyframes twinkle{0%,100%{opacity:.15;transform:translate(-50%,-50%) scale(.7)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.5)}}
+.shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.10) 50%,transparent 60%);background-size:250% 100%;animation:shine 5s ease-in-out infinite;mix-blend-mode:screen}
+@keyframes shine{0%{background-position:120% 0}60%,100%{background-position:-60% 0}}
+
+/* STATS */
+.stats{padding:60px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.stat{padding:26px;border-radius:var(--radius);border:1px solid var(--line);background:linear-gradient(160deg,rgba(60,200,240,.07),transparent 60%);text-align:center}
+.stat:nth-child(even){background:linear-gradient(160deg,rgba(245,162,58,.07),transparent 60%)}
+.stat .v{font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1}
+.stat .l{color:var(--muted);font-size:.9rem;margin-top:8px}
+
+/* PROBLEM + before/after */
+.prob-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.prob{padding:26px;border-radius:var(--radius);background:var(--panel);border:1px solid var(--line);position:relative;overflow:hidden;transition:transform .25s}
+.prob:hover{transform:translateY(-4px)}
+.prob::after{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,var(--orange),transparent)}
+.prob .num{font-family:var(--display);font-size:.8rem;color:var(--orange);font-weight:700;letter-spacing:.1em}
+.prob h3{font-size:1.1rem;margin:12px 0 10px}
+.prob p{color:var(--muted);font-size:.93rem}
+.ba{margin-top:46px;display:grid;grid-template-columns:.9fr 1.1fr;gap:34px;align-items:center;padding:34px;border:1px solid var(--line-2);border-radius:22px;background:var(--panel)}
+.ba h3{font-size:1.4rem;margin:10px 0 10px}
+.ba p{color:var(--muted)}
+.switch{display:inline-flex;background:#0f1924;border:1px solid var(--line-2);border-radius:12px;padding:4px;margin-top:20px;position:relative}
+.switch button{position:relative;z-index:1;border:0;background:none;color:var(--muted);font-weight:600;padding:9px 16px;border-radius:9px;cursor:pointer;font-size:.88rem;transition:color .25s}
+.switch button.on{color:#06121d}
+.switch .pillbg{position:absolute;top:4px;bottom:4px;left:4px;border-radius:9px;background:var(--orange);transition:left .3s,width .3s,background .3s}
+.ba-steps{display:grid;gap:9px}
+.ba-step{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:11px 14px;border-radius:11px;background:#0f1924;border:1px solid var(--line);font-size:.9rem}
+.ba-step .who{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:.8rem}
+.ba-step .bar{grid-column:2/4;height:4px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:-2px}
+.ba-step .bar span{display:block;height:100%;border-radius:4px;transition:width .7s cubic-bezier(.2,.8,.2,1),background .4s}
+.ba-step .t{font-family:var(--mono);font-size:.82rem;color:var(--muted)}
+.ba-total{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:14px 16px;border-radius:12px;border:1px dashed var(--line-2)}
+.ba-total b{font-family:var(--display);font-size:1.5rem}
+
+/* WHY */
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.why{display:flex;gap:18px;padding:24px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,rgba(255,255,255,.025),transparent)}
+.why .ico{width:44px;height:44px;border-radius:12px}
+.why .ico svg{width:22px;height:22px}
+.why h3{font-size:1.06rem;margin-bottom:6px}
+.why p{color:var(--muted);font-size:.94rem}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat{padding:28px;border-radius:var(--radius);background:var(--panel);border:1px solid var(--line);transition:transform .25s,border-color .25s}
+.feat:hover{transform:translateY(-4px);border-color:rgba(60,200,240,.4)}
+.feat .ico{width:46px;height:46px;border-radius:12px;margin-bottom:18px}
+.feat .ico svg{width:22px;height:22px}
+.feat h3{font-size:1.12rem;margin-bottom:8px}
+.feat p{color:var(--muted);font-size:.94rem}
+.feat ul{list-style:none;margin-top:12px}
+.feat li{font-size:.86rem;color:var(--dim);padding-left:18px;position:relative;margin-top:4px}
+.feat li::before{content:"";position:absolute;left:2px;top:9px;width:7px;height:7px;border-radius:2px;background:var(--cyan);opacity:.7}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;counter-reset:s;margin-top:22px}
+.step{position:relative;padding:26px 22px;border-radius:var(--radius);border:1px dashed var(--line-2);transition:border-color .3s,background .3s}
+.step:hover{border-color:var(--cyan);background:rgba(60,200,240,.04)}
+.step::before{counter-increment:s;content:"0" counter(s);font-family:var(--display);font-weight:800;font-size:2.2rem;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;display:block;margin-bottom:10px}
+.step h4{font-size:1.02rem;margin-bottom:6px}
+.step p{font-size:.9rem;color:var(--muted)}
+
+/* PLAYGROUND */
+.pg{display:grid;grid-template-columns:340px 1fr;gap:0;border:1px solid var(--line-2);border-radius:22px;overflow:hidden;background:var(--panel)}
+.pg-side{padding:24px;border-right:1px solid var(--line);background:#121d2a}
+.pg-side h4{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:18px 0 10px;font-family:Inter}
+.pg-side h4:first-child{margin-top:0}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;border:1px solid var(--line);background:#0f1924;cursor:pointer;font-size:.88rem;color:var(--muted);transition:all .2s;text-align:left;width:100%}
+.opt:hover{border-color:var(--line-2);color:var(--text)}
+.opt.sel{border-color:var(--cyan);color:var(--text);background:rgba(60,200,240,.08)}
+.opt.act.sel{border-color:var(--orange);background:rgba(245,162,58,.08)}
+.opt .n{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:var(--orange)}
+.chk{display:flex;align-items:center;gap:10px;font-size:.86rem;color:var(--muted);cursor:pointer;margin-top:6px}
+.chk input{accent-color:var(--orange);width:16px;height:16px}
+.pg-main{display:flex;flex-direction:column;min-height:520px}
+.pg-canvas{flex:1;padding:26px;background-image:radial-gradient(rgba(148,190,230,.14) 1px,transparent 1px);background-size:22px 22px;display:flex;align-items:center;overflow-x:auto}
+.chain{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;row-gap:22px;margin:auto;padding:10px 0;max-width:100%}
+.cnode{min-width:120px;max-width:150px;padding:12px;border-radius:12px;border:1px solid var(--line-2);background:#0f1924;font-size:.8rem;position:relative;transition:all .3s;animation:pop .35s ease}
+@keyframes pop{from{transform:scale(.8);opacity:0}}
+.cnode .t{display:flex;gap:8px;align-items:center;font-weight:600}
+.cnode .s{color:var(--dim);font-size:.72rem;margin-top:3px}
+.cnode.run{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(60,200,240,.18),0 0 24px rgba(60,200,240,.35)}
+.cnode.ok{border-color:var(--green)}
+.cnode.err{border-color:var(--red);box-shadow:0 0 0 3px rgba(239,107,123,.18)}
+.cnode .st{position:absolute;top:-9px;right:10px;font-size:.6rem;font-weight:700;padding:1px 7px;border-radius:99px;display:none}
+.cnode.ok .st{display:block;background:var(--green);color:#06121d}
+.cnode.err .st{display:block;background:var(--red);color:#1a0508}
+.seg{display:flex;align-items:center}
+.link{width:34px;height:2px;background:rgba(60,200,240,.3);position:relative;flex:none}
+.link::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:rgba(60,200,240,.5);border-right:0}
+.link.flow::before{content:"";position:absolute;left:0;top:-2px;width:8px;height:6px;border-radius:3px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:travel .5s linear forwards}
+@keyframes travel{to{left:calc(100% - 8px)}}
+.empty{color:var(--dim);font-size:.9rem;margin:auto;text-align:center}
+.pg-bar{display:flex;gap:10px;align-items:center;padding:14px 18px;border-top:1px solid var(--line);flex-wrap:wrap}
+.pg-bar .sp{margin-left:auto;font-size:.8rem;color:var(--dim)}
+.console{height:170px;overflow:auto;background:#0a111a;border-top:1px solid var(--line);padding:12px 16px;font-family:var(--mono);font-size:.78rem;line-height:1.7}
+.console .l{color:#8aa0b5}
+.console .l time{color:#4f6378;margin-right:10px}
+.console .ok{color:var(--green)}.console .warn{color:var(--amber)}.console .err{color:var(--red)}.console .info{color:var(--cyan)}
+
+/* DASHBOARD */
+.dash{display:grid;grid-template-columns:200px 1fr;min-height:460px}
+.dash aside{border-right:1px solid var(--line);padding:18px 14px;font-size:.84rem}
+.dash aside button{width:100%;border:0;background:none;padding:9px 12px;border-radius:9px;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.84rem;text-align:left;transition:background .2s,color .2s}
+.dash aside button:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.dash aside button.on{background:rgba(60,200,240,.12);color:var(--cyan);font-weight:600}
+.dash aside button i{width:8px;height:8px;border-radius:2px;background:currentColor;opacity:.7}
+.dash main{padding:22px;min-width:0}
+.dash h4{font-size:1rem;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tagx{font-family:Inter;font-weight:500;font-size:.72rem;color:var(--dim);border:1px solid var(--line);padding:3px 9px;border-radius:99px}
+.view{display:none;animation:fade .35s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{padding:14px;border:1px solid var(--line);border-radius:12px;background:#111b27}
+.kpi span{font-size:.72rem;color:var(--dim)}
+.kpi b{display:block;font-family:var(--display);font-size:1.35rem;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi em{font-style:normal;font-size:.72rem;color:var(--green)}
+.dash-row{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+.box{border:1px solid var(--line);border-radius:12px;padding:14px;background:#111b27;min-width:0}
+.box .lbl{font-size:.75rem;color:var(--dim);margin-bottom:10px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:160px}
+.bars div{flex:1;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,var(--cyan),rgba(47,143,232,.3));transition:height .6s cubic-bezier(.2,.8,.2,1);position:relative}
+.bars div.o{background:linear-gradient(180deg,var(--orange),rgba(245,162,58,.3))}
+.bars div:hover{filter:brightness(1.3)}
+.bars div[data-v]:hover::after{content:attr(data-v);position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:#0a111a;border:1px solid var(--line-2);padding:1px 6px;border-radius:6px;font-size:.66rem;white-space:nowrap}
+.runs{font-size:.76rem;height:200px;overflow:hidden}
+.run{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);color:var(--muted);animation:slidein .4s ease}
+@keyframes slidein{from{opacity:0;transform:translateY(-8px)}}
+.run small{color:var(--dim);font-family:var(--mono);font-size:.68rem}
+.st{font-size:.66rem;padding:2px 8px;border-radius:99px;font-weight:600;flex:none}
+.st.ok{background:rgba(94,224,160,.14);color:var(--green)}
+.st.rt{background:rgba(245,162,58,.15);color:var(--amber)}
+.flist{display:grid;gap:10px}
+.fitem{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#111b27;font-size:.86rem}
+.fitem .meta{color:var(--dim);font-size:.74rem}
+.toggle{margin-left:auto;width:42px;height:24px;border-radius:99px;background:#2a3a4c;border:0;position:relative;cursor:pointer;transition:background .25s;flex:none}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .25s}
+.toggle.on{background:var(--green)}
+.toggle.on::after{left:21px}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.citem{padding:14px;border:1px solid var(--line);border-radius:12px;background:#111b27;font-size:.84rem;display:flex;align-items:center;gap:10px}
+.citem .dot{width:8px;height:8px;border-radius:50%;margin-left:auto}
+.shot-caps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+.shot-caps div{font-size:.92rem;color:var(--muted);padding-left:14px;border-left:2px solid var(--cyan)}
+.shot-caps b{color:var(--text);display:block;font-family:var(--display);font-size:.95rem;margin-bottom:2px}
+
+/* ROI */
+.roi{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line-2);border-radius:22px;overflow:hidden;background:var(--panel)}
+.roi-in{padding:34px}
+.roi-out{padding:34px;background:radial-gradient(500px 300px at 100% 0%,rgba(60,200,240,.16),transparent 70%),#121d2a;border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
+.range{margin-bottom:24px}
+.range .top{display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:10px;color:var(--muted)}
+.range .top b{color:var(--text);font-family:var(--mono);font-weight:500}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;padding:0;border:0;box-shadow:none;border-radius:6px;background:linear-gradient(90deg,var(--cyan) var(--p,50%),#253547 var(--p,50%));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:4px solid var(--cyan);cursor:pointer;box-shadow:0 0 0 4px rgba(60,200,240,.2)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:4px solid var(--cyan);cursor:pointer}
+.big-out{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,5vw,3.4rem);line-height:1;font-variant-numeric:tabular-nums}
+.out-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+.out-row div{padding:16px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.18)}
+.out-row b{font-family:var(--display);font-size:1.4rem;display:block;font-variant-numeric:tabular-nums}
+.out-row span{font-size:.8rem;color:var(--dim)}
+.gauge{margin-top:22px;height:10px;border-radius:10px;background:#253547;overflow:hidden}
+.gauge span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--orange));transition:width .5s}
+
+/* AUDIENCE tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.tab{border:1px solid var(--line-2);background:transparent;color:var(--muted);padding:10px 16px;border-radius:11px;cursor:pointer;font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:8px;transition:all .2s}
+.tab:hover{color:var(--text)}
+.tab.on{background:var(--text);color:#0d1520;border-color:var(--text)}
+.persona{display:grid;grid-template-columns:320px 1fr;gap:0;border:1px solid var(--line-2);border-radius:22px;overflow:hidden;background:var(--panel);animation:fade .35s ease}
+.p-left{padding:30px;background:#121d2a;border-right:1px solid var(--line)}
+.avatar{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:1.3rem;flex:none;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.p-left h3{font-size:1.25rem;margin-top:16px}
+.p-left .role{color:var(--dim);font-size:.88rem}
+.p-left p{color:var(--muted);font-size:.92rem;margin-top:14px}
+.p-left .meter{margin-top:20px}
+.p-left .meter div{display:flex;justify-content:space-between;font-size:.78rem;color:var(--dim);margin-top:10px}
+.p-left .meter span{display:block;height:6px;border-radius:6px;background:#253547;margin-top:5px;overflow:hidden}
+.p-left .meter span i{display:block;height:100%;border-radius:6px;background:var(--grad);transition:width .7s}
+.p-right{padding:30px;display:grid;grid-template-columns:1fr 1fr;gap:22px;align-content:start}
+.p-right h5{font-family:var(--display);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+.p-right h5.o{color:var(--orange)}
+.p-right ul{list-style:none}
+.p-right li{color:var(--muted);font-size:.92rem;padding:7px 0 7px 22px;position:relative;border-bottom:1px dashed var(--line)}
+.p-right li::before{content:"›";position:absolute;left:4px;color:var(--orange);font-weight:700}
+.p-right .auto li::before{content:"⚡";font-size:.75rem;top:9px}
+.p-right .full{grid-column:1/-1;padding:16px 18px;border-radius:14px;background:linear-gradient(90deg,rgba(94,224,160,.1),transparent);border:1px solid rgba(94,224,160,.25);color:var(--text);font-size:.95rem}
+.p-right .full b{color:var(--green)}
+
+/* BENEFITS */
+.ben-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.ben{padding:28px 24px;border-radius:var(--radius);border:1px solid var(--line);background:linear-gradient(160deg,rgba(60,200,240,.08),transparent 60%);transition:transform .25s}
+.ben:hover{transform:translateY(-4px)}
+.ben:nth-child(even){background:linear-gradient(160deg,rgba(245,162,58,.08),transparent 60%)}
+.ben .big{font-family:var(--display);font-weight:800;font-size:1.9rem;margin-bottom:6px}
+.ben h3{font-size:1.02rem;margin-bottom:6px}
+.ben p{color:var(--muted);font-size:.9rem}
+
+/* COMPARE */
+.table-wrap{overflow-x:auto;border:1px solid var(--line-2);border-radius:18px;background:var(--panel)}
+table{width:100%;border-collapse:collapse;min-width:760px;font-size:.92rem}
+th,td{padding:15px 18px;text-align:center;border-bottom:1px solid var(--line)}
+th{font-family:var(--display);font-weight:600;font-size:.86rem;color:var(--muted);background:#152130}
+th:first-child,td:first-child{text-align:left;color:var(--text)}
+th.us{color:#06121d;background:var(--grad)}
+td.us{background:rgba(60,200,240,.06);font-weight:600}
+tbody tr{transition:background .2s}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tr:last-child td{border-bottom:0}
+.y{color:var(--green);font-weight:700}.n{color:var(--red);font-weight:700}.p{color:var(--amber);font-weight:600;font-size:.84rem}
+.diff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+.diff{padding:24px;border-radius:var(--radius);border:1px solid var(--line);background:var(--bg)}
+.diff .ico{width:40px;height:40px;border-radius:11px}.diff .ico svg{width:20px;height:20px}
+.diff h3{font-size:1.05rem;margin:12px 0 6px}
+.diff p{font-size:.92rem;color:var(--muted)}
+
+/* PLANS */
+.model-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.plan{padding:30px;border-radius:20px;border:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;transition:transform .25s,border-color .25s}
+.plan:hover{transform:translateY(-4px);border-color:var(--line-2)}
+.plan.hl{border-color:rgba(60,200,240,.55);box-shadow:0 30px 60px -30px rgba(60,200,240,.4);position:relative}
+.plan.hl::before{content:"Recomendado";position:absolute;top:-12px;left:30px;background:var(--orange);color:#1a1006;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:99px}
+.plan h3{font-size:1.2rem}
+.plan .tag{font-size:.86rem;color:var(--dim);margin:4px 0 18px}
+.plan .how{font-family:var(--display);font-size:1.05rem;margin-bottom:16px;color:var(--cyan)}
+.plan ul{list-style:none;flex:1}
+.plan li{padding:7px 0 7px 26px;position:relative;font-size:.92rem;color:var(--muted);border-bottom:1px dashed var(--line)}
+.plan li::before{content:"✓";position:absolute;left:2px;color:var(--green);font-weight:700}
+
+/* ROADMAP */
+.road{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.road::before{content:"";position:absolute;top:22px;left:4%;right:4%;height:2px;background:linear-gradient(90deg,var(--cyan),var(--orange));opacity:.5}
+.milestone{position:relative;padding-top:56px}
+.milestone .dot{position:absolute;top:10px;left:0;width:26px;height:26px;border-radius:50%;background:var(--bg);border:3px solid var(--cyan);display:grid;place-items:center}
+.milestone.now .dot{border-color:var(--orange);box-shadow:0 0 0 6px rgba(245,162,58,.15);animation:pulse 1.8s infinite}
+.milestone.done .dot::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--cyan)}
+.milestone small{font-family:var(--mono);font-size:.74rem;color:var(--orange)}
+.milestone h4{font-size:1.05rem;margin:4px 0 6px}
+.milestone p{font-size:.9rem;color:var(--muted)}
+
+/* TEAM */
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:880px;margin:0 auto 48px}
+.member{display:flex;gap:20px;align-items:center;padding:24px;border-radius:20px;border:1px solid var(--line-2);background:var(--panel);transition:transform .3s,border-color .3s}
+.member:hover{transform:translateY(-4px);border-color:rgba(60,200,240,.5)}
+.member .avatar{width:96px;height:96px;border-radius:22px;font-size:1.8rem;box-shadow:0 0 0 3px var(--bg),0 0 0 5px rgba(60,200,240,.5)}
+.member.m2 .avatar{box-shadow:0 0 0 3px var(--bg),0 0 0 5px rgba(245,162,58,.6)}
+.member h3{font-size:1.15rem}
+.member .r{color:var(--cyan);font-size:.85rem;font-weight:600}
+.member p{color:var(--muted);font-size:.88rem;margin-top:6px}
+.roles{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.role-c{padding:16px;border-radius:14px;border:1px solid var(--line);background:var(--bg-2);transition:border-color .25s,transform .25s}
+.role-c:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.role-c b{font-family:var(--display);font-size:.86rem;display:block;margin-bottom:4px}
+.role-c span{font-size:.78rem;color:var(--dim);line-height:1.45;display:block}
+
+/* FAQ */
+.faq{max-width:820px;margin:0 auto;display:grid;gap:12px}
+.faq details{border:1px solid var(--line);border-radius:14px;background:var(--panel);transition:border-color .25s}
+.faq details[open]{border-color:var(--line-2)}
+.faq summary{list-style:none;cursor:pointer;padding:18px 22px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:1.4rem;color:var(--cyan);transition:transform .25s;line-height:1}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding:0 22px 20px;color:var(--muted);font-size:.95rem}
+
+/* CONTACT */
+.contact-card{display:grid;grid-template-columns:1fr 1.1fr;border:1px solid var(--line-2);border-radius:24px;overflow:hidden;background:var(--panel)}
+.contact-info{padding:44px;background:radial-gradient(500px 300px at 0% 0%,rgba(60,200,240,.16),transparent 70%)}
+.contact-info h2{font-size:clamp(1.7rem,3vw,2.3rem);margin:14px 0}
+.contact-info p{color:var(--muted);margin-bottom:26px}
+.cline{display:flex;gap:14px;align-items:center;margin-bottom:16px;font-size:.95rem}
+.cline .ico{width:40px;height:40px;border-radius:11px}.cline .ico svg{width:18px;height:18px}
+.cline small{display:block;color:var(--dim);font-size:.76rem}
+.copy{margin-left:6px;font-size:.7rem;padding:2px 8px;border-radius:6px;border:1px solid var(--line-2);background:none;color:var(--muted);cursor:pointer}
+.copy:hover{color:var(--text)}
+form{padding:44px;display:grid;gap:14px;border-left:1px solid var(--line)}
+label{font-size:.82rem;color:var(--muted);display:grid;gap:6px}
+input,select,textarea{font-family:inherit;font-size:.95rem;padding:12px 14px;border-radius:10px;border:1px solid var(--line-2);background:#0f1924;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(60,200,240,.15)}
+textarea{min-height:110px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.count{font-size:.72rem;color:var(--dim);text-align:right;margin-top:-8px}
+
+/* toast + top */
+#toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,120px);background:#0f1924;border:1px solid var(--green);color:var(--text);padding:13px 18px;border-radius:12px;font-size:.9rem;z-index:80;box-shadow:0 20px 40px -10px rgba(0,0,0,.6);transition:transform .35s cubic-bezier(.2,.8,.2,1);display:flex;gap:10px;align-items:center;max-width:90vw}
+#toast.show{transform:translate(-50%,0)}
+#toast:not(.show){visibility:hidden;transition:transform .35s,visibility 0s .35s}
+#toast::before{content:"✓";width:22px;height:22px;border-radius:50%;background:var(--green);color:#06121d;font-weight:800;display:grid;place-items:center;font-size:.8rem;flex:none}
+#top{position:fixed;right:22px;bottom:22px;width:46px;height:46px;border-radius:14px;border:1px solid var(--line-2);background:rgba(15,25,36,.9);color:var(--cyan);cursor:pointer;z-index:55;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;display:grid;place-items:center}
+#top.show{opacity:1;pointer-events:auto}
+#top:hover{transform:translateY(-3px)}
+
+footer{padding:46px 0;border-top:1px solid var(--line);font-size:.86rem;color:var(--dim)}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+@media (max-width:1020px){
+  .hero-grid,.about-grid,.contact-card,.ba,.roi,.persona,.pg{grid-template-columns:1fr}
+  .prob-grid,.ben-grid,.steps,.stats-grid,.road{grid-template-columns:1fr 1fr}
+  .road::before{display:none}
+  .feat-grid,.model-grid,.diff-grid{grid-template-columns:1fr 1fr}
+  .roles{grid-template-columns:repeat(3,1fr)}
+  form,.roi-out{border-left:0;border-top:1px solid var(--line)}
+  .pg-side,.p-left{border-right:0;border-bottom:1px solid var(--line)}
+  .nav-links{gap:18px}
+}
+@media (max-width:860px){.nav-links,.nav-cta{display:none}.menu-btn{display:block}
+  .nav.open .nav-links{display:flex;flex-direction:column;position:absolute;top:72px;left:0;right:0;background:rgba(13,21,32,.97);padding:20px 24px;gap:16px;border-bottom:1px solid var(--line)}}
+@media (max-width:760px){
+  section{padding:80px 0}
+  .hero{min-height:auto}
+  .prob-grid,.ben-grid,.steps,.feat-grid,.model-grid,.diff-grid,.why-grid,.team-grid,.two-prod,.shot-caps,.p-right,.road,.out-row{grid-template-columns:1fr}
+  .stats-grid,.roles,.cgrid{grid-template-columns:1fr 1fr}
+  .dash{grid-template-columns:1fr}
+  .dash aside{display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);gap:4px;padding:10px}
+  .dash aside button{width:auto;white-space:nowrap;margin:0}
+  .kpis{grid-template-columns:1fr 1fr}.dash-row{grid-template-columns:1fr}
+  .flow{height:420px}
+  .node{min-width:118px;font-size:.72rem}
+  .n1{left:3%;top:4%}.n6{left:3%;bottom:4%;top:auto}.n2{left:50%;top:50%;transform:translate(-50%,-50%)}.n3{right:3%;top:22%}.n4{display:none}.n5{right:3%;bottom:22%}
+  .contact-info,form,.roi-in,.roi-out,.ba{padding:26px}
+  .row2{grid-template-columns:1fr}
+  .member{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.4 3.4-5 6.5-5s5.7 1.6 6.5 5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 15c1.9.6 3.1 2.2 3.5 5"/></g></symbol>
+    <symbol id="i-db" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></g></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></g></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 4h18l-7 8.5V19l-4 2v-8.5L3 4z"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8z"/><path d="m3 8 9 5 9-5M12 13v8"/></g></symbol>
+    <symbol id="i-flow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="15" width="6" height="6" rx="1.5"/><path d="M9 6h4a3 3 0 0 1 3 3v6"/></g></symbol>
+    <symbol id="i-plug" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0V7zM12 17v5"/></symbol>
+    <symbol id="i-robot" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13v1M15 13v1M9 17h6"/><circle cx="12" cy="3" r="1"/></g></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></g></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></g></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M7 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 9.5 4.3 4.3 0 0 1 17.5 18H7z"/></symbol>
+    <symbol id="i-handshake" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1.4 1.4 0 0 0 2-2"/><path d="m14 14 2.5 2.5a1.4 1.4 0 0 0 2-2L15 11l-3 1-2-2 3-3 3 1 5 4M3 11l4-4 3 1"/><path d="m3 11 7 7a1.4 1.4 0 0 0 2-2"/></g></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></g></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></g></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></g></symbol>
+    <symbol id="i-team" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20c.6-3 3-4.5 6-4.5s5.4 1.5 6 4.5M14 15.6c.6-.1 1.3-.1 2-.1 3 0 5.4 1.5 6 4.5"/></g></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4v16l13-8z"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></g></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></g></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.5 11h11L21 7H6.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></g></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 5h16v11H9l-5 4z"/></symbol>
+    <symbol id="i-sheet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></g></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 6h6l2 2h10v11H3z"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></g></symbol>
+    <symbol id="i-kanban" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 7v8M12 7v4M16 7v10"/></g></symbol>
+    <symbol id="i-headset" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></g></symbol>
+    <symbol id="i-mega" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 10v4h4l8 5V5L7 10z"/><path d="M19 9a4 4 0 0 1 0 6"/></g></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3l5 5L9 20H4v-5z"/><path d="M3 22h18"/></g></symbol>
+    <symbol id="i-euro" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 6a7 7 0 1 0 0 12"/><path d="M4 10h9M4 14h9"/></g></symbol>
+    <symbol id="i-api" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></g></symbol>
+  </defs>
+</svg>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a href="#inicio" class="brand"><img src="assets/logo-symbol.png" alt="Símbolo de EasyAutomation"><span>Easy<b>Automation</b></span></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#proyecto">Proyecto</a>
+      <a href="#problema">Problema</a>
+      <a href="#funciones">Funciones</a>
+      <a href="#prueba">Pruébalo</a>
+      <a href="#usuarios">Usuarios</a>
+      <a href="#diferencias">Diferencias</a>
+      <a href="#equipo">Equipo</a>
+    </nav>
+    <a href="#contacto" class="btn btn-primary nav-cta">Solicitar demo</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Abrir menú"><svg width="26" height="26" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <canvas id="net" aria-hidden="true"></canvas>
+  <div class="wrap hero-grid">
+    <div class="reveal">
+      <div class="pill"><span>NUEVO</span> Plataforma de automatización por EasyAutomation</div>
+      <h1><span class="grad-text">NexFlow</span> Core</h1>
+      <p class="slogan">Conecta tus sistemas. <em>Libera a tu equipo.</em></p>
+      <p class="typer" aria-live="polite">&gt; conectar <b id="typed"></b><i></i></p>
+      <p class="lead">La plataforma SaaS híbrida que une tu CRM, ERP, correo y bases de datos en un solo flujo, y automatiza las tareas repetitivas que hoy consumen horas de trabajo en tu empresa.</p>
+      <div class="hero-ctas">
+        <a href="#prueba" class="btn btn-primary"><svg width="16" height="16"><use href="#i-play"/></svg> Probar la demo</a>
+        <a href="#ahorro" class="btn btn-ghost">Calcular mi ahorro</a>
+      </div>
+      <div class="hero-meta">
+        <div><strong>API + RPA</strong>en una sola plataforma</div>
+        <div><strong>Cloud u on‑premise</strong>despliegue híbrido</div>
+        <div><strong>Llave en mano</strong>consultoría incluida</div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="mock tilt" id="heroMock">
+        <div class="mock-bar"><i></i><i></i><i></i><span class="title">Flujo · Alta de cliente → Facturación</span><span class="live">Activo</span></div>
+        <div class="flow" id="heroFlow">
+          <svg id="wires" aria-hidden="true"></svg>
+          <div class="node trigger n1" data-o="0"><span class="ok">✓</span><span class="badge">TRIGGER</span><div class="t"><span class="ico ic-c"><svg><use href="#i-users"/></svg></span>CRM</div><div class="s">Nuevo cliente creado</div></div>
+          <div class="node n6 o"><span class="ok">✓</span><div class="t"><span class="ico ic-o"><svg><use href="#i-mail"/></svg></span>Correo</div><div class="s">Contrato firmado recibido</div></div>
+          <div class="node n2"><span class="ok">✓</span><div class="t"><span class="ico ic-v"><svg><use href="#i-filter"/></svg></span>Validar y mapear</div><div class="s">Reglas + transformación</div></div>
+          <div class="node n3"><span class="ok">✓</span><div class="t"><span class="ico ic-c"><svg><use href="#i-box"/></svg></span>ERP</div><div class="s">Crear ficha y factura</div></div>
+          <div class="node n4 o"><span class="ok">✓</span><div class="t"><span class="ico ic-o"><svg><use href="#i-db"/></svg></span>Base de datos</div><div class="s">Registrar operación</div></div>
+          <div class="node n5"><span class="ok">✓</span><div class="t"><span class="ico ic-g"><svg><use href="#i-mail"/></svg></span>Notificar</div><div class="s">Aviso a Finanzas</div></div>
+        </div>
+        <div class="mock-foot">
+          <span>Ejecuciones hoy: <b id="heroCount">1284</b></span>
+          <span style="display:flex;gap:6px">
+            <button class="mini-btn" id="runHero">▶ Ejecutar</button>
+            <button class="mini-btn o" id="speedHero">⚡ Turbo</button>
+          </span>
+          <span id="heroStatus"><b>● Correcto</b> · 1,4 s</span>
+        </div>
+      </div>
+      <p class="caption">Prototipo del editor de flujos · pulsa «Ejecutar» o mueve el ratón encima.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-sec">
+  <p class="lbl">Conecta con más de 40 herramientas</p>
+  <div class="marquee" data-dir="1"><div class="track" id="mq1"></div></div>
+  <div class="marquee" data-dir="-1"><div class="track" id="mq2"></div></div>
+</div>
+
+<!-- PROYECTO -->
+<section class="about" id="proyecto">
+  <div class="wrap about-grid">
+    <div class="reveal">
+      <span class="eyebrow">El proyecto</span>
+      <h2 style="font-size:clamp(1.9rem,3.6vw,2.7rem);margin:14px 0 20px">Automatización de procesos, <span class="grad-text">sin fricción</span></h2>
+      <p><strong>EasyAutomation</strong> es una empresa de desarrollo de software especializada en automatización de procesos: <strong>RPA</strong> (robots de software que imitan acciones humanas) e <strong>integración de APIs</strong> (conexión directa entre aplicaciones).</p>
+      <p>Nuestro objetivo es eliminar las tareas repetitivas y optimizar los flujos de trabajo digitales de medianas y grandes empresas, para que sus equipos dediquen su tiempo a lo que de verdad aporta valor.</p>
+      <div class="two-prod">
+        <div class="mini spot"><h4><span class="ico ic-c"><svg><use href="#i-flow"/></svg></span>NexFlow Core</h4><p>Plataforma SaaS híbrida para conectar herramientas corporativas y automatizar flujos complejos.</p></div>
+        <div class="mini spot"><h4><span class="ico ic-o"><svg><use href="#i-handshake"/></svg></span>Servicio Enterprise</h4><p>Auditoría de procesos, arquitectura a medida y despliegue llave en mano para grandes cuentas.</p></div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="logo-card tilt" id="logoCard">
+        <img src="assets/logo-full.jpg" alt="Logotipo de EasyAutomation: un símbolo de infinito formado por circuitos, con el texto Integration & Workflows">
+        <div class="logo-fx" id="logoFx" aria-hidden="true">
+          <svg viewBox="0 0 1024 765" preserveAspectRatio="none">
+            <defs>
+              <filter id="blur6"><feGaussianBlur stdDeviation="5"/></filter>
+            </defs>
+            <path id="lL" fill="none" stroke="#7ee8ff" stroke-width="12" stroke-linecap="round" filter="url(#blur6)" opacity=".9" d=""/>
+            <path id="lLc" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".85" d=""/>
+            <path id="lR" fill="none" stroke="#ffbf6b" stroke-width="12" stroke-linecap="round" filter="url(#blur6)" opacity=".85" d=""/>
+            <path id="lRc" fill="none" stroke="#fff3dd" stroke-width="3" stroke-linecap="round" opacity=".85" d=""/>
+          </svg>
+          <div class="shine"></div>
+        </div>
+      </div>
+      <p class="caption">Logo animado: las luces del circuito recorren el símbolo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats alt">
+  <div class="wrap stats-grid">
+    <div class="stat reveal"><div class="v grad-text" data-count="40" data-suffix="+">0</div><div class="l">conectores previstos</div></div>
+    <div class="stat reveal"><div class="v" style="color:var(--orange)" data-count="24" data-suffix="/7">0</div><div class="l">ejecución desatendida</div></div>
+    <div class="stat reveal"><div class="v grad-text" data-count="3">0</div><div class="l">modos de despliegue</div></div>
+    <div class="stat reveal"><div class="v" style="color:var(--orange)" data-count="10" data-prefix="&lt;" data-suffix=" min">0</div><div class="l">para crear tu primer flujo</div></div>
+  </div>
+  <p class="note center" style="text-align:center">Objetivos de diseño del proyecto.</p>
+</div>
+
+<!-- PROBLEMA -->
+<section id="problema">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">El problema</span>
+      <h2>Las empresas trabajan con muchas herramientas que no se hablan entre sí</h2>
+      <p>CRM, ERP, correo, hojas de cálculo, bases de datos… Cada departamento usa su sistema, y la información viaja entre ellos a mano. El resultado es tiempo perdido, errores y equipos saturados.</p>
+    </div>
+    <div class="prob-grid">
+      <div class="prob reveal"><span class="num">01</span><h3>Tareas repetitivas</h3><p>Personas cualificadas copiando y pegando datos entre sistemas, generando informes a mano o procesando facturas una por una.</p></div>
+      <div class="prob reveal"><span class="num">02</span><h3>Errores humanos</h3><p>Cada transcripción manual es una oportunidad de error: importes mal tecleados, duplicados, datos desactualizados.</p></div>
+      <div class="prob reveal"><span class="num">03</span><h3>Silos de información</h3><p>Finanzas, RR. HH. y Ventas trabajan con datos distintos. No hay una única fuente de verdad ni visibilidad del proceso completo.</p></div>
+      <div class="prob reveal"><span class="num">04</span><h3>Soluciones a medias</h3><p>Las herramientas sencillas se quedan cortas en entornos corporativos, y los desarrollos a medida son caros, lentos y difíciles de mantener.</p></div>
+    </div>
+
+    <div class="ba reveal">
+      <div>
+        <span class="eyebrow">Compruébalo</span>
+        <h3>Un mismo proceso, dos realidades</h3>
+        <p>Ejemplo: dar de alta a un cliente nuevo. Cambia entre «Manual» y «Con NexFlow» y mira cómo cambia el tiempo de cada paso.</p>
+        <div class="switch" id="baSwitch"><span class="pillbg"></span><button class="on" data-m="manual">Manual</button><button data-m="auto">Con NexFlow</button></div>
+      </div>
+      <div>
+        <div class="ba-steps" id="baSteps"></div>
+        <div class="ba-total"><span style="color:var(--muted)">Tiempo total por cliente</span><b id="baTotal">40 min</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POR QUÉ -->
+<section id="por-que" class="alt">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Por qué desarrollarla</span>
+      <h2>Una necesidad real en plena transformación digital</h2>
+      <p>Las empresas ya han digitalizado sus herramientas; el siguiente paso es que esas herramientas trabajen juntas. Ahí es donde NexFlow Core aporta valor.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why spot reveal"><span class="ico ic-c"><svg><use href="#i-chart"/></svg></span><div><h3>Demanda creciente</h3><p>Los departamentos corporativos buscan automatizar para hacer más con los mismos recursos y reducir costes operativos.</p></div></div>
+      <div class="why spot reveal"><span class="ico ic-o"><svg><use href="#i-target"/></svg></span><div><h3>Hueco en el mercado</h3><p>Entre las herramientas «no‑code» pensadas para pymes y las grandes suites de RPA, falta una opción completa, flexible y acompañada.</p></div></div>
+      <div class="why spot reveal"><span class="ico ic-g"><svg><use href="#i-clock"/></svg></span><div><h3>Retorno medible</h3><p>Cada proceso automatizado ahorra horas cada mes que se pueden medir desde el propio panel de la plataforma.</p></div></div>
+      <div class="why spot reveal"><span class="ico ic-v"><svg><use href="#i-handshake"/></svg></span><div><h3>Modelo sostenible</h3><p>Combina ingresos recurrentes por suscripción (SaaS) con servicios profesionales de consultoría, conectores a medida y formación.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FUNCIONES -->
+<section id="funciones">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Funcionalidades</span>
+      <h2>Todo lo necesario para automatizar de principio a fin</h2>
+      <p>NexFlow Core reúne en una sola plataforma la integración entre aplicaciones, los robots de software y el control de cada ejecución.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat spot reveal"><span class="ico ic-c"><svg><use href="#i-flow"/></svg></span><h3>Editor visual de flujos</h3><p>Diseña procesos arrastrando y conectando bloques, sin escribir código.</p><ul><li>Condiciones, bucles y ramas</li><li>Plantillas de procesos habituales</li></ul></div>
+      <div class="feat spot reveal"><span class="ico ic-o"><svg><use href="#i-plug"/></svg></span><h3>Conectores nativos</h3><p>Integración lista para usar con CRM, ERP, correo, bases de datos y cualquier API REST.</p><ul><li>Conectores a medida bajo demanda</li><li>Mapeo y transformación de datos</li></ul></div>
+      <div class="feat spot reveal"><span class="ico ic-v"><svg><use href="#i-robot"/></svg></span><h3>Robots RPA</h3><p>Automatiza también aplicaciones antiguas sin API, imitando las acciones de un usuario.</p><ul><li>Lectura de documentos y formularios</li><li>Ejecución programada o desatendida</li></ul></div>
+      <div class="feat spot reveal"><span class="ico ic-c"><svg><use href="#i-bolt"/></svg></span><h3>Eventos en tiempo real</h3><p>Los flujos se disparan al instante cuando algo ocurre: un pedido, un correo, un alta.</p><ul><li>Webhooks y disparadores</li><li>Reintentos automáticos ante fallos</li></ul></div>
+      <div class="feat spot reveal"><span class="ico ic-g"><svg><use href="#i-chart"/></svg></span><h3>Monitorización y analítica</h3><p>Panel con el estado de cada ejecución, errores, tiempos y horas ahorradas.</p><ul><li>Alertas por correo</li><li>Historial y trazabilidad completa</li></ul></div>
+      <div class="feat spot reveal"><span class="ico ic-o"><svg><use href="#i-shield"/></svg></span><h3>Seguridad corporativa</h3><p>Diseñada para grandes empresas: datos protegidos y control de quién hace qué.</p><ul><li>Roles y permisos por usuario</li><li>Cifrado y registros de auditoría</li></ul></div>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><h4>Audita</h4><p>Analizamos tus procesos y detectamos cuáles automatizar primero.</p></div>
+      <div class="step reveal"><h4>Conecta</h4><p>Enlazamos tus herramientas con conectores nativos o a medida.</p></div>
+      <div class="step reveal"><h4>Automatiza</h4><p>Diseñamos los flujos en el editor visual y los ponemos en marcha.</p></div>
+      <div class="step reveal"><h4>Mide y mejora</h4><p>Supervisas resultados desde el panel y seguimos optimizando.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PLAYGROUND -->
+<section id="prueba" class="alt">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Pruébalo tú mismo</span>
+      <h2>Crea tu primer flujo en segundos</h2>
+      <p>Elige un disparador, añade acciones y pulsa «Ejecutar». Es una simulación para que veas cómo funcionaría la plataforma.</p>
+    </div>
+    <div class="pg reveal">
+      <div class="pg-side">
+        <h4>1 · ¿Cuándo empieza?</h4>
+        <div class="opts" id="triggers"></div>
+        <h4>2 · ¿Qué debe hacer? (en orden)</h4>
+        <div class="opts" id="actions"></div>
+        <h4>3 · Opciones</h4>
+        <label class="chk"><input type="checkbox" id="simErr"> Simular un fallo (para ver los reintentos)</label>
+      </div>
+      <div class="pg-main">
+        <div class="pg-canvas"><div class="chain" id="chain"></div></div>
+        <div class="pg-bar">
+          <button class="btn btn-primary btn-sm" id="runPg"><svg width="14" height="14"><use href="#i-play"/></svg> Ejecutar flujo</button>
+          <button class="btn btn-ghost btn-sm" id="clearPg">Limpiar</button>
+          <button class="btn btn-ghost btn-sm" id="tplPg">Usar plantilla</button>
+          <span class="sp" id="pgInfo">0 acciones</span>
+        </div>
+        <div class="console" id="console" aria-live="polite"><div class="l"><time>--:--:--</time><span class="info">NexFlow listo. Configura tu flujo y pulsa «Ejecutar».</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="capturas">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Así se verá</span>
+      <h2>Control total desde un único panel</h2>
+      <p>Prototipo interactivo con datos de ejemplo que se actualizan en directo. Navega por el menú lateral.</p>
+    </div>
+    <div class="mock reveal">
+      <div class="mock-bar"><i></i><i></i><i></i><span class="title">app.nexflow · Panel de control</span><span class="live">En directo</span></div>
+      <div class="dash">
+        <aside id="dashNav">
+          <button class="on" data-v="v-panel"><i></i>Panel</button>
+          <button data-v="v-flujos"><i></i>Flujos</button>
+          <button data-v="v-con"><i></i>Conectores</button>
+          <button data-v="v-rpa"><i></i>Robots RPA</button>
+        </aside>
+        <main>
+          <div class="view on" id="v-panel">
+            <h4>Resumen del mes <span class="tagx">Datos de ejemplo</span></h4>
+            <div class="kpis">
+              <div class="kpi"><span>Ejecuciones</span><b id="kExec">48.210</b><em>▲ 18 %</em></div>
+              <div class="kpi"><span>Tasa de éxito</span><b id="kRate">99,2 %</b><em>▲ 0,4 pp</em></div>
+              <div class="kpi"><span>Horas ahorradas</span><b id="kHours">1340 h</b><em>▲ 22 %</em></div>
+              <div class="kpi"><span>Flujos activos</span><b id="kFlows">5</b><em>de 6 creados</em></div>
+            </div>
+            <div class="dash-row">
+              <div class="box"><div class="lbl">Ejecuciones por hora (pasa el ratón)</div><div class="bars" id="bars"></div></div>
+              <div class="box"><div class="lbl">Últimas ejecuciones</div><div class="runs" id="runs"></div></div>
+            </div>
+          </div>
+          <div class="view" id="v-flujos">
+            <h4>Tus flujos <span class="tagx">Activa o pausa con el interruptor</span></h4>
+            <div class="flist" id="flist"></div>
+          </div>
+          <div class="view" id="v-con">
+            <h4>Conectores <span class="tagx">Haz clic para conectar / desconectar</span></h4>
+            <div class="cgrid" id="cgrid"></div>
+          </div>
+          <div class="view" id="v-rpa">
+            <h4>Robots RPA <span class="tagx">Simulación</span></h4>
+            <div class="flist" id="rpalist"></div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <div class="shot-caps">
+      <div class="reveal"><b>Visión global</b>Indicadores clave de todas las automatizaciones de un vistazo.</div>
+      <div class="reveal"><b>Trazabilidad</b>Cada ejecución queda registrada: qué pasó, cuándo y con qué datos.</div>
+      <div class="reveal"><b>Ahorro visible</b>Las horas ahorradas se calculan solas, para justificar el retorno.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ROI -->
+<section id="ahorro" class="alt">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Calculadora de ahorro</span>
+      <h2>¿Cuánto podría ahorrar tu empresa?</h2>
+      <p>Mueve los controles para estimar el tiempo y el dinero que liberarías automatizando tareas repetitivas.</p>
+    </div>
+    <div class="roi reveal">
+      <div class="roi-in">
+        <div class="range"><div class="top"><span>Personas que hacen tareas repetitivas</span><b id="oPeople">10</b></div><input type="range" id="rPeople" min="1" max="200" value="10"></div>
+        <div class="range"><div class="top"><span>Horas por semana, por persona</span><b id="oHours">8 h</b></div><input type="range" id="rHours" min="1" max="30" value="8"></div>
+        <div class="range"><div class="top"><span>Coste por hora (€)</span><b id="oCost">25 €</b></div><input type="range" id="rCost" min="10" max="80" value="25"></div>
+        <div class="range"><div class="top"><span>Porcentaje automatizable</span><b id="oPct">60 %</b></div><input type="range" id="rPct" min="10" max="90" value="60" step="5"></div>
+      </div>
+      <div class="roi-out">
+        <span style="color:var(--muted);font-size:.9rem">Ahorro estimado al año</span>
+        <div class="big-out grad-text" id="oMoney">0 €</div>
+        <div class="out-row">
+          <div><b id="oYearH">0 h</b><span>horas liberadas al año</span></div>
+          <div><b id="oFte">0</b><span>jornadas completas equivalentes</span></div>
+        </div>
+        <div class="gauge"><span id="oGauge" style="width:0"></span></div>
+        <p class="note">Estimación orientativa: 46 semanas laborables y 1.720 h por jornada completa al año.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USUARIOS -->
+<section id="usuarios">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Público objetivo y usuarios</span>
+      <h2>Pensada para medianas y grandes empresas</h2>
+      <p>Nos dirigimos a organizaciones con varios sistemas y procesos que se repiten a diario, y en especial a los departamentos que lideran su transformación digital. Elige un departamento para conocer a su usuario tipo.</p>
+    </div>
+    <div class="tabs reveal" id="ptabs"></div>
+    <div id="pview"></div>
+    <p class="note">Perfiles ficticios creados para representar a los usuarios potenciales.</p>
+  </div>
+</section>
+
+<!-- BENEFICIOS -->
+<section id="beneficios" class="alt">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Qué aporta</span>
+      <h2>Beneficios para quienes la usan</h2>
+    </div>
+    <div class="ben-grid">
+      <div class="ben reveal"><div class="big grad-text">Tiempo</div><h3>Más horas para lo importante</h3><p>Las tareas mecánicas las hace la plataforma; las personas, el trabajo que requiere criterio.</p></div>
+      <div class="ben reveal"><div class="big" style="color:var(--orange)">Calidad</div><h3>Menos errores</h3><p>Los datos se transfieren automáticamente y con validaciones, sin transcripciones manuales.</p></div>
+      <div class="ben reveal"><div class="big grad-text">Control</div><h3>Visibilidad total</h3><p>Cada proceso es trazable y medible desde un único panel, con alertas si algo falla.</p></div>
+      <div class="ben reveal"><div class="big" style="color:var(--orange)">Escala</div><h3>Crecer sin fricción</h3><p>Más volumen de trabajo sin necesidad de ampliar la plantilla en la misma proporción.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- DIFERENCIAS -->
+<section id="diferencias">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Qué nos hace diferentes</span>
+      <h2>Lo mejor de cada opción, en una sola propuesta</h2>
+      <p>Comparamos NexFlow Core con los tipos de soluciones que las empresas usan hoy para automatizar.</p>
+    </div>
+    <div class="table-wrap reveal">
+      <table>
+        <thead><tr><th>Característica</th><th class="us">NexFlow Core</th><th>Herramientas no‑code para pymes</th><th>Suites RPA tradicionales</th><th>Desarrollo interno a medida</th></tr></thead>
+        <tbody>
+          <tr><td>Integración por API y robots RPA juntos</td><td class="us y">✓</td><td class="p">Solo API</td><td class="p">Centrado en RPA</td><td class="p">Según el caso</td></tr>
+          <tr><td>Despliegue híbrido (nube u on‑premise)</td><td class="us y">✓</td><td class="n">✕</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Editor visual sin código</td><td class="us y">✓</td><td class="y">✓</td><td class="p">Parcial</td><td class="n">✕</td></tr>
+          <tr><td>Pensada para procesos corporativos complejos</td><td class="us y">✓</td><td class="n">✕</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Consultoría e implantación llave en mano</td><td class="us y">✓</td><td class="n">✕</td><td class="p">Con partners</td><td class="p">Equipo propio</td></tr>
+          <tr><td>Precio por consumo real</td><td class="us y">✓</td><td class="y">✓</td><td class="p">Licencias por robot</td><td class="n">Coste fijo alto</td></tr>
+          <tr><td>Puesta en marcha rápida</td><td class="us y">✓</td><td class="y">✓</td><td class="p">Proyectos largos</td><td class="n">✕</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Comparativa orientativa por categorías de solución, elaborada con fines académicos.</p>
+    <div class="diff-grid">
+      <div class="diff spot reveal"><span class="ico ic-c"><svg><use href="#i-cloud"/></svg></span><h3>Híbrida de verdad</h3><p>La empresa elige dónde se ejecutan sus automatizaciones: en la nube o en sus propios servidores, según sus requisitos de seguridad.</p></div>
+      <div class="diff spot reveal"><span class="ico ic-o"><svg><use href="#i-handshake"/></svg></span><h3>Producto + acompañamiento</h3><p>No solo vendemos software: auditamos, diseñamos e implantamos junto al cliente y formamos a su equipo.</p></div>
+      <div class="diff spot reveal"><span class="ico ic-g"><svg><use href="#i-plug"/></svg></span><h3>Conectores a medida</h3><p>Si un sistema no tiene conector, lo desarrollamos. Ninguna herramienta del cliente se queda fuera.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- MODELO -->
+<section id="modelo" class="alt">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Modelo de negocio</span>
+      <h2>Paga por lo que automatizas</h2>
+      <p>Suscripción según el consumo de operaciones y el número de usuarios, más servicios profesionales cuando se necesitan.</p>
+    </div>
+    <div class="model-grid">
+      <div class="plan spot reveal"><h3>Business</h3><p class="tag">Para departamentos que empiezan</p><p class="how">Suscripción SaaS</p><ul><li>Editor visual y plantillas</li><li>Conectores nativos</li><li>Panel de monitorización</li><li>Soporte técnico estándar</li></ul></div>
+      <div class="plan hl spot reveal"><h3>Corporate</h3><p class="tag">Para empresas con varios departamentos</p><p class="how">SaaS por consumo + usuarios</p><ul><li>Todo lo de Business</li><li>Robots RPA</li><li>Roles, permisos y auditoría</li><li>Gestor de Customer Success</li></ul></div>
+      <div class="plan spot reveal"><h3>Enterprise</h3><p class="tag">Grandes cuentas, a medida</p><p class="how">Servicio llave en mano</p><ul><li>Auditoría de procesos</li><li>Despliegue on‑premise o híbrido</li><li>Conectores a medida</li><li>Formación interna del equipo</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="hoja">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Hoja de ruta</span>
+      <h2>Del concepto al lanzamiento</h2>
+    </div>
+    <div class="road">
+      <div class="milestone done reveal"><span class="dot"></span><small>FASE 1</small><h4>Idea y validación</h4><p>Definición del problema, público objetivo y propuesta de valor.</p></div>
+      <div class="milestone now reveal"><span class="dot"></span><small>FASE 2 · AHORA</small><h4>Prototipo</h4><p>Diseño de la interfaz y del editor de flujos. Esta landing forma parte de esta fase.</p></div>
+      <div class="milestone reveal"><span class="dot"></span><small>FASE 3</small><h4>MVP y beta</h4><p>Primeros conectores (CRM, ERP, correo) y pruebas con empresas piloto.</p></div>
+      <div class="milestone reveal"><span class="dot"></span><small>FASE 4</small><h4>Lanzamiento</h4><p>Robots RPA, despliegue híbrido y servicio Enterprise de consultoría.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPO -->
+<section id="equipo" class="alt">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">El equipo</span>
+      <h2>Quién está detrás de EasyAutomation</h2>
+    </div>
+    <div class="team-grid">
+      <div class="member reveal"><div class="avatar"><img src="assets/lucas.jpg" alt="Foto de Lucas Herrera Moreno"></div><div><h3>Lucas Herrera Moreno</h3><span class="r">Cofundador</span><p>Cofundador de EasyAutomation y responsable del proyecto NexFlow Core.</p></div></div>
+      <div class="member m2 reveal"><div class="avatar" style="background:linear-gradient(135deg,#f5a23a,#ffc56b);color:#1a1006">MD</div><div><h3>Manuel Delgado Lopes</h3><span class="r" style="color:var(--orange)">Cofundador</span><p>Cofundador de EasyAutomation y responsable del proyecto NexFlow Core.</p></div></div>
+    </div>
+    <p class="reveal" style="color:var(--muted);text-align:center;margin-bottom:26px">Perfiles profesionales que forman la estructura de la empresa:</p>
+    <div class="roles">
+      <div class="role-c reveal"><b>CEO / Fundador</b><span>Estrategia, inversores y expansión comercial.</span></div>
+      <div class="role-c reveal"><b>CTO</b><span>Arquitectura, seguridad de datos e infraestructura cloud.</span></div>
+      <div class="role-c reveal"><b>Desarrollador backend</b><span>Servidor, bases de datos, eventos en tiempo real y APIs.</span></div>
+      <div class="role-c reveal"><b>Desarrollador frontend</b><span>Interfaz de la plataforma y experiencia de usuario.</span></div>
+      <div class="role-c reveal"><b>Ingeniero de automatización</b><span>Conectores nativos y motor de ejecución de flujos.</span></div>
+      <div class="role-c reveal"><b>Desarrollo de negocio</b><span>Estrategia comercial y cierre de contratos B2B.</span></div>
+      <div class="role-c reveal"><b>Ventas B2B</b><span>Captación, demos de producto y gestión de leads.</span></div>
+      <div class="role-c reveal"><b>Head of Customer Success</b><span>Retención, satisfacción y crecimiento de clientes.</span></div>
+      <div class="role-c reveal"><b>Consultor de implementación</b><span>Arquitectura de integración durante el onboarding.</span></div>
+      <div class="role-c reveal"><b>Soporte técnico</b><span>Incidencias, documentación y guías de ayuda.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Preguntas frecuentes</span>
+      <h2>Lo que suelen preguntarnos</h2>
+    </div>
+    <div class="faq reveal">
+      <details open><summary>¿Necesito saber programar para usar NexFlow Core?</summary><p>No. El editor visual permite crear flujos arrastrando bloques. Para casos muy específicos, nuestro equipo desarrolla conectores o lógica a medida.</p></details>
+      <details><summary>¿Qué diferencia hay entre integración por API y RPA?</summary><p>La integración por API conecta aplicaciones directamente a través de sus interfaces de programación. El RPA usa robots de software que imitan a una persona usando la aplicación, útil cuando un sistema no tiene API.</p></details>
+      <details><summary>¿Mis datos salen de la empresa?</summary><p>Depende del modo de despliegue. Con la opción on‑premise o híbrida, las automatizaciones se ejecutan en los servidores del cliente y los datos sensibles no salen de su infraestructura.</p></details>
+      <details><summary>¿Cómo se cobra?</summary><p>Mediante suscripción según el número de operaciones ejecutadas y de usuarios. Los servicios de consultoría, conectores a medida y formación se presupuestan por proyecto.</p></details>
+      <details><summary>¿Cuánto se tarda en implantar?</summary><p>Un flujo sencillo puede estar listo el mismo día. Un proyecto Enterprise empieza con una auditoría de procesos y se despliega por fases.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto" class="alt">
+  <div class="wrap">
+    <div class="contact-card reveal">
+      <div class="contact-info">
+        <span class="eyebrow">Contacto</span>
+        <h2>¿Hablamos de tus procesos?</h2>
+        <p>Cuéntanos qué tareas te quitan más tiempo y te enseñaremos cómo NexFlow Core puede automatizarlas.</p>
+        <div class="cline"><span class="ico ic-c"><svg><use href="#i-mail"/></svg></span><div><small>Correo del proyecto (ficticio)</small><span id="mailTxt">hola@easyautomation-nexflow.es</span><button class="copy" id="copyMail" type="button">Copiar</button></div></div>
+        <div class="cline"><span class="ico ic-o"><svg><use href="#i-pin"/></svg></span><div><small>Ubicación</small>España · Proyecto académico</div></div>
+        <div class="cline"><span class="ico ic-g"><svg><use href="#i-team"/></svg></span><div><small>Equipo</small>Lucas Herrera Moreno · Manuel Delgado Lopes</div></div>
+      </div>
+      <form id="contactForm" novalidate>
+        <div class="row2">
+          <label>Nombre<input type="text" name="nombre" placeholder="Tu nombre" required></label>
+          <label>Empresa<input type="text" name="empresa" placeholder="Nombre de la empresa"></label>
+        </div>
+        <label>Correo electrónico<input type="email" name="email" placeholder="tu@empresa.com" required></label>
+        <label>Departamento
+          <select name="dep"><option>Finanzas</option><option>Recursos Humanos</option><option>Operaciones</option><option>Tecnología / IT</option><option>Otro</option></select>
+        </label>
+        <label>¿Qué proceso te gustaría automatizar?<textarea name="msg" maxlength="400" id="msg" placeholder="Ej.: pasar los pedidos del CRM al ERP y generar la factura"></textarea></label>
+        <div class="count"><span id="msgCount">0</span>/400</div>
+        <button class="btn btn-primary" type="submit">Solicitar demo</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="#inicio" class="brand"><img src="assets/logo-symbol.png" alt=""><span>Easy<b>Automation</b></span></a>
+    <span>NexFlow Core · Proyecto académico · © 2026 Lucas Herrera Moreno y Manuel Delgado Lopes</span>
+  </div>
+</footer>
+
+<div id="toast" role="status"></div>
+<button id="top" aria-label="Volver arriba"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(s,c){return (c||document).querySelector(s)},$$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fmt=function(n){return Math.round(n).toLocaleString('es-ES')};
+  function toast(msg){var t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('show')},3200)}
+  function now(){var d=new Date();return d.toTimeString().slice(0,8)}
+
+  /* ---------- NAV, progress, back to top, active link ---------- */
+  var nav=$('#nav'),prog=$('#progress'),top=$('#top');
+  var secs=$$('#navLinks a').map(function(a){return document.querySelector(a.getAttribute('href'))});
+  function onScroll(){
+    var y=window.scrollY,h=document.documentElement.scrollHeight-innerHeight;
+    nav.classList.toggle('scrolled',y>20);
+    prog.style.width=(h>0?y/h*100:0)+'%';
+    top.classList.toggle('show',y>900);
+    var cur=-1;secs.forEach(function(s,i){if(s&&s.getBoundingClientRect().top<innerHeight*.4)cur=i});
+    $$('#navLinks a').forEach(function(a,i){a.classList.toggle('active',i===cur)});
+  }
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+  top.addEventListener('click',function(){scrollTo({top:0,behavior:'smooth'})});
+  $('#menuBtn').addEventListener('click',function(){nav.classList.toggle('open')});
+  $$('#navLinks a').forEach(function(a){a.addEventListener('click',function(){nav.classList.remove('open')})});
+
+  /* ---------- reveal + counters ---------- */
+  function countUp(el){
+    var end=+el.dataset.count,pre=el.dataset.prefix||'',suf=el.dataset.suffix||'',t0=null;
+    function step(t){if(!t0)t0=t;var p=Math.min((t-t0)/1300,1),e=1-Math.pow(1-p,3);el.textContent=pre+Math.round(end*e)+suf;if(p<1)requestAnimationFrame(step)}
+    requestAnimationFrame(step);
+  }
+  var els=$$('.reveal');
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');$$('[data-count]',e.target).forEach(countUp);io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+    els.forEach(function(el){io.observe(el)});
+  } else {els.forEach(function(el){el.classList.add('in')});$$('[data-count]').forEach(countUp)}
+
+  /* ---------- spotlight cards ---------- */
+  $$('.spot').forEach(function(c){c.addEventListener('pointermove',function(e){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')})});
+
+  /* ---------- tilt ---------- */
+  $$('.tilt').forEach(function(el){
+    if(reduce)return;
+    el.addEventListener('pointermove',function(e){var r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform='perspective(900px) rotateY('+(x*7)+'deg) rotateX('+(-y*7)+'deg)'});
+    el.addEventListener('pointerleave',function(){el.style.transform=''});
+  });
+
+  /* ---------- hero network canvas ---------- */
+  (function(){
+    var cv=$('#net'),ctx=cv.getContext('2d'),pts=[],W,H,mouse={x:-999,y:-999};
+    function size(){W=cv.width=cv.offsetWidth*devicePixelRatio;H=cv.height=cv.offsetHeight*devicePixelRatio;pts=[];var n=Math.min(70,Math.round(W*H/(26000*devicePixelRatio*devicePixelRatio)));for(var i=0;i<n;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35*devicePixelRatio,vy:(Math.random()-.5)*.35*devicePixelRatio,o:Math.random()<.25})}
+    size();addEventListener('resize',size);
+    cv.parentElement.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect();mouse.x=(e.clientX-r.left)*devicePixelRatio;mouse.y=(e.clientY-r.top)*devicePixelRatio});
+    var D=130*devicePixelRatio;
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      for(var i=0;i<pts.length;i++){var p=pts[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+        var dm=Math.hypot(p.x-mouse.x,p.y-mouse.y);if(dm<D*1.4){p.x+=(p.x-mouse.x)/dm*.6;p.y+=(p.y-mouse.y)/dm*.6}
+        for(var j=i+1;j<pts.length;j++){var q=pts[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<D){ctx.strokeStyle='rgba(60,200,240,'+(1-d/D)*.28+')';ctx.lineWidth=devicePixelRatio;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke()}}
+        ctx.fillStyle=p.o?'rgba(245,162,58,.9)':'rgba(60,200,240,.9)';ctx.beginPath();ctx.arc(p.x,p.y,1.8*devicePixelRatio,0,7);ctx.fill();
+      }
+      if(!reduce)requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* ---------- typewriter ---------- */
+  (function(){
+    var words=['tu CRM con tu ERP','facturas con contabilidad','altas con Recursos Humanos','pedidos con el almacén','correos con tu base de datos','Excel con todo lo demás'];
+    var el=$('#typed'),w=0,c=0,del=false;
+    function tick(){var s=words[w];el.textContent=s.slice(0,c);
+      if(!del&&c<s.length){c++;setTimeout(tick,55)}else if(!del){del=true;setTimeout(tick,1600)}else if(c>0){c--;setTimeout(tick,25)}else{del=false;w=(w+1)%words.length;setTimeout(tick,300)}}
+    tick();
+  })();
+
+  /* ---------- hero flow wires + run ---------- */
+  var flow=$('#heroFlow'),svg=$('#wires');
+  var links=[['n1','n2','c',0],['n6','n2','o',-1.2],['n2','n3','c',-.6],['n2','n4','o',-1.8],['n2','n5','c',-2.1]];
+  function drawWires(){
+    var fr=flow.getBoundingClientRect(),html='';
+    links.forEach(function(l){
+      var a=$('.'+l[0],flow).getBoundingClientRect(),b=$('.'+l[1],flow).getBoundingClientRect();
+      if(!a.width||!b.width)return;
+      var x1,y1,x2,y2,d,o=l[2]==='o'?' o':'',col=o?'#f5a23a':'#3cc8f0';
+      if(b.left-a.right>24){x1=a.right-fr.left;y1=a.top+a.height/2-fr.top;x2=b.left-fr.left;y2=b.top+b.height/2-fr.top;var dx=Math.max(20,(x2-x1)/2);d='M'+x1+' '+y1+' C '+(x1+dx)+' '+y1+', '+(x2-dx)+' '+y2+', '+x2+' '+y2}
+      else{var dn=b.top>a.top;x1=a.left+a.width/2-fr.left;y1=(dn?a.bottom:a.top)-fr.top;x2=b.left+b.width/2-fr.left;y2=(dn?b.top:b.bottom)-fr.top;var dy=(y2-y1)/2;d='M'+x1+' '+y1+' C '+x1+' '+(y1+dy)+', '+x2+' '+(y2-dy)+', '+x2+' '+y2}
+      html+='<path class="wire'+o+'" d="'+d+'"/><path class="pulse'+o+'" style="animation-delay:'+l[3]+'s" d="'+d+'"/><circle cx="'+x1+'" cy="'+y1+'" r="3.5" fill="'+col+'"/><circle cx="'+x2+'" cy="'+y2+'" r="3.5" fill="'+col+'"/>';
+    });
+    svg.innerHTML=html;
+  }
+  drawWires();addEventListener('resize',drawWires);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawWires);
+  var heroCount=1284;
+  setInterval(function(){heroCount+=Math.ceil(Math.random()*3);$('#heroCount').textContent=fmt(heroCount)},1800);
+  var running=false;
+  function runHero(){
+    if(running)return;running=true;
+    var nodes=$$('.node',flow);nodes.forEach(function(n){n.classList.remove('hit','done')});
+    $('#heroStatus').innerHTML='<span style="color:var(--cyan)">● Ejecutando…</span>';
+    var order=[['n1','n6'],['n2'],['n3','n4','n5']],k=0,t0=performance.now();
+    (function next(){
+      if(k>=order.length){var s=((performance.now()-t0)/1000).toFixed(1).replace('.',',');$('#heroStatus').innerHTML='<b>● Correcto</b> · '+s+' s';heroCount++;$('#heroCount').textContent=fmt(heroCount);setTimeout(function(){nodes.forEach(function(n){n.classList.remove('hit','done')})},2200);running=false;return}
+      order[k].forEach(function(c){$('.'+c,flow).classList.add('hit')});
+      setTimeout(function(){order[k].forEach(function(c){var n=$('.'+c,flow);n.classList.remove('hit');n.classList.add('done')});k++;next()},flow.classList.contains('fast')?220:520);
+    })();
+  }
+  $('#runHero').addEventListener('click',runHero);
+  $('#speedHero').addEventListener('click',function(){var f=flow.classList.toggle('fast');this.textContent=f?'🐢 Normal':'⚡ Turbo'});
+  setTimeout(runHero,1600);
+
+  /* ---------- marquee ---------- */
+  var C=[['Salesforce','CRM','#3cc8f0'],['HubSpot','CRM','#f5a23a'],['SAP','ERP','#2f8fe8'],['Odoo','ERP','#b3a4ff'],['Microsoft Dynamics','ERP / CRM','#3cc8f0'],['Oracle','Base de datos','#ef6b7b'],['Gmail','Correo','#ef6b7b'],['Outlook','Correo','#2f8fe8'],['Slack','Mensajería','#b3a4ff'],['Microsoft Teams','Mensajería','#2f8fe8'],['WhatsApp Business','Mensajería','#5ee0a0'],['MySQL','Base de datos','#3cc8f0'],['PostgreSQL','Base de datos','#2f8fe8'],['MongoDB','Base de datos','#5ee0a0'],['SQL Server','Base de datos','#ef6b7b'],['Excel','Hojas de cálculo','#5ee0a0'],['Google Sheets','Hojas de cálculo','#5ee0a0'],['Google Drive','Archivos','#f5a23a'],['OneDrive','Archivos','#2f8fe8'],['Dropbox','Archivos','#3cc8f0'],['SharePoint','Archivos','#3cc8f0'],['Shopify','E‑commerce','#5ee0a0'],['WooCommerce','E‑commerce','#b3a4ff'],['Stripe','Pagos','#b3a4ff'],['PayPal','Pagos','#2f8fe8'],['Jira','Proyectos','#2f8fe8'],['Trello','Proyectos','#3cc8f0'],['Asana','Proyectos','#ef6b7b'],['Notion','Documentación','#e8f0f8'],['Zendesk','Soporte','#5ee0a0'],['Freshdesk','Soporte','#5ee0a0'],['Mailchimp','Marketing','#f5a23a'],['Google Calendar','Calendario','#2f8fe8'],['DocuSign','Firma digital','#f5a23a'],['Holded','Contabilidad','#ef6b7b'],['A3','Nóminas','#f5a23a'],['AWS S3','Nube','#f5a23a'],['Azure','Nube','#2f8fe8'],['API REST','Genérico','#3cc8f0'],['Webhooks','Genérico','#f5a23a'],['SFTP','Archivos','#b3a4ff'],['PDF / OCR','Documentos','#ef6b7b']];
+  var ICON={'CRM':'i-users','ERP':'i-box','ERP / CRM':'i-box','Base de datos':'i-db','Correo':'i-mail','Mensajería':'i-chat','Hojas de cálculo':'i-sheet','Archivos':'i-folder','E‑commerce':'i-cart','Pagos':'i-card','Proyectos':'i-kanban','Documentación':'i-doc','Soporte':'i-headset','Marketing':'i-mega','Calendario':'i-calendar','Firma digital':'i-pen','Contabilidad':'i-euro','Nóminas':'i-euro','Nube':'i-cloud','Genérico':'i-api','Documentos':'i-doc'};
+  function chip(c){var ic=ICON[c[1]]||'i-plug';
+    return '<div class="conn"><span class="lg" style="background:'+c[2]+'22;color:'+c[2]+'"><svg><use href="#'+ic+'"/></svg></span><span><b>'+c[0]+'</b><small>'+c[1]+'</small></span></div>'}
+  var half=Math.ceil(C.length/2);
+  $('#mq1').innerHTML=C.slice(0,half).map(chip).join('').repeat(3);
+  $('#mq2').innerHTML=C.slice(half).map(chip).join('').repeat(3);
+  $$('.marquee').forEach(function(m){
+    var dir=+m.dataset.dir||1,speed=.6,pos=0,paused=false,hover=false,resumeT,third=0;
+    function measure(){third=m.querySelector('.track').scrollWidth/3;if(!pos){pos=third;m.scrollLeft=pos}}
+    function wrap(){if(pos>=third*2)pos-=third;else if(pos<third*.5)pos+=third}
+    function pauseFor(ms){paused=true;clearTimeout(resumeT);resumeT=setTimeout(function(){paused=false;pos=m.scrollLeft},ms)}
+    measure();addEventListener('resize',function(){third=m.querySelector('.track').scrollWidth/3});
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){third=m.querySelector('.track').scrollWidth/3});
+    m.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse')hover=true});
+    m.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse'){hover=false;pos=m.scrollLeft}});
+    m.addEventListener('touchstart',function(){pauseFor(1e9)},{passive:true});
+    m.addEventListener('touchend',function(){pauseFor(1800)},{passive:true});
+    m.addEventListener('wheel',function(){pauseFor(1500)},{passive:true});
+    m.addEventListener('scroll',function(){if(paused||hover||drag){pos=m.scrollLeft;wrap();if(Math.abs(m.scrollLeft-pos)>1)m.scrollLeft=pos}},{passive:true});
+    var drag=false,sx=0,sl=0,moved=0;
+    m.addEventListener('pointerdown',function(e){if(e.pointerType!=='mouse')return;drag=true;moved=0;sx=e.clientX;sl=m.scrollLeft;m.setPointerCapture(e.pointerId)});
+    m.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-sx;moved=Math.max(moved,Math.abs(dx));if(moved>4)m.classList.add('drag');m.scrollLeft=sl-dx});
+    function end(){if(!drag)return;drag=false;m.classList.remove('drag');pos=m.scrollLeft}
+    m.addEventListener('pointerup',end);m.addEventListener('pointercancel',end);
+    (function loop(){if(!paused&&!hover&&!drag&&third){pos+=speed*dir;wrap();m.scrollLeft=pos}requestAnimationFrame(loop)})();
+  });
+
+  /* ---------- animated logo ---------- */
+  (function(){
+    var fx=$('#logoFx');
+    function circ(cx,cy,r,ccw){var sw=ccw?0:1;return 'M'+(cx-r)+' '+cy+' A'+r+' '+r+' 0 1 '+sw+' '+(cx+r)+' '+cy+' A'+r+' '+r+' 0 1 '+sw+' '+(cx-r)+' '+cy}
+    var L1=$('#lL'),L1c=$('#lLc'),R1=$('#lR'),R1c=$('#lRc');
+    L1.setAttribute('d',circ(426,302,80,false));L1c.setAttribute('d',circ(426,302,80,false));
+    R1.setAttribute('d',circ(602,301,81,true));R1c.setAttribute('d',circ(602,301,81,true));
+    var LL=L1.getTotalLength(),LR=R1.getTotalLength();
+    [L1,L1c].forEach(function(p){p.style.strokeDasharray='60 '+(LL-60)});
+    [R1,R1c].forEach(function(p){p.style.strokeDasharray='60 '+(LR-60)});
+    var dots=[[36.1,32.0,'c'],[33.8,39.4,'c'],[36.2,46.7,'c'],[41.5,39.4,'o'],[54.9,30.7,'c'],[62.1,35.3,'o'],[58.7,39.2,'c'],[64.3,46.7,'o'],[54.4,48.6,'o']];
+    dots.forEach(function(p,i){var g=document.createElement('span');g.className='glow '+p[2];g.style.left=p[0]+'%';g.style.top=p[1]+'%';g.style.animationDelay=(i*.27)+'s';fx.appendChild(g)});
+    var off=0;
+    (function anim(){off+=2.4;L1.style.strokeDashoffset=L1c.style.strokeDashoffset=-(off%LL);R1.style.strokeDashoffset=R1c.style.strokeDashoffset=-((off+LR/2)%LR);if(!reduce)requestAnimationFrame(anim)})();
+  })();
+
+  /* ---------- before / after ---------- */
+  (function(){
+    var steps=[['Copiar datos del CRM al ERP',15,2],['Crear la factura',10,2],['Enviar correo de bienvenida',5,1],['Registrar en el Excel de control',5,1],['Avisar a Finanzas',5,2]];
+    var box=$('#baSteps'),mode='manual';
+    box.innerHTML=steps.map(function(s){return '<div class="ba-step"><span class="who"></span><span>'+s[0]+'</span><span class="t"></span><div class="bar"><span></span></div></div>'}).join('');
+    function render(){
+      var tot=0;$$('.ba-step',box).forEach(function(r,i){var s=steps[i],m=mode==='manual',v=m?s[1]:s[2];tot+=v;
+        $('.who',r).textContent=m?'🧑':'⚡';$('.who',r).style.background=m?'rgba(239,107,123,.15)':'rgba(94,224,160,.15)';
+        $('.t',r).textContent=m?v+' min':v+' s';
+        var bar=$('.bar span',r);bar.style.width=(m?s[1]/15*100:s[2]/15*8)+'%';bar.style.background=m?'var(--red)':'var(--green)'});
+      $('#baTotal').textContent=mode==='manual'?tot+' min':'≈ '+tot+' s';
+      $('#baTotal').style.color=mode==='manual'?'var(--red)':'var(--green)';
+      var on=$('#baSwitch button.on'),bg=$('#baSwitch .pillbg');bg.style.left=on.offsetLeft+'px';bg.style.width=on.offsetWidth+'px';bg.style.background=mode==='manual'?'var(--orange)':'var(--green)';
+    }
+    $$('#baSwitch button').forEach(function(b){b.addEventListener('click',function(){$$('#baSwitch button').forEach(function(x){x.classList.remove('on')});b.classList.add('on');mode=b.dataset.m;render()})});
+    render();addEventListener('resize',render);
+    setTimeout(render,500);
+  })();
+
+  /* ---------- playground ---------- */
+  (function(){
+    var T=[['crm','i-users','Nuevo cliente en el CRM','ic-c'],['mail','i-mail','Llega un correo con factura','ic-o'],['cal','i-calendar','Cada lunes a las 9:00','ic-v'],['shop','i-cart','Nuevo pedido en la tienda','ic-g']];
+    var A=[['ocr','i-doc','Leer documento (OCR)','ic-v'],['erp','i-box','Crear registro en el ERP','ic-c'],['db','i-db','Guardar en base de datos','ic-o'],['sheet','i-sheet','Actualizar Excel','ic-g'],['robot','i-robot','Robot RPA en app antigua','ic-v'],['notify','i-chat','Avisar al equipo (Teams/Slack)','ic-c'],['mailx','i-mail','Enviar correo al cliente','ic-o']];
+    var trig=null,acts=[];
+    function opt(o,cls){return '<button type="button" class="opt '+cls+'" data-k="'+o[0]+'"><span class="ico '+o[3]+'"><svg><use href="#'+o[1]+'"/></svg></span>'+o[2]+'<span class="n"></span></button>'}
+    $('#triggers').innerHTML=T.map(function(o){return opt(o,'trg')}).join('');
+    $('#actions').innerHTML=A.map(function(o){return opt(o,'act')}).join('');
+    function find(arr,k){return arr.filter(function(o){return o[0]===k})[0]}
+    function render(){
+      $$('#triggers .opt').forEach(function(b){b.classList.toggle('sel',b.dataset.k===trig)});
+      $$('#actions .opt').forEach(function(b){var i=acts.indexOf(b.dataset.k);b.classList.toggle('sel',i>-1);$('.n',b).textContent=i>-1?'#'+(i+1):''});
+      var ch=$('#chain');
+      if(!trig&&!acts.length){ch.innerHTML='<p class="empty">👈 Elige un disparador y algunas acciones<br>para construir tu flujo.</p>'}
+      else{
+        var list=[];if(trig)list.push(['TRIGGER',find(T,trig)]);acts.forEach(function(k,i){list.push(['PASO '+(i+1),find(A,k)])});
+        ch.innerHTML=list.map(function(x,i){return '<div class="seg">'+(i?'<div class="link"></div>':'')+'<div class="cnode" data-i="'+i+'"><span class="st"></span><div class="t"><span class="ico '+x[1][3]+'"><svg><use href="#'+x[1][1]+'"/></svg></span>'+x[1][2]+'</div><div class="s">'+x[0]+'</div></div></div>'}).join('');
+      }
+      $('#pgInfo').textContent=acts.length+(acts.length===1?' acción':' acciones');
+    }
+    $('#triggers').addEventListener('click',function(e){var b=e.target.closest('.opt');if(!b)return;trig=b.dataset.k;render()});
+    $('#actions').addEventListener('click',function(e){var b=e.target.closest('.opt');if(!b)return;var k=b.dataset.k,i=acts.indexOf(k);if(i>-1)acts.splice(i,1);else if(acts.length<5)acts.push(k);else toast('Máximo 5 acciones en la demo');render()});
+    $('#clearPg').addEventListener('click',function(){trig=null;acts=[];render();log('info','Flujo vacío.')});
+    $('#tplPg').addEventListener('click',function(){trig='mail';acts=['ocr','erp','sheet','notify'];render();log('info','Plantilla cargada: «Facturas de proveedor → ERP».')});
+    var con=$('#console');
+    function log(cls,msg){var d=document.createElement('div');d.className='l';d.innerHTML='<time>'+now()+'</time><span class="'+cls+'">'+msg+'</span>';con.appendChild(d);con.scrollTop=con.scrollHeight}
+    var busy=false;
+    $('#runPg').addEventListener('click',function(){
+      if(busy)return;
+      if(!trig){toast('Elige primero un disparador');return}
+      if(!acts.length){toast('Añade al menos una acción');return}
+      busy=true;this.disabled=true;var btn=this;
+      var nodes=$$('#chain .cnode'),links=$$('#chain .link');nodes.forEach(function(n){n.classList.remove('run','ok','err')});
+      var failAt=$('#simErr').checked?Math.max(1,Math.floor(Math.random()*acts.length)+1):-1,retried=false,t0=performance.now();
+      log('info','▶ Ejecución iniciada · id #'+Math.random().toString(16).slice(2,8));
+      var i=0;
+      (function step(){
+        if(i>=nodes.length){var ms=Math.round(performance.now()-t0);log('ok','✔ Flujo completado en '+(ms/1000).toFixed(2).replace('.',',')+' s · '+nodes.length+' pasos');toast('¡Flujo ejecutado con éxito!');busy=false;btn.disabled=false;return}
+        var n=nodes[i];n.classList.add('run');if(i>0){links[i-1].classList.remove('flow');void links[i-1].offsetWidth;links[i-1].classList.add('flow')}
+        var name=$('.t',n).textContent;
+        setTimeout(function(){
+          n.classList.remove('run');
+          if(i===failAt&&!retried){n.classList.add('err');$('.st',n).textContent='ERROR';log('err','✖ '+name+': tiempo de espera agotado');log('warn','↻ Reintento automático en 1 s…');retried=true;setTimeout(function(){n.classList.remove('err');step()},1000);return}
+          n.classList.add('ok');$('.st',n).textContent='OK';log('ok','✔ '+(i===0?'Disparador: ':'')+name);i++;step();
+        },650);
+      })();
+    });
+    render();
+  })();
+
+  /* ---------- dashboard ---------- */
+  (function(){
+    $$('#dashNav button').forEach(function(b){b.addEventListener('click',function(){$$('#dashNav button').forEach(function(x){x.classList.remove('on')});b.classList.add('on');$$('.view').forEach(function(v){v.classList.toggle('on',v.id===b.dataset.v)})})});
+    var bars=$('#bars'),vals=[];for(var i=0;i<16;i++)vals.push(30+Math.random()*60);
+    function drawBars(){bars.innerHTML=vals.map(function(v,i){return '<div style="height:'+v+'%" class="'+(v<38?'o':'')+'" data-v="'+Math.round(v*14)+' ejec."></div>'}).join('')}
+    drawBars();
+    var names=['Alta de cliente → ERP','Nóminas mensuales','Conciliación bancaria','Onboarding empleado','Informe de ventas','Facturas de proveedor','Pedido → Almacén'];
+    var runs=$('#runs');
+    function addRun(){var ok=Math.random()>.12,d=document.createElement('div');d.className='run';d.innerHTML='<span>'+names[Math.floor(Math.random()*names.length)]+'<br><small>'+now()+'</small></span><span class="st '+(ok?'ok':'rt')+'">'+(ok?'OK':'Reintento')+'</span>';runs.insertBefore(d,runs.firstChild);while(runs.children.length>6)runs.removeChild(runs.lastChild)}
+    for(var j=0;j<5;j++)addRun();
+    var exec=48210,hours=1340;
+    setInterval(function(){
+      exec+=Math.floor(Math.random()*9)+2;hours+=Math.random()*.6;
+      $('#kExec').textContent=fmt(exec);$('#kHours').textContent=fmt(hours)+' h';
+      $('#kRate').textContent=(98.8+Math.random()*.8).toFixed(1).replace('.',',')+' %';
+      vals.shift();vals.push(30+Math.random()*65);drawBars();addRun();
+    },2200);
+    var F=[['Alta de cliente → ERP','CRM · ERP · Correo',1],['Facturas de proveedor','Correo · OCR · ERP',1],['Nóminas mensuales','A3 · Banco',1],['Onboarding empleado','RR. HH. · Teams',1],['Informe de ventas semanal','CRM · Excel',1],['Sincronizar inventario','Tienda · ERP',0]];
+    $('#flist').innerHTML=F.map(function(f,i){return '<div class="fitem"><span class="ico ic-c"><svg><use href="#i-flow"/></svg></span><div><b>'+f[0]+'</b><div class="meta">'+f[1]+'</div></div><button class="toggle'+(f[2]?' on':'')+'" data-i="'+i+'" aria-label="Activar o pausar '+f[0]+'"></button></div>'}).join('');
+    function countFlows(){$('#kFlows').textContent=$$('#flist .toggle.on').length}
+    $('#flist').addEventListener('click',function(e){var t=e.target.closest('.toggle');if(!t)return;var on=t.classList.toggle('on');countFlows();toast((on?'Flujo activado: ':'Flujo pausado: ')+F[+t.dataset.i][0])});
+    countFlows();
+    var CO=[['Salesforce',1],['SAP',1],['Outlook',1],['Teams',1],['MySQL',1],['Excel',1],['Shopify',0],['Slack',0],['Stripe',0]];
+    function drawC(){$('#cgrid').innerHTML=CO.map(function(c,i){return '<button class="citem" data-i="'+i+'" style="cursor:pointer;color:inherit;text-align:left"><span class="ico '+(c[1]?'ic-g':'ic-r')+'"><svg><use href="#i-plug"/></svg></span>'+c[0]+'<span class="dot" style="background:'+(c[1]?'var(--green)':'#4f6378')+'"></span></button>'}).join('')}
+    drawC();
+    $('#cgrid').addEventListener('click',function(e){var b=e.target.closest('.citem');if(!b)return;var c=CO[+b.dataset.i];c[1]=c[1]?0:1;drawC();toast(c[0]+(c[1]?' conectado ✔':' desconectado'))});
+    var R=[['Robot 01 · Facturas SAP GUI','En ejecución',72],['Robot 02 · Portal de proveedores','En espera',0],['Robot 03 · Descarga de extractos','En ejecución',35]];
+    $('#rpalist').innerHTML=R.map(function(r,i){return '<div class="fitem" style="flex-wrap:wrap"><span class="ico ic-v"><svg><use href="#i-robot"/></svg></span><div><b>'+r[0]+'</b><div class="meta" id="rs'+i+'">'+r[1]+'</div></div><div style="flex-basis:100%;height:6px;border-radius:6px;background:#253547;overflow:hidden"><span id="rb'+i+'" style="display:block;height:100%;width:'+r[2]+'%;background:var(--grad);transition:width .8s"></span></div></div>'}).join('');
+    setInterval(function(){R.forEach(function(r,i){if(r[1]==='En espera'&&Math.random()<.3){r[1]='En ejecución'}if(r[1]==='En ejecución'){r[2]+=Math.random()*14;if(r[2]>=100){r[2]=0;r[1]='Completado ✔'}}else if(r[1].indexOf('Completado')===0&&Math.random()<.4){r[1]='En espera'}$('#rs'+i).textContent=r[1];$('#rb'+i).style.width=Math.min(r[2],100)+'%'})},1500);
+  })();
+
+  /* ---------- ROI ---------- */
+  (function(){
+    var ids=['rPeople','rHours','rCost','rPct'],shown=0;
+    function calc(){
+      ids.forEach(function(id){var r=document.getElementById(id);r.style.setProperty('--p',((r.value-r.min)/(r.max-r.min)*100)+'%')});
+      var p=+rPeople.value,h=+rHours.value,c=+rCost.value,pc=+rPct.value/100;
+      $('#oPeople').textContent=p;$('#oHours').textContent=h+' h';$('#oCost').textContent=c+' €';$('#oPct').textContent=Math.round(pc*100)+' %';
+      var yearH=p*h*46*pc,money=yearH*c;
+      $('#oYearH').textContent=fmt(yearH)+' h';$('#oFte').textContent=(yearH/1720).toFixed(1).replace('.',',');
+      $('#oGauge').style.width=Math.min(100,money/2000000*100)+'%';
+      var from=shown,to=money,t0=null;cancelAnimationFrame(calc.r);
+      (function st(t){if(!t0)t0=t;var k=Math.min((t-t0)/450,1);shown=from+(to-from)*(1-Math.pow(1-k,3));$('#oMoney').textContent=fmt(shown)+' €';if(k<1)calc.r=requestAnimationFrame(st)})(performance.now());
+    }
+    var rPeople=$('#rPeople'),rHours=$('#rHours'),rCost=$('#rCost'),rPct=$('#rPct');
+    ids.forEach(function(id){document.getElementById(id).addEventListener('input',calc)});calc();
+  })();
+
+  /* ---------- personas tabs ---------- */
+  (function(){
+    var P=[
+      {k:'fin',tab:'💶 Finanzas',ini:'LG',col:'var(--cyan)',bg:'rgba(60,200,240,.16)',name:'Laura, 42',role:'Directora financiera',desc:'Gestiona un equipo de 8 personas en una empresa de distribución que trabaja con ERP, banca online y cientos de facturas al mes.',m:[['Carga de trabajo manual',85],['Interés en automatizar',95]],needs:['Cerrar el mes más rápido','Evitar errores en facturas e importes','Tener datos fiables al momento'],auto:['Lectura automática de facturas (OCR) → ERP','Conciliación bancaria diaria','Informe de tesorería cada lunes'],ben:'Su equipo pasa de introducir datos a <b>analizarlos</b>, y el cierre mensual se acorta.'},
+      {k:'rrhh',tab:'🧑‍💼 Recursos Humanos',ini:'JR',col:'var(--orange)',bg:'rgba(245,162,58,.16)',name:'Javier, 38',role:'Responsable de RR. HH.',desc:'Coordina altas, bajas y nóminas de más de 500 empleados repartidos en varios sistemas que no están conectados.',m:[['Carga de trabajo manual',75],['Interés en automatizar',80]],needs:['Agilizar las incorporaciones','Menos papeleo y correos manuales','Cumplir plazos legales sin estrés'],auto:['Onboarding: cuentas, accesos y bienvenida','Envío de nóminas y certificados','Recordatorios de contratos y vacaciones'],ben:'Una incorporación completa queda lista <b>en minutos</b> en lugar de días.'},
+      {k:'it',tab:'🛡️ Tecnología / IT',ini:'MS',col:'var(--violet)',bg:'rgba(179,164,255,.16)',name:'Marta, 35',role:'CTO / Responsable de IT',desc:'Recibe constantes peticiones de integraciones de otros departamentos y tiene un equipo de desarrollo limitado.',m:[['Peticiones pendientes',90],['Exigencia de seguridad',100]],needs:['Seguridad, permisos y auditoría','No mantener scripts sueltos','Opción de desplegar en sus servidores'],auto:['Integraciones centralizadas y monitorizadas','Alertas automáticas ante fallos','Copias y sincronización de datos'],ben:'Todas las integraciones en <b>una única plataforma</b> segura y auditable.'},
+      {k:'ops',tab:'📦 Operaciones',ini:'DP',col:'var(--green)',bg:'rgba(94,224,160,.16)',name:'David, 47',role:'Director de operaciones',desc:'Supervisa procesos entre ventas, almacén y atención al cliente, y necesita saber qué está pasando en cada momento.',m:[['Falta de visibilidad',80],['Interés en automatizar',85]],needs:['Visibilidad de extremo a extremo','Escalar sin contratar más','Detectar cuellos de botella'],auto:['Pedido de la tienda → almacén → envío','Avisos de stock bajo','Encuestas de satisfacción tras la entrega'],ben:'Procesos conectados y <b>medibles</b> que crecen con el negocio.'}
+    ];
+    $('#ptabs').innerHTML=P.map(function(p,i){return '<button class="tab'+(i?'':' on')+'" data-i="'+i+'">'+p.tab+'</button>'}).join('');
+    function show(i){var p=P[i];
+      $('#pview').innerHTML='<div class="persona"><div class="p-left"><div class="avatar" style="background:'+p.bg+';color:'+p.col+'">'+p.ini+'</div><h3>'+p.name+'</h3><div class="role">'+p.role+'</div><p>'+p.desc+'</p><div class="meter">'+p.m.map(function(m){return '<div><span style="background:none;height:auto;margin:0;display:inline">'+m[0]+'</span><b>'+m[1]+'%</b></div><span><i style="width:0" data-w="'+m[1]+'"></i></span>'}).join('')+'</div></div>'+
+        '<div class="p-right"><div><h5>Necesidades e intereses</h5><ul>'+p.needs.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul></div><div class="auto"><h5 class="o">Qué automatizaría</h5><ul>'+p.auto.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul></div><div class="full">Beneficio: '+p.ben+'</div></div></div>';
+      setTimeout(function(){$$('#pview [data-w]').forEach(function(e){e.style.width=e.dataset.w+'%'})},60);
+    }
+    $('#ptabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(!b)return;$$('#ptabs .tab').forEach(function(x){x.classList.remove('on')});b.classList.add('on');show(+b.dataset.i)});
+    show(0);
+  })();
+
+  /* ---------- contact ---------- */
+  $('#msg').addEventListener('input',function(){$('#msgCount').textContent=this.value.length});
+  $('#copyMail').addEventListener('click',function(){var t=$('#mailTxt').textContent;if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){toast('Correo copiado al portapapeles')},function(){toast(t)})}else toast(t)});
+  $('#contactForm').addEventListener('submit',function(e){
+    e.preventDefault();var f=e.target,okN=!!f.nombre.value.trim(),okE=/^\S+@\S+\.\S+$/.test(f.email.value);
+    f.nombre.style.borderColor=okN?'':'var(--red)';f.email.style.borderColor=okE?'':'var(--red)';
+    if(!okN||!okE){toast('Revisa el nombre y el correo');return}
+    toast('¡Gracias, '+f.nombre.value.trim().split(' ')[0]+'! (formulario de demostración: no se ha enviado nada)');f.reset();$('#msgCount').textContent='0';
+  });
+})();
+</script>
+</body>
+</html>
