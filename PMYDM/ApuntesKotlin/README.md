@@ -12,14 +12,7 @@ ejemplos de código y **todos los ejercicios resueltos** con cada fichero del pr
 
 ## Cuentas iniciales
 
-| Usuario  | Contraseña      | Rol           |
-|----------|-----------------|---------------|
-| Manuel   | `Kotlin#Admin26` | Administrador |
-| Manuel2  | `Manuel2#2026`  | Usuario       |
-| Manuel3  | `Manuel3#2026`  | Usuario       |
-| Manuel4  | `Manuel4#2026`  | Usuario       |
 
-Cámbialas desde **Panel admin → Cuentas → 🔑 Contraseña**.
 
 ## Panel de administración (solo admin)
 
