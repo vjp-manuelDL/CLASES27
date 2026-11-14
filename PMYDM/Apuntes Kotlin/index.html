@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apuntes Kotlin · PMYDM</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%237F52FF'/><stop offset='.55' stop-color='%23C711E1'/><stop offset='1' stop-color='%23F88909'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><text x='16' y='22' font-family='Arial' font-weight='700' font-size='16' text-anchor='middle' fill='white'>Kt</text></svg>">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- ============================ LOGIN ============================ -->
+  <main id="vista-login" class="login" hidden>
+    <div class="login-card">
+      <div class="brand big"><span class="logo">Kt</span><div><strong>Apuntes Kotlin</strong><small>Programación Multimedia y Dispositivos Móviles</small></div></div>
+      <form id="form-login" autocomplete="on" novalidate>
+        <label>Usuario
+          <input id="login-user" name="username" autocomplete="username" required autofocus>
+        </label>
+        <label>Contraseña
+          <span class="pass-wrap">
+            <input id="login-pass" name="password" type="password" autocomplete="current-password" required>
+            <button type="button" class="ver-pass" aria-label="Mostrar contraseña">👁</button>
+          </span>
+        </label>
+        <p id="login-error" class="form-error" role="alert"></p>
+        <button class="btn primary full" type="submit">Entrar</button>
+      </form>
+      <p class="login-foot">Temas 3 a 7 · Kotlin y Jetpack Compose</p>
+    </div>
+  </main>
+
+  <!-- ============================ APP ============================ -->
+  <div id="vista-app" class="app" hidden>
+    <header class="topbar">
+      <button id="btn-menu" class="icon-btn only-mobile" aria-label="Abrir menú">☰</button>
+      <a class="brand" href="#/inicio"><span class="logo">Kt</span><strong>Apuntes Kotlin</strong></a>
+      <div class="search">
+        <input id="buscador" type="search" placeholder="Buscar en los apuntes… (Ctrl+K)" autocomplete="off">
+        <div id="resultados" class="search-results" hidden></div>
+      </div>
+      <div class="top-actions">
+        <button id="btn-tema" class="icon-btn" title="Modo claro / oscuro">🌓</button>
+        <a id="btn-admin" class="btn small accent" href="#/admin" hidden>Panel admin</a>
+        <div class="user-chip" id="user-chip"></div>
+        <button id="btn-salir" class="btn small ghost">Salir</button>
+      </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar"></aside>
+    <div id="overlay" class="overlay"></div>
+
+    <main id="contenido" class="content" tabindex="-1"></main>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+  <dialog id="dialogo"></dialog>
+
+  <noscript><p style="padding:2rem">Esta web necesita JavaScript activado.</p></noscript>
+
+  <script src="js/db.js"></script>
+  <script src="js/contenido.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
