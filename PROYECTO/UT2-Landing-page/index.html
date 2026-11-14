@@ -405,8 +405,9 @@ tr:last-child td{border-bottom:0}
 .milestone p{font-size:.9rem;color:var(--muted)}
 
 /* TEAM */
-.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:880px;margin:0 auto 48px}
-.member{display:flex;gap:20px;align-items:center;padding:24px;border-radius:20px;border:1px solid var(--line-2);background:var(--panel);transition:transform .3s,border-color .3s}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1120px;margin:0 auto 48px}
+.member.m3 .avatar{box-shadow:0 0 0 3px var(--bg),0 0 0 5px rgba(179,164,255,.6)}
+.member{display:flex;flex-direction:column;text-align:center;gap:16px;align-items:center;padding:24px;border-radius:20px;border:1px solid var(--line-2);background:var(--panel);transition:transform .3s,border-color .3s}
 .member:hover{transform:translateY(-4px);border-color:rgba(60,200,240,.5)}
 .member .avatar{width:96px;height:96px;border-radius:22px;font-size:1.8rem;box-shadow:0 0 0 3px var(--bg),0 0 0 5px rgba(60,200,240,.5)}
 .member.m2 .avatar{box-shadow:0 0 0 3px var(--bg),0 0 0 5px rgba(245,162,58,.6)}
@@ -466,6 +467,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
 @media (max-width:1020px){
   .hero-grid,.about-grid,.contact-card,.ba,.roi,.persona,.pg{grid-template-columns:1fr}
   .prob-grid,.ben-grid,.steps,.stats-grid,.road{grid-template-columns:1fr 1fr}
+  .team-grid{grid-template-columns:1fr 1fr}
   .road::before{display:none}
   .feat-grid,.model-grid,.diff-grid{grid-template-columns:1fr 1fr}
   .roles{grid-template-columns:repeat(3,1fr)}
@@ -938,6 +940,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
     <div class="team-grid">
       <div class="member reveal"><div class="avatar"><img src="assets/lucas.jpg" alt="Foto de Lucas Herrera Moreno"></div><div><h3>Lucas Herrera Moreno</h3><span class="r">Cofundador</span><p>Cofundador de EasyAutomation y responsable del proyecto NexFlow Core.</p></div></div>
       <div class="member m2 reveal"><div class="avatar" style="background:linear-gradient(135deg,#f5a23a,#ffc56b);color:#1a1006">MD</div><div><h3>Manuel Delgado Lopes</h3><span class="r" style="color:var(--orange)">Cofundador</span><p>Cofundador de EasyAutomation y responsable del proyecto NexFlow Core.</p></div></div>
+      <div class="member m3 reveal"><div class="avatar" style="background:linear-gradient(135deg,#b3a4ff,#7f6bff);color:#120c2e">KG</div><div><h3>Karlos Gorrochategui Pérez</h3><span class="r" style="color:var(--violet)">Cofundador</span><p>Cofundador de EasyAutomation y responsable del proyecto NexFlow Core.</p></div></div>
     </div>
     <p class="reveal" style="color:var(--muted);text-align:center;margin-bottom:26px">Perfiles profesionales que forman la estructura de la empresa:</p>
     <div class="roles">
@@ -982,7 +985,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
         <p>Cuéntanos qué tareas te quitan más tiempo y te enseñaremos cómo NexFlow Core puede automatizarlas.</p>
         <div class="cline"><span class="ico ic-c"><svg><use href="#i-mail"/></svg></span><div><small>Correo del proyecto (ficticio)</small><span id="mailTxt">hola@easyautomation-nexflow.es</span><button class="copy" id="copyMail" type="button">Copiar</button></div></div>
         <div class="cline"><span class="ico ic-o"><svg><use href="#i-pin"/></svg></span><div><small>Ubicación</small>España · Proyecto académico</div></div>
-        <div class="cline"><span class="ico ic-g"><svg><use href="#i-team"/></svg></span><div><small>Equipo</small>Lucas Herrera Moreno · Manuel Delgado Lopes</div></div>
+        <div class="cline"><span class="ico ic-g"><svg><use href="#i-team"/></svg></span><div><small>Equipo</small>Lucas Herrera Moreno · Manuel Delgado Lopes · Karlos Gorrochategui Pérez</div></div>
       </div>
       <form id="contactForm" novalidate>
         <div class="row2">
@@ -1004,7 +1007,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
 <footer>
   <div class="wrap">
     <a href="#inicio" class="brand"><img src="assets/logo-symbol.png" alt=""><span>Easy<b>Automation</b></span></a>
-    <span>NexFlow Core · Proyecto académico · © 2026 Lucas Herrera Moreno y Manuel Delgado Lopes</span>
+    <span>NexFlow Core · Proyecto académico · © 2026 Lucas Herrera Moreno, Manuel Delgado Lopes y Karlos Gorrochategui Pérez</span>
   </div>
 </footer>
 

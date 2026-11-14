@@ -1,7 +1,7 @@
 # NexFlow Core · Landing page de EasyAutomation
 
 Landing page del proyecto **NexFlow Core**, de **EasyAutomation**
-Equipo: Lucas Herrera Moreno · Manuel Delgado Lopes — UT1, Parte 1, Tarea 2.
+Equipo: Lucas Herrera Moreno · Manuel Delgado Lopes · Karlos Gorrochategui Pérez — UT1, Parte 1, Tarea 2.
 
 ## Estructura
 
