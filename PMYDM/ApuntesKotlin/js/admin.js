@@ -37,7 +37,22 @@
       (s.tieneToken ? "" : " · falta tu token para poder guardar cambios") + "</small>";
     return `<span class="pill me">💻 Modo local</span> <small class="legend">${esc(s.mensaje)}</small>`;
   }
-  window.addEventListener("db-sync", () => { document.querySelectorAll(".sync-line").forEach((el) => (el.innerHTML = syncHtml())); });
+  /* Aviso grande cuando los cambios NO salen de este navegador */
+  function avisoLocal() {
+    const s = DB.sync;
+    if (!s.config || s.publicado) return "";
+    return `<div class="callout aviso banner-local">
+      <strong>⚠️ Ahora mismo las cuentas solo existen en este navegador.</strong>
+      Si cambias una contraseña aquí, en el móvil u otro ordenador seguirá valiendo la antigua.
+      Para compartirlas, añade una vez tu token de GitHub.
+      <a class="btn small primary" href="#/admin/datos">🔑 Configurar ahora</a>
+    </div>`;
+  }
+  window.addEventListener("db-sync", () => {
+    document.querySelectorAll(".sync-line").forEach((el) => (el.innerHTML = syncHtml()));
+    const b = document.querySelector(".banner-local");
+    if (b && DB.sync.publicado) b.remove();
+  });
 
   /* Redibuja si llegan cambios de otro dispositivo (sin interrumpir si estás escribiendo) */
   function refresh() {
@@ -63,6 +78,7 @@
       <nav class="crumbs"><a href="#/inicio">Inicio</a><span>›</span><span>Administración</span></nav>
       <h1>🛡️ Panel de administración</h1>
       <p class="sync-line">${syncHtml()}</p>
+      ${avisoLocal()}
       <div class="admin-tabs">
         <button data-t="cuentas" class="${tab === "cuentas" ? "active" : ""}">👥 Cuentas</button>
         <button data-t="visibilidad" class="${tab === "visibilidad" ? "active" : ""}">👁️ Visibilidad de temas</button>
@@ -79,6 +95,24 @@
   /* ============================ CUENTAS ============================ */
   function drawCuentas(body, me) {
     const U = window.UI, users = DB.data.users, temas = window.TEMAS || [];
+
+    // Datos de cada cuenta, para pintarlos en la tabla (pantalla ancha) y en las tarjetas (móvil)
+    const info = users.map((u) => ({
+      u,
+      yo: u.username === me.username,
+      vis: temas.filter((t) => DB.canSee(u, t.id)).length
+    }));
+
+    const selRol = (x) => `<select data-act="rol" aria-label="Rol de ${esc(x.u.username)}" ${x.yo ? "disabled" : ""}>
+        <option value="user" ${x.u.role === "user" ? "selected" : ""}>Usuario</option>
+        <option value="admin" ${x.u.role === "admin" ? "selected" : ""}>Admin</option></select>`;
+    const botones = (x) => `
+        <button class="btn small" data-act="toggle" ${x.yo ? "disabled" : ""}>${x.u.enabled ? "🚫 Deshabilitar" : "✅ Habilitar"}</button>
+        <button class="btn small" data-act="pass">🔑 Contraseña</button>
+        <button class="btn small" data-act="vis">👁️ Temas</button>
+        <button class="btn small danger" data-act="del" ${x.yo ? "disabled" : ""}>🗑️ Eliminar</button>`;
+    const estado = (x) => `<span class="pill ${x.u.enabled ? "on" : "off"}">${x.u.enabled ? "Habilitada" : "Deshabilitada"}</span>`;
+
     body.innerHTML = `
       <section class="panel">
         <h3>Añadir cuenta</h3>
@@ -91,24 +125,28 @@
       </section>
       <section class="panel">
         <h3>Cuentas (${users.length})</h3>
-        <div class="table-wrap"><table>
+
+        <div class="table-wrap solo-ancho"><table>
           <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Temas visibles</th><th>Creada</th><th>Acciones</th></tr></thead>
-          <tbody>${users.map((u) => {
-            const isMe = u.username === me.username;
-            const vis = temas.filter((t) => DB.canSee(u, t.id)).length;
-            return `<tr data-u="${esc(u.username)}">
-              <td><strong>${esc(u.username)}</strong> ${isMe ? '<span class="pill me">tú</span>' : ""}</td>
-              <td><select data-act="rol" ${isMe ? "disabled" : ""}><option value="user" ${u.role === "user" ? "selected" : ""}>Usuario</option><option value="admin" ${u.role === "admin" ? "selected" : ""}>Admin</option></select></td>
-              <td><span class="pill ${u.enabled ? "on" : "off"}">${u.enabled ? "Habilitada" : "Deshabilitada"}</span></td>
-              <td>${vis} / ${temas.length}</td>
-              <td>${fmt(u.created)}</td>
-              <td><div class="actions">
-                <button class="btn small" data-act="toggle" ${isMe ? "disabled" : ""}>${u.enabled ? "🚫 Deshabilitar" : "✅ Habilitar"}</button>
-                <button class="btn small" data-act="pass">🔑 Contraseña</button>
-                <button class="btn small" data-act="vis">👁️ Temas</button>
-                <button class="btn small danger" data-act="del" ${isMe ? "disabled" : ""}>🗑️ Eliminar</button>
-              </div></td></tr>`;
-          }).join("")}</tbody></table></div>
+          <tbody>${info.map((x) => `<tr data-u="${esc(x.u.username)}">
+              <td><strong>${esc(x.u.username)}</strong> ${x.yo ? '<span class="pill me">tú</span>' : ""}</td>
+              <td>${selRol(x)}</td>
+              <td>${estado(x)}</td>
+              <td>${x.vis} / ${temas.length}</td>
+              <td>${fmt(x.u.created)}</td>
+              <td><div class="actions">${botones(x)}</div></td></tr>`).join("")}</tbody></table></div>
+
+        <div class="cards solo-movil">${info.map((x) => `<article class="ucard" data-u="${esc(x.u.username)}">
+            <header>
+              <span class="avatar">${esc(x.u.username[0].toUpperCase())}</span>
+              <div class="ucard-id"><strong>${esc(x.u.username)}</strong>
+                <small>${x.vis} de ${temas.length} temas · ${fmt(x.u.created)}</small></div>
+              ${x.yo ? '<span class="pill me">tú</span>' : ""}${estado(x)}
+            </header>
+            <label class="sw-row"><span>Rol</span>${selRol(x)}</label>
+            <div class="actions">${botones(x)}</div>
+          </article>`).join("")}</div>
+
         <p class="legend">No puedes deshabilitarte, eliminarte ni quitarte el rol de admin a ti mismo, y siempre tiene que quedar al menos un administrador habilitado.</p>
       </section>`;
 
@@ -117,19 +155,23 @@
       const f = e.target;
       run(() => DB.addUser(f.u.value, f.p.value, f.r.value), `Cuenta «${f.u.value.trim()}» creada`);
     });
-    U.$$("tr[data-u]", body).forEach((tr) => {
-      const name = tr.dataset.u;
-      tr.addEventListener("click", (e) => {
-        const b = e.target.closest("button[data-act]");
-        if (!b) return;
-        const u = DB.findUser(name);
-        if (b.dataset.act === "toggle") run(() => DB.setEnabled(name, !u.enabled), `Cuenta ${u.enabled ? "deshabilitada" : "habilitada"}`);
-        if (b.dataset.act === "del") confirmar(`¿Eliminar la cuenta «${name}»?`, "Esta acción no se puede deshacer.", () => run(() => DB.deleteUser(name), "Cuenta eliminada"));
-        if (b.dataset.act === "pass") cambiarPass(name);
-        if (b.dataset.act === "vis") verTemasUsuario(name);
-      });
-      const sel = U.$("select[data-act=rol]", tr);
-      sel.addEventListener("change", () => run(() => DB.setRole(name, sel.value), "Rol actualizado"));
+
+    // Un solo manejador para la tabla y para las tarjetas
+    body.addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-act]");
+      if (!b || !body.contains(b)) return;
+      const name = b.closest("[data-u]").dataset.u;
+      const u = DB.findUser(name);
+      if (!u) return;
+      if (b.dataset.act === "toggle") run(() => DB.setEnabled(name, !u.enabled), `Cuenta ${u.enabled ? "deshabilitada" : "habilitada"}`);
+      if (b.dataset.act === "del") confirmar(`¿Eliminar la cuenta «${name}»?`, "Esta acción no se puede deshacer.", () => run(() => DB.deleteUser(name), "Cuenta eliminada"));
+      if (b.dataset.act === "pass") cambiarPass(name);
+      if (b.dataset.act === "vis") verTemasUsuario(name);
+    });
+    body.addEventListener("change", (e) => {
+      const s = e.target.closest("select[data-act=rol]");
+      if (!s) return;
+      run(() => DB.setRole(s.closest("[data-u]").dataset.u, s.value), "Rol actualizado");
     });
   }
 
@@ -153,7 +195,11 @@
   }
 
   function cambiarPass(name) {
+    const compartido = DB.sync.publicado || DB.sync.tieneToken;
     dialog(`<form><h3>Nueva contraseña para «${esc(name)}»</h3>
+      <p class="legend">${compartido
+        ? "Se aplicará en todos los dispositivos en unos segundos y cerrará las sesiones abiertas con la antigua."
+        : "⚠️ Solo cambiará en este navegador. En el móvil seguirá valiendo la antigua hasta que configures GitHub."}</p>
       <label>Contraseña nueva<input name="p" type="password" required minlength="4" autocomplete="new-password"></label>
       <label>Repetir contraseña<input name="p2" type="password" required minlength="4" autocomplete="new-password"></label>
       <div class="actions"><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" value="ok">Guardar</button></div></form>`,
@@ -196,7 +242,7 @@
         <h3>Visibilidad de temas</h3>
         <p class="legend">Interruptor <strong style="color:var(--ok)">verde = visible</strong>, gris = oculto. Las reglas se combinan:
         un tema se ve solo si está visible en <em>Todas las cuentas</em>, en <em>No-admins</em> (si la cuenta no es admin) y en la columna de esa cuenta.</p>
-        <div class="table-wrap"><table class="matrix">
+        <div class="table-wrap solo-ancho"><table class="matrix">
           <thead><tr><th>Tema</th>
             <th>Todas las cuentas<small>incluye admins</small></th>
             <th>No-admins<small>todos menos admins</small></th>
@@ -216,6 +262,25 @@
               }).join("")}
               <td><button class="btn small" data-reset>Restablecer</button></td></tr>`;
           }).join("")}</tbody></table></div>
+
+        <div class="cards solo-movil">${temas.map((t) => {
+          const v = vis(t.id);
+          return `<article class="vcard" data-t="${t.id}">
+            <h4>Tema ${t.numero}. ${esc(t.titulo)}</h4>
+            <label class="sw-row"><span>Todas las cuentas<small>incluye admins</small></span>
+              <span class="switch"><input type="checkbox" data-scope="todos" ${!v.todos ? "checked" : ""}><span></span></span></label>
+            <label class="sw-row"><span>No-admins<small>todos menos admins</small></span>
+              <span class="switch"><input type="checkbox" data-scope="noAdmin" ${!v.noAdmin ? "checked" : ""}><span></span></span></label>
+            <hr>
+            ${users.map((u) => {
+              const own = (v.usuarios || []).includes(u.username);
+              const efectivo = DB.canSee(u, t.id);
+              return `<label class="sw-row"><span>${esc(u.username)}<small class="${efectivo ? "" : "bad"}">${u.role === "admin" ? "admin · " : ""}${efectivo ? "lo ve" : "no lo ve"}</small></span>
+                <span class="switch"><input type="checkbox" data-scope="user" data-u="${esc(u.username)}" ${!own ? "checked" : ""}><span></span></span></label>`;
+            }).join("")}
+            <button class="btn small" data-reset>♻️ Restablecer este tema</button>
+          </article>`;
+        }).join("")}</div>
       </section>
       <section class="panel">
         <h3>Acciones rápidas</h3>
@@ -231,15 +296,19 @@
         </div>
       </section>`;
 
-    U.$$("tr[data-t]", body).forEach((tr) => {
-      const id = tr.dataset.t;
-      U.$$("input[type=checkbox]", tr).forEach((cb) => cb.addEventListener("change", () => {
-        const hide = !cb.checked;
-        if (cb.dataset.scope === "todos") run(() => DB.setVisTodos(id, hide));
-        else if (cb.dataset.scope === "noAdmin") run(() => DB.setVisNoAdmin(id, hide));
-        else run(() => DB.setVisUsuario(id, cb.dataset.u, hide));
-      }));
-      U.$("[data-reset]", tr).addEventListener("click", () => run(() => DB.resetVis(id), "Tema visible para todos"));
+    // Un solo manejador para la tabla y para las tarjetas
+    body.addEventListener("change", (e) => {
+      const cb = e.target.closest("input[data-scope]");
+      if (!cb) return;
+      const id = cb.closest("[data-t]").dataset.t, hide = !cb.checked;
+      if (cb.dataset.scope === "todos") run(() => DB.setVisTodos(id, hide));
+      else if (cb.dataset.scope === "noAdmin") run(() => DB.setVisNoAdmin(id, hide));
+      else run(() => DB.setVisUsuario(id, cb.dataset.u, hide));
+    });
+    body.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-reset]");
+      if (!b) return;
+      run(() => DB.resetVis(b.closest("[data-t]").dataset.t), "Tema visible para todos");
     });
     const quick = (hide) => {
       const id = U.$("#q-tema", body).value, sc = U.$("#q-scope", body).value;

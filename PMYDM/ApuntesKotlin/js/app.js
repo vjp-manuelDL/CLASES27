@@ -196,6 +196,16 @@
     ta.remove();
   }
 
+  /* Buscador en móvil: se abre a pantalla completa sobre la barra superior */
+  const caja = $("#caja-buscar");
+  function abrirBuscador(abrir) {
+    caja.classList.toggle("open", abrir);
+    if (abrir) { input.focus(); input.select(); }
+    else { input.value = ""; box.hidden = true; input.blur(); }
+  }
+  $("#btn-buscar").addEventListener("click", () => abrirBuscador(!caja.classList.contains("open")));
+  $("#cerrar-buscar").addEventListener("click", () => abrirBuscador(false));
+
   $("#btn-menu").addEventListener("click", () => { $("#sidebar").classList.toggle("open"); $("#overlay").classList.toggle("show"); });
   $("#overlay").addEventListener("click", () => { $("#sidebar").classList.remove("open"); $("#overlay").classList.remove("show"); });
 
@@ -229,9 +239,9 @@
   });
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") { const a = $("a.sel", box); if (a && a.getAttribute("href")) { location.hash = a.getAttribute("href"); box.hidden = true; input.blur(); } }
-    if (e.key === "Escape") { box.hidden = true; input.blur(); }
+    if (e.key === "Escape") { box.hidden = true; input.blur(); caja.classList.remove("open"); }
   });
-  box.addEventListener("click", () => { box.hidden = true; });
+  box.addEventListener("click", () => { box.hidden = true; caja.classList.remove("open"); });
   document.addEventListener("click", (e) => { if (!e.target.closest(".search")) box.hidden = true; });
   document.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k" && DB.currentUser()) { e.preventDefault(); input.focus(); input.select(); }

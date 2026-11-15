@@ -44,6 +44,17 @@ Las cuentas, contraseñas y permisos se guardan en `datos/cuentas.json` dentro d
 Cada cambio del panel admin crea un commit en el repo («Apuntes Kotlin: …»). Haz *Pull* en GitHub Desktop
 antes de subir tus cambios para no tener conflictos con `datos/cuentas.json`.
 
+### Si una contraseña nueva no funciona en el móvil
+
+1. ¿Aparece el aviso naranja **«Ahora mismo las cuentas solo existen en este navegador»** en el panel admin?
+   Entonces falta el token: haz los 3 pasos de arriba.
+2. Comprueba que la carpeta del repo se llama exactamente **`ApuntesKotlin`** (sin espacio), igual que en
+   `js/config.js`. Si la renombras, cambia también esa ruta.
+3. En el panel admin → *Sincronización y datos* debe poner **☁️ Sincronizado con GitHub**.
+   Pulsa **🔄 Comprobar ahora** para forzar la sincronización.
+4. En el móvil, cierra y vuelve a abrir la pestaña (GitHub Pages tarda ~1 minuto en publicar los cambios de archivos,
+   pero las cuentas se leen de la API al momento).
+
 > El repo debe ser **público** para que los usuarios sin token puedan leer las cuentas (y para GitHub Pages gratis).
 > En el archivo solo se guardan *hashes* de las contraseñas, pero es una web estática: el login sirve para organizar
 > quién ve qué, no es seguridad real. Sin conexión se usan los últimos datos guardados en el navegador.
