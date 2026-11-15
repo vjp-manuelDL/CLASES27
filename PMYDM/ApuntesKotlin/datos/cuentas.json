@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "users": [
+    {
+      "username": "Manuel",
+      "role": "admin",
+      "enabled": true,
+      "created": "2026-11-14T17:55:38.944Z",
+      "hash": "faae97ea268131071fba7d4bc61b48e09f78f49f3ef07f381f228fb15f8b9f85"
+    },
+    {
+      "username": "Manuel2",
+      "role": "user",
+      "enabled": true,
+      "created": "2026-11-14T17:55:38.944Z",
+      "hash": "716bbfa5f066375e9daabb3cacb8abcc508028caad2dec711eab2fa89cc69df8"
+    },
+    {
+      "username": "Manuel3",
+      "role": "user",
+      "enabled": true,
+      "created": "2026-11-14T17:55:38.944Z",
+      "hash": "b8f6ce975711fd24636ca17459a243ab8e63f8bb7ef884ce462ca6ca6059bead"
+    },
+    {
+      "username": "Manuel4",
+      "role": "user",
+      "enabled": true,
+      "created": "2026-11-14T17:55:38.944Z",
+      "hash": "47734de92f69ceda08d6f5cc6d700371e207201a74c64481b463c43cee321d34"
+    }
+  ],
+  "visibilidad": {},
+  "log": [
+    {
+      "t": "2026-11-15T00:55:24.663Z",
+      "by": "Manuel",
+      "msg": "cuentas publicadas en GitHub"
+    },
+    {
+      "t": "2026-11-15T00:46:05.271Z",
+      "by": "Manuel",
+      "msg": "contraseña cambiada: Manuel"
+    },
+    {
+      "t": "2026-11-15T00:45:35.919Z",
+      "by": "Manuel",
+      "msg": "contraseña cambiada: Manuel"
+    },
+    {
+      "t": "2026-11-15T00:08:26.135Z",
+      "by": "Manuel",
+      "msg": "Contraseña cambiada: Manuel"
+    },
+    {
+      "t": "2026-11-14T21:57:16.299Z",
+      "by": "Manuel",
+      "msg": "Contraseña cambiada: Manuel"
+    }
+  ]
+}
