@@ -7,6 +7,8 @@
 
 `Text` muestra texto en pantalla: títulos, subtítulos, párrafos, etiquetas…
 
+> 📌 **Buena práctica:** en los fragmentos cortos de los apuntes el texto se escribe directamente para que se lea mejor, pero en los **ejercicios** (y en tus prácticas) **todos los textos van en `res/values/strings.xml`** y se usan con `stringResource()` o `context.getString()`. Lo tienes resumido en *Tema 4 › 4. Acceso a recursos*.
+
 | Parámetro | Para qué |
 |---|---|
 | `text` | Contenido |
@@ -257,7 +259,8 @@ fun Botones() {
     val context = LocalContext.current
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(
-            onClick = { Toast.makeText(context, "Este es el mensaje del Toast", Toast.LENGTH_SHORT).show() },
+            // El texto viene de strings.xml: <string name="mensaje_toast">Este es el mensaje del Toast</string>
+            onClick = { Toast.makeText(context, R.string.mensaje_toast, Toast.LENGTH_SHORT).show() },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7F52FF), contentColor = Color.White),
             shape = RoundedCornerShape(8.dp)
         ) {
@@ -866,17 +869,17 @@ fun calcular(context: Context, texto1: String, texto2: String, sumar: Boolean, r
     val num2 = texto2.trim().toDoubleOrNull()
 
     if (num1 == null || num2 == null) {
-        Toast.makeText(context, "Introduce dos números válidos", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.error_numeros, Toast.LENGTH_SHORT).show()
         return null
     }
     if (!sumar && !restar) {
-        return "Seleccione al menos una operación"
+        return context.getString(R.string.sin_operacion)
     }
 
-    var resultado = ""
-    if (sumar) resultado += "Suma: $num1 + $num2 = ${num1 + num2}\n"
-    if (restar) resultado += "Resta: $num1 - $num2 = ${num1 - num2}"
-    return resultado.trim()
+    val lineas = mutableListOf<String>()
+    if (sumar) lineas.add(context.getString(R.string.resultado_suma, num1, num2, num1 + num2))
+    if (restar) lineas.add(context.getString(R.string.resultado_resta, num1, num2, num1 - num2))
+    return lineas.joinToString("\n")
 }
 
 @Composable
@@ -944,6 +947,11 @@ fun Calculadora() {
     <string name="sumar">Sumar</string>
     <string name="restar">Restar</string>
     <string name="calcular">Calcular</string>
+    <string name="error_numeros">Introduce dos números válidos</string>
+    <string name="sin_operacion">Seleccione al menos una operación</string>
+    <!-- %1$s, %2$s y %3$s se sustituyen por los números -->
+    <string name="resultado_suma">Suma: %1$s + %2$s = %3$s</string>
+    <string name="resultado_resta">Resta: %1$s - %2$s = %3$s</string>
 </resources>
 ```
 > `toDoubleOrNull()` devuelve `null` si el texto no es un número: así validamos sin que la app se cierre (alternativa al `try/catch` con `NumberFormatException`).
@@ -1251,6 +1259,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.ejercicio8t6.ui.theme.Ejercicio8T6Theme
@@ -1270,10 +1279,10 @@ class MainActivity : ComponentActivity() {
 /** Lógica del botón Guardar */
 fun guardarJugador(context: Context, nombre: String, personaje: String) {
     val mensaje = when {
-        nombre.isBlank() && personaje.isEmpty() -> "Introduce un nombre y selecciona un personaje"
-        nombre.isBlank() -> "Error: introduce el nombre del jugador"
-        personaje.isEmpty() -> "Error: selecciona un tipo de personaje"
-        else -> "Jugador ${nombre.trim()} guardado como $personaje"
+        nombre.isBlank() && personaje.isEmpty() -> context.getString(R.string.error_todo)
+        nombre.isBlank() -> context.getString(R.string.error_nombre)
+        personaje.isEmpty() -> context.getString(R.string.error_personaje)
+        else -> context.getString(R.string.jugador_guardado, nombre.trim(), personaje)
     }
     Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
 }
@@ -1281,7 +1290,7 @@ fun guardarJugador(context: Context, nombre: String, personaje: String) {
 @Composable
 fun FormularioJugador() {
     val context = LocalContext.current
-    val personajes = listOf("Guerrero", "Mago", "Arquero", "Explorador")
+    val personajes = stringArrayResource(R.array.personajes)   // lista en strings.xml
     var nombre by rememberSaveable { mutableStateOf("") }
     var personaje by rememberSaveable { mutableStateOf("") }   // "" = ninguno seleccionado
 
@@ -1329,6 +1338,17 @@ fun FormularioJugador() {
     <string name="placeholder">Escribe tu nick</string>
     <string name="tipo">Tipo de personaje:</string>
     <string name="guardar">Guardar</string>
+    <string name="error_todo">Introduce un nombre y selecciona un personaje</string>
+    <string name="error_nombre">Error: introduce el nombre del jugador</string>
+    <string name="error_personaje">Error: selecciona un tipo de personaje</string>
+    <string name="jugador_guardado">Jugador %1$s guardado como %2$s</string>
+
+    <string-array name="personajes">
+        <item>Guerrero</item>
+        <item>Mago</item>
+        <item>Arquero</item>
+        <item>Explorador</item>
+    </string-array>
 </resources>
 ```
 :::
@@ -1426,14 +1446,13 @@ fun AdivinaNumero() {
                 onClick = {
                     val numero = entrada.trim().toIntOrNull()
                     if (numero == null || numero !in 1..10) {
-                        Toast.makeText(context, "Introduce un número válido entre 1 y 10", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, R.string.error_numero, Toast.LENGTH_SHORT).show()
                     } else {
                         intentos++
                         if (comprobarNumero(numero, secreto)) {
                             acertado = true
                         } else {
-                            val pista = if (numero < secreto) "Pista: Introduce un número mayor"
-                                        else "Pista: Introduce un número menor"
+                            val pista = if (numero < secreto) R.string.pista_mayor else R.string.pista_menor
                             Toast.makeText(context, pista, Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -1452,7 +1471,7 @@ fun AdivinaNumero() {
         }
 
         Text(
-            text = if (acertado) "¡Enhorabuena! Has acertado el número $secreto en $intentos intentos" else "",
+            text = if (acertado) stringResource(R.string.enhorabuena, secreto, intentos) else "",
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
@@ -1467,6 +1486,11 @@ fun AdivinaNumero() {
     <string name="label">Introduce un número</string>
     <string name="probar">Probar Suerte</string>
     <string name="reiniciar">Reiniciar</string>
+    <string name="error_numero">Introduce un número válido entre 1 y 10</string>
+    <string name="pista_mayor">Pista: Introduce un número mayor</string>
+    <string name="pista_menor">Pista: Introduce un número menor</string>
+    <!-- %1$d = número secreto, %2$d = intentos -->
+    <string name="enhorabuena">¡Enhorabuena! Has acertado el número %1$d en %2$d intentos</string>
 </resources>
 ```
 :::
@@ -1537,9 +1561,9 @@ class MainActivity : ComponentActivity() {
 /** Muestra un Toast con los monumentos seleccionados */
 fun guardarVisita(context: Context, seleccionados: List<String>) {
     val mensaje = if (seleccionados.isEmpty()) {
-        "No se han seleccionado monumentos"
+        context.getString(R.string.sin_monumentos)
     } else {
-        "Visita guardada: " + seleccionados.joinToString(", ")
+        context.getString(R.string.visita_guardada, seleccionados.joinToString(", "))
     }
     Toast.makeText(context, mensaje, Toast.LENGTH_LONG).show()
 }
@@ -1609,6 +1633,8 @@ fun Monumento(@DrawableRes imagen: Int, nombre: String, marcado: Boolean, onCamb
     <string name="panteon">Panteón de Agripa</string>
     <string name="foro">Foro Romano</string>
     <string name="guardar">Guardar Visita</string>
+    <string name="sin_monumentos">No se han seleccionado monumentos</string>
+    <string name="visita_guardada">Visita guardada: %1$s</string>
 </resources>
 ```
 :::

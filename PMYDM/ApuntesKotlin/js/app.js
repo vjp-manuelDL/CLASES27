@@ -29,9 +29,14 @@
   });
 
   /* ---------------- login ---------------- */
-  $("#form-login").addEventListener("submit", (e) => {
+  $("#form-login").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const r = DB.login($("#login-user").value, $("#login-pass").value);
+    const btn = $("#form-login button[type=submit]");
+    btn.disabled = true;
+    btn.textContent = "Comprobando…";
+    let r;
+    try { r = await DB.login($("#login-user").value, $("#login-pass").value); }
+    finally { btn.disabled = false; btn.textContent = "Entrar"; }
     if (!r.ok) {
       $("#login-error").textContent = r.error;
       $("#login-pass").select();
@@ -110,6 +115,10 @@
       </nav>`;
   }
 
+  /* "Firma" de lo que ve el usuario: si un cambio remoto no la altera, no se redibuja la página */
+  let firma = "";
+  const firmaActual = (u) => u ? [u.username, u.role, visibleTemas(u).map((t) => t.id).join(",")].join("|") : "";
+
   /* ---------------- router ---------------- */
   function parseRoute() {
     const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
@@ -121,6 +130,7 @@
   function render() {
     const u = DB.currentUser();
     if (!u) return boot();
+    firma = firmaActual(u);
     const route = parseRoute();
     const main = $("#contenido");
     let html;
@@ -232,14 +242,27 @@
     const u = DB.currentUser();
     $("#vista-login").hidden = !!u;
     $("#vista-app").hidden = !u;
-    if (!u) { setTimeout(() => $("#login-user").focus(), 0); return; }
+    if (!u) {
+      // ¿Se ha cerrado la sesión porque cambió la contraseña o se deshabilitó la cuenta?
+      const motivo = DB.takeMotivoCierre();
+      if (motivo) $("#login-error").textContent = motivo;
+      setTimeout(() => $("#login-user").focus(), 0);
+      return;
+    }
     $("#user-chip").innerHTML = `<span class="avatar">${esc(u.username[0].toUpperCase())}</span><span class="name">${esc(u.username)}</span><span class="role ${u.role}">${u.role === "admin" ? "admin" : "usuario"}</span>`;
     $("#btn-admin").hidden = u.role !== "admin";
     render();
   }
   window.addEventListener("hashchange", render);
-  // Si el admin cambia permisos (o se deshabilita la cuenta) se refresca la vista
-  window.addEventListener("db-change", () => { if (parseRoute().view !== "admin") boot(); else if (!DB.currentUser()) boot(); });
+  // Cambios de datos (de GitHub, de otra pestaña o del panel admin):
+  // - si la sesión ya no es válida (contraseña cambiada, cuenta deshabilitada…) se cierra al instante
+  // - si cambian los temas visibles de este usuario, se redibuja
+  window.addEventListener("db-change", () => {
+    const u = DB.currentUser();
+    if (!u) { if (!$("#vista-app").hidden) boot(); return; }
+    if (parseRoute().view === "admin") { window.Admin.refresh(); return; }
+    if (firmaActual(u) !== firma) boot();
+  });
   window.App = { render, boot };
   boot();
 })();

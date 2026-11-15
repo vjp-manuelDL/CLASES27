@@ -5,6 +5,8 @@
 
 ## 1. Listas: LazyColumn y LazyRow
 
+> 📌 **Buena práctica:** en los fragmentos cortos de los apuntes el texto se escribe directamente para que se lea mejor, pero en los **ejercicios** (y en tus prácticas) **todos los textos van en `res/values/strings.xml`** y se usan con `stringResource()` o `context.getString()`. Lo tienes resumido en *Tema 4 › 4. Acceso a recursos*.
+
 Las listas muestran **muchos elementos ordenados** (productos, películas, contactos…). Compose tiene dos componentes:
 
 - **LazyColumn**: lista **vertical** con scroll.
@@ -80,6 +82,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.ejercicio1t7.ui.theme.Ejercicio1T7Theme
@@ -98,12 +101,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ListadoSeries() {
-    val series = listOf(
-        "Breaking Bad", "Juego de Tronos", "Stranger Things", "La Casa de Papel",
-        "The Office", "Friends", "Los Soprano", "The Mandalorian", "Dark",
-        "Peaky Blinders", "The Last of Us", "El Ministerio del Tiempo",
-        "Better Call Saul", "The Crown", "Arcane"
-    )
+    val series: Array<String> = stringArrayResource(R.array.series)   // lista en strings.xml
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -121,7 +119,7 @@ fun ListadoSeries() {
         itemsIndexed(series) { index, serie ->
             Card(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "${index + 1}. $serie",
+                    text = stringResource(R.string.item_serie, index + 1, serie),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -134,6 +132,26 @@ fun ListadoSeries() {
 <resources>
     <string name="app_name">Ejercicio1T7</string>
     <string name="titulo">Mis series favoritas</string>
+    <!-- %1$d = posición, %2$s = nombre de la serie -->
+    <string name="item_serie">%1$d. %2$s</string>
+
+    <string-array name="series">
+        <item>Breaking Bad</item>
+        <item>Juego de Tronos</item>
+        <item>Stranger Things</item>
+        <item>La Casa de Papel</item>
+        <item>The Office</item>
+        <item>Friends</item>
+        <item>Los Soprano</item>
+        <item>The Mandalorian</item>
+        <item>Dark</item>
+        <item>Peaky Blinders</item>
+        <item>The Last of Us</item>
+        <item>El Ministerio del Tiempo</item>
+        <item>Better Call Saul</item>
+        <item>The Crown</item>
+        <item>Arcane</item>
+    </string-array>
 </resources>
 ```
 :::
@@ -213,6 +231,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -232,15 +251,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SelectorTitulacion() {
-    val titulaciones = listOf(
-        "CFGB Informática y Comunicaciones",
-        "CFGM Sistemas Microinformáticos y Redes",
-        "CFGM Gestión Administrativa",
-        "CFGS Desarrollo de Aplicaciones Multiplataforma",
-        "CFGS Desarrollo de Aplicaciones Web",
-        "CFGS Administración de Sistemas Informáticos en Red",
-        "CFGS Administración y Finanzas"
-    )
+    val titulaciones = stringArrayResource(R.array.titulaciones)   // lista en strings.xml
     val sinSeleccion = stringResource(R.string.sin_seleccion)
     var expandido by remember { mutableStateOf(false) }
     var seleccionada by rememberSaveable { mutableStateOf("") }
@@ -281,7 +292,7 @@ fun SelectorTitulacion() {
         }
 
         Text(
-            text = if (seleccionada.isEmpty()) sinSeleccion else "Has seleccionado:\n$seleccionada",
+            text = if (seleccionada.isEmpty()) sinSeleccion else stringResource(R.string.seleccionada, seleccionada),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
@@ -295,6 +306,17 @@ fun SelectorTitulacion() {
     <string name="titulo">Oferta formativa FP\nIES Valle del Jerte</string>
     <string name="boton">Seleccionar titulación</string>
     <string name="sin_seleccion">No se ha seleccionado titulación</string>
+    <string name="seleccionada">Has seleccionado:\n%1$s</string>
+
+    <string-array name="titulaciones">
+        <item>CFGB Informática y Comunicaciones</item>
+        <item>CFGM Sistemas Microinformáticos y Redes</item>
+        <item>CFGM Gestión Administrativa</item>
+        <item>CFGS Desarrollo de Aplicaciones Multiplataforma</item>
+        <item>CFGS Desarrollo de Aplicaciones Web</item>
+        <item>CFGS Administración de Sistemas Informáticos en Red</item>
+        <item>CFGS Administración y Finanzas</item>
+    </string-array>
 </resources>
 ```
 :::
@@ -369,14 +391,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.ejercicio3t7.ui.theme.Ejercicio3T7Theme
@@ -397,24 +420,26 @@ class MainActivity : ComponentActivity() {
 fun anadirCiudad(context: Context, ciudades: SnapshotStateList<String>, nombre: String): Boolean {
     val ciudad = nombre.trim()
     if (ciudad.isEmpty()) {
-        Toast.makeText(context, "Introduce el nombre de una ciudad", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.error_ciudad, Toast.LENGTH_SHORT).show()
         return false
     }
     ciudades.add(ciudad)
-    Toast.makeText(context, "$ciudad añadida a la lista", Toast.LENGTH_SHORT).show()
+    Toast.makeText(context, context.getString(R.string.ciudad_anadida, ciudad), Toast.LENGTH_SHORT).show()
     return true
 }
 
 /** Botón de icono "borrar" */
 fun eliminarCiudad(context: Context, ciudades: SnapshotStateList<String>, ciudad: String) {
     ciudades.remove(ciudad)
-    Toast.makeText(context, "$ciudad eliminada de la lista", Toast.LENGTH_SHORT).show()
+    Toast.makeText(context, context.getString(R.string.ciudad_eliminada, ciudad), Toast.LENGTH_SHORT).show()
 }
 
 @Composable
 fun GestorCiudades() {
     val context = LocalContext.current
-    val ciudades = remember { mutableStateListOf("Madrid", "Plasencia", "Sevilla", "Valencia") }
+    // Ciudades iniciales desde strings.xml (stringArrayResource no se puede llamar dentro de remember { })
+    val iniciales = stringArrayResource(R.array.ciudades_iniciales)
+    val ciudades = remember { iniciales.toList().toMutableStateList() }   // = mutableStateListOf(...)
     var nombre by remember { mutableStateOf("") }
 
     Column(
@@ -463,6 +488,16 @@ fun GestorCiudades() {
     <string name="label">Nombre de la ciudad</string>
     <string name="anadir">Añadir Ciudad</string>
     <string name="borrar">Borrar ciudad</string>
+    <string name="error_ciudad">Introduce el nombre de una ciudad</string>
+    <string name="ciudad_anadida">%1$s añadida a la lista</string>
+    <string name="ciudad_eliminada">%1$s eliminada de la lista</string>
+
+    <string-array name="ciudades_iniciales">
+        <item>Madrid</item>
+        <item>Plasencia</item>
+        <item>Sevilla</item>
+        <item>Valencia</item>
+    </string-array>
 </resources>
 ```
 :::
@@ -838,21 +873,22 @@ app/src/main/
 package com.example.ejercicio6t7
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 
 data class Pelicula(
-    val titulo: String,
+    @StringRes val titulo: Int,     // ID del texto en strings.xml (buena práctica)
     val anio: Int,
     @DrawableRes val imagen: Int
 )
 
 // Lista inmutable con los datos
 val peliculas: List<Pelicula> = listOf(
-    Pelicula("Iron Man", 2008, R.drawable.iron_man),
-    Pelicula("El caballero oscuro", 2008, R.drawable.batman),
-    Pelicula("Los Vengadores", 2012, R.drawable.vengadores),
-    Pelicula("Wonder Woman", 2017, R.drawable.wonder_woman),
-    Pelicula("Black Panther", 2018, R.drawable.black_panther),
-    Pelicula("Spider-Man: No Way Home", 2021, R.drawable.spiderman)
+    Pelicula(R.string.peli_iron_man, 2008, R.drawable.iron_man),
+    Pelicula(R.string.peli_batman, 2008, R.drawable.batman),
+    Pelicula(R.string.peli_vengadores, 2012, R.drawable.vengadores),
+    Pelicula(R.string.peli_wonder_woman, 2017, R.drawable.wonder_woman),
+    Pelicula(R.string.peli_black_panther, 2018, R.drawable.black_panther),
+    Pelicula(R.string.peli_spiderman, 2021, R.drawable.spiderman)
 )
 ```
 ```kotlin file=app/src/main/java/com/example/ejercicio6t7/MainActivity.kt
@@ -924,12 +960,12 @@ fun TarjetaPelicula(pelicula: Pelicula) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(id = pelicula.imagen),
-                contentDescription = pelicula.titulo,
+                contentDescription = stringResource(pelicula.titulo),
                 modifier = Modifier.width(100.dp).height(150.dp),
                 contentScale = ContentScale.Crop
             )
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(pelicula.titulo, style = MaterialTheme.typography.titleLarge)
+                Text(stringResource(pelicula.titulo), style = MaterialTheme.typography.titleLarge)
                 Text(
                     stringResource(R.string.estreno, pelicula.anio),
                     style = MaterialTheme.typography.bodyMedium,
@@ -945,8 +981,16 @@ fun TarjetaPelicula(pelicula: Pelicula) {
     <string name="app_name">Ejercicio6T7</string>
     <string name="titulo">Películas de superhéroes</string>
     <string name="estreno">Estreno: %1$d</string>
+
+    <string name="peli_iron_man">Iron Man</string>
+    <string name="peli_batman">El caballero oscuro</string>
+    <string name="peli_vengadores">Los Vengadores</string>
+    <string name="peli_wonder_woman">Wonder Woman</string>
+    <string name="peli_black_panther">Black Panther</string>
+    <string name="peli_spiderman">Spider-Man: No Way Home</string>
 </resources>
 ```
+> La pista dice `titulo: String`; para cumplir la buena práctica de **no escribir textos en el código** guardamos el **ID del recurso** (`@StringRes Int`) y lo mostramos con `stringResource(pelicula.titulo)`.
 > `%1$d` es un marcador para un **número entero**; `%1$s` sería para un texto.
 :::
 
@@ -971,21 +1015,22 @@ import androidx.compose.material.icons.filled.Pool
 import androidx.compose.material.icons.filled.SportsBasketball
 import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.SportsTennis
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class Deporte(
-    val nombre: String,
-    val descripcion: String,
+    @StringRes val nombre: Int,        // IDs de strings.xml
+    @StringRes val descripcion: Int,
     val icono: ImageVector
 )
 
 val deportes = listOf(
-    Deporte("Fútbol", "Dos equipos de 11 jugadores intentan meter el balón en la portería contraria.", Icons.Filled.SportsSoccer),
-    Deporte("Baloncesto", "Dos equipos de 5 jugadores encestan el balón en el aro rival.", Icons.Filled.SportsBasketball),
-    Deporte("Tenis", "Con una raqueta se golpea la pelota por encima de la red hacia el campo contrario.", Icons.Filled.SportsTennis),
-    Deporte("Natación", "Desplazarse en el agua lo más rápido posible usando distintos estilos.", Icons.Filled.Pool),
-    Deporte("Atletismo", "Carreras, saltos y lanzamientos: el deporte más antiguo.", Icons.AutoMirrored.Filled.DirectionsRun),
-    Deporte("Ciclismo", "Recorrer distancias en bicicleta, en carretera, montaña o pista.", Icons.AutoMirrored.Filled.DirectionsBike)
+    Deporte(R.string.futbol, R.string.futbol_desc, Icons.Filled.SportsSoccer),
+    Deporte(R.string.baloncesto, R.string.baloncesto_desc, Icons.Filled.SportsBasketball),
+    Deporte(R.string.tenis, R.string.tenis_desc, Icons.Filled.SportsTennis),
+    Deporte(R.string.natacion, R.string.natacion_desc, Icons.Filled.Pool),
+    Deporte(R.string.atletismo, R.string.atletismo_desc, Icons.AutoMirrored.Filled.DirectionsRun),
+    Deporte(R.string.ciclismo, R.string.ciclismo_desc, Icons.AutoMirrored.Filled.DirectionsBike)
 )
 ```
 ```kotlin file=app/src/main/java/com/example/ejercicio7t7/MainActivity.kt
@@ -1051,7 +1096,7 @@ fun SelectorDeporte() {
             DropdownMenu(expanded = expandido, onDismissRequest = { expandido = false }) {
                 deportes.forEach { deporte ->
                     DropdownMenuItem(
-                        text = { Text(deporte.nombre) },
+                        text = { Text(stringResource(deporte.nombre)) },
                         leadingIcon = { Icon(deporte.icono, contentDescription = null) },
                         onClick = {
                             seleccionado = deporte
@@ -1084,12 +1129,12 @@ fun TarjetaDeporte(deporte: Deporte) {
         ) {
             Icon(
                 imageVector = deporte.icono,
-                contentDescription = deporte.nombre,
+                contentDescription = stringResource(deporte.nombre),
                 modifier = Modifier.size(72.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
-            Text(deporte.nombre, style = MaterialTheme.typography.headlineSmall)
-            Text(deporte.descripcion, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
+            Text(stringResource(deporte.nombre), style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(deporte.descripcion), style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
         }
     }
 }
@@ -1099,6 +1144,19 @@ fun TarjetaDeporte(deporte: Deporte) {
     <string name="app_name">Ejercicio7T7</string>
     <string name="boton">Seleccionar deporte</string>
     <string name="sin_seleccion">Todavía no has seleccionado ningún deporte</string>
+
+    <string name="futbol">Fútbol</string>
+    <string name="futbol_desc">Dos equipos de 11 jugadores intentan meter el balón en la portería contraria.</string>
+    <string name="baloncesto">Baloncesto</string>
+    <string name="baloncesto_desc">Dos equipos de 5 jugadores encestan el balón en el aro rival.</string>
+    <string name="tenis">Tenis</string>
+    <string name="tenis_desc">Con una raqueta se golpea la pelota por encima de la red hacia el campo contrario.</string>
+    <string name="natacion">Natación</string>
+    <string name="natacion_desc">Desplazarse en el agua lo más rápido posible usando distintos estilos.</string>
+    <string name="atletismo">Atletismo</string>
+    <string name="atletismo_desc">Carreras, saltos y lanzamientos: el deporte más antiguo.</string>
+    <string name="ciclismo">Ciclismo</string>
+    <string name="ciclismo_desc">Recorrer distancias en bicicleta, en carretera, montaña o pista.</string>
 </resources>
 ```
 > Si tu versión de la librería no tiene `Icons.AutoMirrored.Filled.DirectionsRun/DirectionsBike`, usa `Icons.Filled.DirectionsRun` y `Icons.Filled.DirectionsBike`.
@@ -1132,6 +1190,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -1159,14 +1218,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.ejercicio8t7.ui.theme.Ejercicio8T7Theme
@@ -1183,37 +1243,39 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private fun toast(context: Context, msg: String) = Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+/** Muestra un Toast con un texto de strings.xml (y sus parámetros, si los tiene) */
+private fun toast(context: Context, @StringRes mensaje: Int, vararg args: Any) =
+    Toast.makeText(context, context.getString(mensaje, *args), Toast.LENGTH_SHORT).show()
 
 /* ------------------------- FUNCIONALIDADES ------------------------- */
 
 fun mostrarFavoritas(context: Context, lista: List<Actividad>) {
-    if (lista.isEmpty()) return toast(context, "La lista de actividades está vacía")
+    if (lista.isEmpty()) return toast(context, R.string.lista_vacia)
     val favoritas = lista.filter { it.favorita }.map { it.nombre }
-    if (favoritas.isEmpty()) toast(context, "No hay actividades favoritas")
-    else toast(context, "Favoritas: " + favoritas.joinToString(", "))
+    if (favoritas.isEmpty()) toast(context, R.string.sin_favoritas)
+    else toast(context, R.string.lista_favoritas, favoritas.joinToString(", "))
 }
 
 fun mostrarInformacion(context: Context, lista: List<Actividad>) {
-    if (lista.isEmpty()) return toast(context, "La lista de actividades está vacía")
-    toast(context, "Hay ${lista.size} actividades en la lista")
+    if (lista.isEmpty()) return toast(context, R.string.lista_vacia)
+    toast(context, R.string.total_actividades, lista.size)
 }
 
 /** Devuelve true si se ha añadido (para limpiar la caja de texto) */
 fun anadirActividad(context: Context, lista: SnapshotStateList<Actividad>, nombre: String): Boolean {
     if (nombre.isBlank()) {
-        toast(context, "Por favor, introduzca el nombre de una actividad")
+        toast(context, R.string.error_actividad)
         return false
     }
     lista.add(Actividad(nombre.trim()))
-    toast(context, "La actividad se ha añadido correctamente")
+    toast(context, R.string.actividad_anadida)
     return true
 }
 
 fun eliminarTodas(context: Context, lista: SnapshotStateList<Actividad>) {
-    if (lista.isEmpty()) return toast(context, "La lista ya está vacía")
+    if (lista.isEmpty()) return toast(context, R.string.lista_ya_vacia)
     lista.clear()
-    toast(context, "Se han eliminado todas las actividades de la lista")
+    toast(context, R.string.actividades_eliminadas)
 }
 
 fun cambiarFavorita(lista: SnapshotStateList<Actividad>, posicion: Int, favorita: Boolean) {
@@ -1226,15 +1288,9 @@ fun cambiarFavorita(lista: SnapshotStateList<Actividad>, posicion: Int, favorita
 @Composable
 fun PantallaActividades() {
     val context = LocalContext.current
-    val actividades = remember {
-        mutableStateListOf(
-            Actividad("Ir al cine"),
-            Actividad("Salir en bicicleta"),
-            Actividad("Hacer senderismo"),
-            Actividad("Leer un libro"),
-            Actividad("Jugar a videojuegos")
-        )
-    }
+    // Actividades iniciales desde strings.xml (stringArrayResource fuera de remember { })
+    val iniciales = stringArrayResource(R.array.actividades_iniciales)
+    val actividades = remember { iniciales.map { Actividad(it) }.toMutableStateList() }
     var nueva by remember { mutableStateOf("") }
 
     Scaffold(
@@ -1317,6 +1373,24 @@ fun PantallaActividades() {
     <string name="eliminar_todas">Eliminar todas</string>
     <string name="nueva">Nueva actividad</string>
     <string name="anadir">Añadir actividad</string>
+
+    <!-- Mensajes de los Toast -->
+    <string name="lista_vacia">La lista de actividades está vacía</string>
+    <string name="sin_favoritas">No hay actividades favoritas</string>
+    <string name="lista_favoritas">Favoritas: %1$s</string>
+    <string name="total_actividades">Hay %1$d actividades en la lista</string>
+    <string name="error_actividad">Por favor, introduzca el nombre de una actividad</string>
+    <string name="actividad_anadida">La actividad se ha añadido correctamente</string>
+    <string name="lista_ya_vacia">La lista ya está vacía</string>
+    <string name="actividades_eliminadas">Se han eliminado todas las actividades de la lista</string>
+
+    <string-array name="actividades_iniciales">
+        <item>Ir al cine</item>
+        <item>Salir en bicicleta</item>
+        <item>Hacer senderismo</item>
+        <item>Leer un libro</item>
+        <item>Jugar a videojuegos</item>
+    </string-array>
 </resources>
 ```
 :::

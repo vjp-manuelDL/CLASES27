@@ -64,6 +64,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import com.example.miapp.ui.theme.MiAppTheme
 
 class MainActivity : ComponentActivity() {          // hereda de ComponentActivity
@@ -72,7 +73,7 @@ class MainActivity : ComponentActivity() {          // hereda de ComponentActivi
         enableEdgeToEdge()
         setContent {                                // aquí va la interfaz (Compose)
             MiAppTheme {
-                Text("¡Hola desde mi Activity!")
+                Text(stringResource(R.string.saludo))   // texto en strings.xml
             }
         }
     }
@@ -412,6 +413,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import com.example.ejercicio4t4.ui.theme.Ejercicio4T4Theme
 
@@ -426,7 +428,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Ejercicio4T4Theme {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Mira la consola de Logcat", fontSize = 24.sp)
+                    Text(text = stringResource(R.string.mensaje), fontSize = 24.sp)
                 }
             }
         }
@@ -463,6 +465,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 ```
+```xml file=app/src/main/res/values/strings.xml
+<resources>
+    <string name="app_name">Ejercicio4T4</string>
+    <string name="mensaje">Mira la consola de Logcat</string>
+</resources>
+```
+> Los mensajes de `Log` son para el programador (no los ve el usuario), por eso se dejan en el código. **Todo lo que aparece en pantalla** va en `strings.xml`.
+
 **Resultados esperados** (filtra Logcat por `tag:CicloVida`):
 
 | Prueba | Métodos que se ejecutan |
@@ -522,3 +532,63 @@ fun Cabecera() {
 ```
 
 > Reglas de nombres de recursos: **minúsculas, números y guion bajo** (`fondo_principal.png`). Nada de espacios, mayúsculas, guiones ni tildes.
+
+### Buenas prácticas: todos los textos en strings.xml
+
+El profesor lo exige y es lo correcto: **ningún texto visible para el usuario se escribe "a mano" en el código**. Así se puede traducir la app, cambiar un texto sin tocar el código y reutilizarlo.
+
+| Caso | Cómo se hace |
+|---|---|
+| Texto en un Composable | `Text(stringResource(R.string.titulo))` |
+| Texto con datos variables | `<string name="saludo">Hola, %1$s</string>` → `stringResource(R.string.saludo, nombre)` |
+| Varios datos | `%1$s` (texto), `%1$d` (entero), `%2$s`… → `stringResource(R.string.x, a, b)` |
+| Fuera de un Composable (funciones, `onClick`, Toast) | `context.getString(R.string.x)` o `context.getString(R.string.x, dato)` |
+| Toast | `Toast.makeText(context, R.string.mensaje, Toast.LENGTH_SHORT).show()` (acepta el ID directamente) |
+| Lista de textos | `<string-array>` en `strings.xml` → `stringArrayResource(R.array.nombre)` |
+| Data class con textos fijos | Guarda el **ID**: `@StringRes val nombre: Int` y muéstralo con `stringResource(item.nombre)` |
+| `contentDescription` de imágenes | También en `strings.xml` |
+
+```xml file=app/src/main/res/values/strings.xml
+<resources>
+    <string name="app_name">MiApp</string>
+
+    <!-- Texto simple -->
+    <string name="titulo">Mi primera app</string>
+
+    <!-- Con parámetros: %1$s = 1er argumento (texto), %2$d = 2º argumento (entero) -->
+    <string name="bienvenida">Hola %1$s, tienes %2$d mensajes</string>
+
+    <!-- Caracteres especiales: apóstrofo \' , comillas \" , salto de línea \n -->
+    <string name="cita">Dijo: \"Kotlin mola\"\nY tenía razón</string>
+
+    <!-- Lista de textos -->
+    <string-array name="colores">
+        <item>Rojo</item>
+        <item>Verde</item>
+        <item>Azul</item>
+    </string-array>
+</resources>
+```
+```kotlin file=MainActivity.kt
+@Composable
+fun Ejemplo(nombre: String, mensajes: Int) {
+    val context = LocalContext.current
+    val colores: Array<String> = stringArrayResource(R.array.colores)
+
+    Column {
+        Text(stringResource(R.string.titulo))
+        Text(stringResource(R.string.bienvenida, nombre, mensajes))
+        colores.forEach { color -> Text(color) }
+
+        Button(onClick = {
+            // Dentro de onClick NO se puede llamar a stringResource (no es Composable):
+            // usamos el contexto
+            Toast.makeText(context, context.getString(R.string.bienvenida, nombre, mensajes), Toast.LENGTH_SHORT).show()
+        }) {
+            Text(stringResource(R.string.titulo))
+        }
+    }
+}
+```
+
+> `stringResource()` y `stringArrayResource()` **solo se pueden llamar dentro de un Composable**. En una función normal (por ejemplo la lógica de un botón) pásale el `context` y usa `context.getString(...)`.

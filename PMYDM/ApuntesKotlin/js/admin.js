@@ -12,9 +12,39 @@
 
   const fmt = (iso) => (iso ? new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "—");
 
+  /* Ejecuta una acción (síncrona o asíncrona), muestra el resultado y redibuja el panel */
+  let ocupado = false;
   function run(fn, okMsg) {
-    try { fn(); if (okMsg) window.UI.toast(okMsg); }
-    catch (e) { window.UI.toast(e.message, true); }
+    if (ocupado) return Promise.resolve();
+    ocupado = true;
+    document.body.classList.add("busy");
+    const s = DB.sync;
+    if (s.tieneToken || s.publicado) window.UI.toast("Guardando en GitHub…");
+    return Promise.resolve()
+      .then(fn)
+      .then((r) => window.UI.toast(typeof r === "string" ? r : (okMsg || "Cambios guardados")))
+      .catch((e) => window.UI.toast((e && e.message) || String(e), true))
+      .finally(() => { ocupado = false; document.body.classList.remove("busy"); draw(); });
+  }
+
+  /* Estado de la sincronización con GitHub */
+  function syncHtml() {
+    const s = DB.sync;
+    const hora = s.ultima ? s.ultima.toLocaleTimeString("es-ES") : "—";
+    if (!s.config) return '<span class="pill off">Sin configuración de GitHub (js/config.js)</span>';
+    if (s.ok === false) return `<span class="pill off">⚠️ Sin conexión con GitHub</span> <small class="legend">${esc(s.mensaje)}</small>`;
+    if (s.publicado) return `<span class="pill on">☁️ Sincronizado con GitHub</span> <small class="legend">última comprobación ${hora}` +
+      (s.tieneToken ? "" : " · falta tu token para poder guardar cambios") + "</small>";
+    return `<span class="pill me">💻 Modo local</span> <small class="legend">${esc(s.mensaje)}</small>`;
+  }
+  window.addEventListener("db-sync", () => { document.querySelectorAll(".sync-line").forEach((el) => (el.innerHTML = syncHtml())); });
+
+  /* Redibuja si llegan cambios de otro dispositivo (sin interrumpir si estás escribiendo) */
+  function refresh() {
+    if (!host || !document.body.contains(host) || ocupado) return;
+    const dlg = document.getElementById("dialogo");
+    const act = document.activeElement;
+    if ((dlg && dlg.open) || (act && host.contains(act) && /INPUT|SELECT|TEXTAREA/.test(act.tagName) && act.type !== "checkbox")) return;
     draw();
   }
 
@@ -32,10 +62,11 @@
     host.innerHTML = `
       <nav class="crumbs"><a href="#/inicio">Inicio</a><span>›</span><span>Administración</span></nav>
       <h1>🛡️ Panel de administración</h1>
+      <p class="sync-line">${syncHtml()}</p>
       <div class="admin-tabs">
         <button data-t="cuentas" class="${tab === "cuentas" ? "active" : ""}">👥 Cuentas</button>
         <button data-t="visibilidad" class="${tab === "visibilidad" ? "active" : ""}">👁️ Visibilidad de temas</button>
-        <button data-t="datos" class="${tab === "datos" ? "active" : ""}">💾 Datos y registro</button>
+        <button data-t="datos" class="${tab === "datos" ? "active" : ""}">☁️ Sincronización y datos</button>
       </div>
       <div id="admin-body"></div>`;
     U.$$(".admin-tabs button", host).forEach((b) => b.addEventListener("click", () => { location.hash = "#/admin/" + b.dataset.t; }));
@@ -61,7 +92,7 @@
       <section class="panel">
         <h3>Cuentas (${users.length})</h3>
         <div class="table-wrap"><table>
-          <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Temas visibles</th><th>Último acceso</th><th>Acciones</th></tr></thead>
+          <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Temas visibles</th><th>Creada</th><th>Acciones</th></tr></thead>
           <tbody>${users.map((u) => {
             const isMe = u.username === me.username;
             const vis = temas.filter((t) => DB.canSee(u, t.id)).length;
@@ -70,7 +101,7 @@
               <td><select data-act="rol" ${isMe ? "disabled" : ""}><option value="user" ${u.role === "user" ? "selected" : ""}>Usuario</option><option value="admin" ${u.role === "admin" ? "selected" : ""}>Admin</option></select></td>
               <td><span class="pill ${u.enabled ? "on" : "off"}">${u.enabled ? "Habilitada" : "Deshabilitada"}</span></td>
               <td>${vis} / ${temas.length}</td>
-              <td>${fmt(u.lastLogin)}</td>
+              <td>${fmt(u.created)}</td>
               <td><div class="actions">
                 <button class="btn small" data-act="toggle" ${isMe ? "disabled" : ""}>${u.enabled ? "🚫 Deshabilitar" : "✅ Habilitar"}</button>
                 <button class="btn small" data-act="pass">🔑 Contraseña</button>
@@ -128,7 +159,10 @@
       <div class="actions"><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" value="ok">Guardar</button></div></form>`,
       (f) => {
         if (f.p.value !== f.p2.value) { window.UI.toast("Las contraseñas no coinciden", true); return false; }
-        run(() => DB.setPassword(name, f.p.value), "Contraseña actualizada");
+        const global = DB.sync.publicado || DB.sync.tieneToken;
+        run(() => DB.setPassword(name, f.p.value),
+          global ? "Contraseña cambiada en todos los dispositivos. Las sesiones abiertas con la antigua se cierran solas."
+                 : "Contraseña actualizada (solo en este navegador: configura GitHub para que sea global).");
       });
   }
 
@@ -146,11 +180,11 @@
           <span class="switch"><input type="checkbox" name="t_${t.id}" ${visiblePropio ? "checked" : ""}><span></span></span></label>`;
       }).join("")}
       <div class="actions"><button class="btn" value="cancel" formnovalidate>Cerrar</button><button class="btn primary" value="ok">Guardar</button></div></form>`,
-      (f) => run(() => temas.forEach((t) => {
-        const want = f["t_" + t.id].checked;
-        const own = ((DB.data.visibilidad[t.id] || {}).usuarios || []).includes(name);
-        if (want === own) DB.setVisUsuario(t.id, name, !want);
-      }), "Visibilidad actualizada"));
+      (f) => {
+        const ocultos = {};
+        temas.forEach((t) => { ocultos[t.id] = !f["t_" + t.id].checked; });
+        run(() => DB.setVisUsuarioVarios(name, ocultos), "Visibilidad actualizada");
+      });
   }
 
   /* ============================ VISIBILIDAD ============================ */
@@ -219,20 +253,54 @@
     U.$("#q-mostrar", body).addEventListener("click", () => quick(false));
   }
 
-  /* ============================ DATOS ============================ */
+  /* ============================ SINCRONIZACIÓN Y DATOS ============================ */
   function drawDatos(body) {
-    const U = window.UI;
+    const U = window.UI, s = DB.sync, c = s.config || {};
     body.innerHTML = `
       <section class="panel">
-        <h3>Copia de seguridad</h3>
-        <p class="legend">Las cuentas y permisos se guardan en el navegador (localStorage). Si cambias de navegador u ordenador, exporta aquí y luego importa.</p>
+        <h3>☁️ Sincronización con GitHub</h3>
+        <p class="sync-line">${syncHtml()}</p>
+        <p class="legend">Las cuentas, contraseñas y permisos se guardan en el repositorio <code>${esc(c.owner)}/${esc(c.repo)}</code>,
+        archivo <code>${esc(c.path)}</code> (rama <code>${esc(c.branch)}</code>). Todos los navegadores (tu PC, GitHub Pages, el móvil…)
+        leen ese archivo y comprueban cambios cada ${s.intervalo} segundos y al volver a la pestaña, así que <strong>un cambio de contraseña
+        o de permisos se aplica en todos a la vez</strong>. Las sesiones abiertas se cierran solas si cambia la contraseña de la cuenta,
+        si se deshabilita o si se elimina.</p>
+        ${s.tieneToken
+          ? `<p><span class="pill on">🔑 Token guardado en este navegador</span></p>
+             <div class="actions"><button class="btn" id="s-sync">🔄 Comprobar ahora</button><button class="btn danger" id="s-forget">Olvidar token</button></div>`
+          : `<form id="s-token" class="form-row" autocomplete="off">
+               <label>Token de GitHub (solo se guarda en este navegador)<input name="tk" type="password" placeholder="github_pat_…" required></label>
+               <button class="btn primary" type="submit">🔑 Guardar token</button>
+             </form>`}
+        <details class="howto" ${s.tieneToken ? "" : "open"}><summary>Cómo crear el token (solo una vez)</summary>
+          <ol>
+            <li>Entra en <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token</a>.</li>
+            <li><strong>Token name</strong>: <em>Apuntes Kotlin</em>. <strong>Expiration</strong>: la que quieras (por ejemplo, 1 año).</li>
+            <li><strong>Repository access</strong> → <em>Only select repositories</em> → <code>${esc(c.repo)}</code>.</li>
+            <li><strong>Permissions → Repository permissions → Contents</strong> → <em>Read and write</em>.</li>
+            <li>Pulsa <strong>Generate token</strong>, cópialo y pégalo arriba. La primera vez se publican las cuentas en GitHub.</li>
+          </ol>
+          <p class="legend">Solo lo necesita el administrador, una vez en cada navegador desde el que administre (PC, GitHub Pages…).
+          Los usuarios normales no necesitan nada. No compartas el token con nadie.</p>
+        </details>
+      </section>
+      <section class="panel">
+        <h3>💾 Copia de seguridad</h3>
         <div class="actions"><button class="btn" id="d-exp">⬇️ Descargar copia (.json)</button>
         <label class="btn" style="display:inline-flex">⬆️ Importar copia<input type="file" id="d-imp" accept=".json,application/json" hidden></label>
-        <button class="btn danger" id="d-reset">♻️ Restablecer valores iniciales</button></div>
+        <button class="btn danger" id="d-reset">♻️ Restablecer cuentas iniciales</button></div>
       </section>
-      <section class="panel"><h3>Registro de cambios</h3>
+      <section class="panel"><h3>📝 Registro de cambios</h3>
         <div class="log">${(DB.data.log || []).map((l) => `<div>${fmt(l.t)} · <strong>${esc(l.by)}</strong> · ${esc(l.msg)}</div>`).join("") || "<div>Sin cambios todavía.</div>"}</div>
       </section>`;
+
+    const ft = U.$("#s-token", body);
+    if (ft) ft.addEventListener("submit", (e) => { e.preventDefault(); run(() => DB.setToken(ft.tk.value)); });
+    const bs = U.$("#s-sync", body);
+    if (bs) bs.addEventListener("click", () => run(() => DB.refresh(), "Comprobado: tienes los datos más recientes"));
+    const bf = U.$("#s-forget", body);
+    if (bf) bf.addEventListener("click", () => { DB.clearToken(); draw(); U.toast("Token eliminado de este navegador"); });
+
     U.$("#d-exp", body).addEventListener("click", () => {
       const blob = new Blob([DB.exportJSON()], { type: "application/json" });
       const a = document.createElement("a");
@@ -247,10 +315,9 @@
       file.text().then((txt) => run(() => DB.importJSON(txt), "Copia importada"));
     });
     U.$("#d-reset", body).addEventListener("click", () =>
-      confirmar("¿Restablecer todo?", "Se borrarán las cuentas creadas y los permisos, y se volverá a las 4 cuentas iniciales. Tendrás que volver a iniciar sesión.", () => {
-        DB.resetAll(); location.hash = ""; window.App.boot();
-      }));
+      confirmar("¿Restablecer todo?", "Se borrarán las cuentas creadas y los permisos (en todos los dispositivos) y se volverá a las 4 cuentas iniciales. Tendrás que volver a iniciar sesión.", () =>
+        run(() => DB.resetAll().then(() => { location.hash = ""; window.App.boot(); }), "Cuentas restablecidas")));
   }
 
-  window.Admin = { render };
+  window.Admin = { render, refresh };
 })();

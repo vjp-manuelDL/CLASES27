@@ -220,6 +220,13 @@ dialog h3 { margin-top: 0; }
 dialog form { display: grid; gap: .9rem; }
 dialog .actions { justify-content: flex-end; margin-top: .4rem; }
 
+/* ---------- Sincronización ---------- */
+body.busy, body.busy * { cursor: progress !important; }
+.sync-line { margin: -.4rem 0 .4rem; display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.howto { margin-top: 1rem; background: var(--panel2); border-radius: 10px; padding: .6rem 1rem; }
+.howto summary { cursor: pointer; font-weight: 700; }
+.howto li { margin: .25rem 0; }
+
 /* ---------- Responsive ---------- */
 .only-mobile { display: none; }
 @media (max-width: 900px) {

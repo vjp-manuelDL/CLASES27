@@ -47,6 +47,8 @@ setContent {
 }
 ```
 
+> 📌 **Buena práctica:** en los fragmentos cortos de los apuntes el texto se escribe directamente para que se lea mejor, pero en los **ejercicios** (y en tus prácticas) **todos los textos van en `res/values/strings.xml`** y se usan con `stringResource()` o `context.getString()`. Lo tienes resumido en *Tema 4 › 4. Acceso a recursos*.
+
 ### Cómo nombrar las funciones Composable
 
 1. **PascalCase** (cada palabra con mayúscula, sin espacios ni guiones): `PantallaPrincipal`, `TarjetaDeProducto`, `BotonSuperior`.
