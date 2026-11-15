@@ -6,7 +6,7 @@
       "role": "admin",
       "enabled": true,
       "created": "2026-11-14T17:55:38.944Z",
-      "hash": "faae97ea268131071fba7d4bc61b48e09f78f49f3ef07f381f228fb15f8b9f85"
+      "hash": "89765f1534b084e8d80d570c78486fa6b3e1684c61396a62df348bc441569d45"
     },
     {
       "username": "Manuel2",
@@ -32,6 +32,11 @@
   ],
   "visibilidad": {},
   "log": [
+    {
+      "t": "2026-11-15T00:56:19.147Z",
+      "by": "Manuel",
+      "msg": "contraseña cambiada: Manuel"
+    },
     {
       "t": "2026-11-15T00:55:24.663Z",
       "by": "Manuel",
