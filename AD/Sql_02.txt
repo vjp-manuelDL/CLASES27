@@ -1,0 +1,24 @@
+CREATE DATABASE IF NOT EXISTS ra3_p2_e1;
+CREATE DATABASE IF NOT EXISTS ra3_p2_e2;
+CREATE DATABASE IF NOT EXISTS ra3_p2_e3;
+
+
+-- repetir cambiando ra3_p2_e1 por e2 y e3
+USE ra3_p2_e1;
+CREATE TABLE envios (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  codigo_seguimiento VARCHAR(12) NOT NULL UNIQUE,
+  descripcion VARCHAR(100) NOT NULL,
+  peso DOUBLE NOT NULL,
+  fecha_registro DATETIME(6) NOT NULL,
+  fecha_entrega_prevista DATE,
+  origen_via VARCHAR(255) NOT NULL,
+  origen_cp VARCHAR(5) NOT NULL,
+  origen_poblacion VARCHAR(255) NOT NULL,
+  origen_provincia VARCHAR(255) NOT NULL,
+  destino_via VARCHAR(255) NOT NULL,
+  destino_cp VARCHAR(5) NOT NULL,
+  destino_poblacion VARCHAR(255) NOT NULL,
+  destino_provincia VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB;

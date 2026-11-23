@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ACADT · RA3 · CE c, d, e, g: mapeo, operaciones y transacciones -->
+    <groupId>com.iesvjp</groupId>
+    <artifactId>ACADT_RA3_P2_E3</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+    <name>ACADT_RA3_P2_E3</name>
+
+    <properties>
+        <!-- Se compila para Java 17 (Eclipse 2023-09 no admite el nivel 21) y se ejecuta con el JDK 21 -->
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <hibernate.version>7.4.2.Final</hibernate.version>
+        <!-- Usad la misma versión del conector que en el RA2 -->
+        <mysql.version>9.7.0</mysql.version>
+    </properties>
+
+    <dependencies>
+        <!-- Hibernate ORM: incluye la implementación de Jakarta Persistence (JPA) 3.2.
+             Ya no existe hibernate-entitymanager: todo está en hibernate-core. -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+
+        <!-- Conector JDBC de MySQL (nuevas coordenadas: com.mysql:mysql-connector-j) -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Permite ejecutar desde terminal:  mvnw compile exec:java -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <mainClass>com.iesvjp.orm.EnviosApp</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
