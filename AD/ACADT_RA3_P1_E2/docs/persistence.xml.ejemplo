@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  EJEMPLO DE REFERENCIA: este fichero NO lo usa la plantilla.
+
+  Es la forma clásica de definir la unidad de persistencia (META-INF/persistence.xml),
+  equivalente a lo que hacen JPAUtil.java + jpa.properties. La plantilla no lo usa
+  porque, al detectarlo, algunos IDE (Eclipse con herramientas JPA) intentan convertir
+  el proyecto en "proyecto JPA" y fallan con JPA 3.2.
+
+  Unidad de persistencia · ACADT · RA3 · CE b (configuración de la herramienta ORM)
+
+  - Espacio de nombres jakarta (JPA 3.2). No usar el de javax/JPA 2.x.
+  - No hace falta indicar el dialecto: Hibernate 6/7 lo detecta a partir de la conexión.
+  - Se crea a mano. No convertir el proyecto en "faceted project" de Eclipse.
+-->
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+                                 https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
+             version="3.2">
+
+    <persistence-unit name="plantillaORM" transaction-type="RESOURCE_LOCAL">
+
+        <!-- Proveedor JPA (opcional si solo hay uno en el classpath) -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Entidades gestionadas: añadir aquí cada clase @Entity nueva -->
+        <class>com.iesvjp.orm.modelo.Usuario</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+        <properties>
+            <!-- Conexión: copiad URL, usuario y contraseña de vuestro proyecto del RA2.
+                 createDatabaseIfNotExist crea la BD "hibernate" si no existe. -->
+            <property name="jakarta.persistence.jdbc.url"
+                      value="jdbc:mysql://localhost:3306/hibernate?createDatabaseIfNotExist=true"/>
+            <property name="jakarta.persistence.jdbc.user" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
+
+            <!-- Generación del esquema:
+                 drop-and-create  -> borra y crea las tablas en cada ejecución (desarrollo)
+                 create           -> solo crea
+                 none             -> no toca el esquema (producción)
+                 Equivalente nativo: hibernate.hbm2ddl.auto -->
+            <property name="jakarta.persistence.schema-generation.database.action"
+                      value="drop-and-create"/>
+
+            <!-- Mostrar el SQL que genera Hibernate (muy útil para aprender) -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

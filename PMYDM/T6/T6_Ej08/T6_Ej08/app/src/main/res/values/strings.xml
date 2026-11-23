@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">T6_Ej08</string>
+    <string name="titulo">Nuevo jugador</string>
+    <string name="nombre">Nombre del jugador</string>
+    <string name="tipo">Tipo de personaje:</string>
+    <string name="guardar">Guardar</string>
+    <string name="imagen">Personajes del juego</string>
+
+
+    <string name="error_todo">Introduce un nombre y selecciona un personaje</string>
+    <string name="error_nombre">Error: introduce el nombre del jugador</string>
+    <string name="error_personaje">Error: selecciona un tipo de personaje</string>
+
+    <string name="jugador_guardado">Jugador %1$s guardado como %2$s</string>
+
+
+    <string-array name="personajes">
+        <item>Guerrero</item>
+        <item>Mago</item>
+        <item>Arquero</item>
+        <item>Explorador</item>
+    </string-array>
+</resources>
