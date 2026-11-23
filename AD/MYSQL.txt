@@ -1,0 +1,40 @@
+CREATE DATABASE IF NOT EXISTS ra3_p1_e1;
+CREATE DATABASE IF NOT EXISTS ra3_p1_e2;
+CREATE DATABASE IF NOT EXISTS ra3_p1_e3;
+
+USE ra3_p1_e1;
+CREATE TABLE usuarios (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL,
+  mensaje VARCHAR(255),
+  PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+USE ra3_p1_e2;
+CREATE TABLE estudiantes (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  dni VARCHAR(255),
+  nombre VARCHAR(255),
+  apellidos VARCHAR(255),
+  telefono VARCHAR(255),
+  correo VARCHAR(255),
+  PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+USE ra3_p1_e3;
+CREATE TABLE departamentos (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(30) NOT NULL,
+  localidad VARCHAR(30) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+CREATE TABLE empleados (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  apellido VARCHAR(40) NOT NULL,
+  oficio VARCHAR(20) NOT NULL,
+  salario DOUBLE NOT NULL,
+  comision DOUBLE,
+  id_departamento BIGINT NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB;
