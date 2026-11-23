@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">T6_Ej10</string>
+    <string name="titulo">Visita guiada por Londres</string>
+    <string name="guardar">Guardar Visita</string>
+
+
+    <string name="big_ben">Big Ben</string>
+    <string name="cabina">Cabina roja</string>
+    <string name="noria">London Eye</string>
+    <string name="puente">Tower Bridge</string>
+
+
+    <string name="sin_monumentos">No se han seleccionado monumentos</string>
+
+    <string name="visita_guardada">Monumentos a visitar: %1$s</string>
+</resources>
