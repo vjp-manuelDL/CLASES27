@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">T7_Ej08</string>
+    <string name="titulo">Mis actividades</string>
+    <string name="favoritas">Favoritas</string>
+    <string name="informacion">Información</string>
+    <string name="eliminar_todas">Eliminar todas</string>
+    <string name="nueva">Nueva actividad</string>
+    <string name="anadir">Añadir actividad</string>
+
+
+    <string name="lista_vacia">La lista de actividades está vacía</string>
+    <string name="sin_favoritas">No hay actividades favoritas</string>
+    <string name="lista_favoritas">Favoritas: %1$s</string>
+    <string name="total_actividades">Hay %1$d actividades en la lista</string>
+    <string name="error_actividad">Por favor, introduzca el nombre de una actividad</string>
+    <string name="actividad_anadida">La actividad se ha añadido correctamente</string>
+    <string name="lista_ya_vacia">La lista ya está vacía</string>
+    <string name="actividades_eliminadas">Se han eliminado todas las actividades de la lista</string>
+
+
+    <string-array name="actividades_iniciales">
+        <item>Ir al cine</item>
+        <item>Salir en bicicleta</item>
+        <item>Hacer senderismo</item>
+        <item>Leer un libro</item>
+        <item>Jugar a videojuegos</item>
+    </string-array>
+</resources>
