@@ -592,3 +592,41 @@ fun Ejemplo(nombre: String, mensajes: Int) {
 ```
 
 > `stringResource()` y `stringArrayResource()` **solo se pueden llamar dentro de un Composable**. En una función normal (por ejemplo la lógica de un botón) pásale el `context` y usa `context.getString(...)`.
+
+## 5. Trucos y errores típicos
+
+### Crear el proyecto bien desde el principio
+
+1. **File → New → New Project → Empty Activity** (la que trae Compose ya montado).
+2. **Name**: sin espacios ni tildes (`Ejercicio1T4`). El **Package name** se genera solo (`com.example.ejercicio1t4`).
+3. **Minimum SDK**: API 24. **Build configuration language**: Kotlin DSL.
+4. Espera a que termine el *Gradle sync* antes de tocar nada: hasta entonces `R` y los imports aparecen en rojo aunque esté todo bien.
+
+> **Truco:** pon el nombre del proyecto igual que pide el enunciado (`Ejercicio1T4`, `T6_Ej08`...). Así el `app_name`, el paquete y el tema (`Ejercicio1T4Theme`) coinciden y no te lías al copiar código entre proyectos.
+
+### Problemas frecuentes
+
+| Síntoma | Causa | Solución |
+|---|---|---|
+| `Unresolved reference: R` | El proyecto no ha sincronizado o hay un error en un XML | **File → Sync Project with Gradle Files**, y mira que ningún XML tenga errores |
+| `R.drawable.foto` no existe | La imagen no está en `res/drawable` o el nombre tiene mayúsculas, espacios o tildes | Renómbrala a minúsculas con `_` y vuelve a compilar |
+| La imagen sale deformada | `contentScale` por defecto | Usa `ContentScale.Crop` (rellena recortando) o `Fit` (cabe entera) |
+| El texto se ve detrás de la hora y la batería | `enableEdgeToEdge()` dibuja bajo las barras | Mete el contenido en un `Scaffold` y aplica su `innerPadding` |
+| La vista previa no carga | Falta compilar | **Build → Make Project** y pulsa *Refresh* en el panel Preview |
+| Cambié un recurso y no se ve | Compilación antigua en caché | **Build → Clean Project** y luego **Rebuild Project** |
+| El emulador va lentísimo | Poca RAM o sin aceleración | Usa tu móvil con **depuración USB** activada en Opciones de desarrollador |
+
+> !**Error clásico al girar la pantalla:** la Activity se destruye y se vuelve a crear, así que todo lo que tuvieras escrito se pierde. Se arregla con `rememberSaveable`, que se explica en el Tema 6.
+
+### Cómo probar el ciclo de vida sin volverte loco
+
+Filtra Logcat por tu etiqueta (`tag:CicloVida`), **limpia la consola** antes de cada prueba y haz las acciones de una en una: abrir, Inicio, volver, girar. Si ves los mensajes mezclados es que no limpiaste entre pruebas.
+
+## 6. Recursos del tema
+
+:::recursos
+pdf | TEMA 04 - Primer contacto con el código. Ciclo de vida de una App | Los apuntes originales en PDF | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=32665
+sol | Soluciones ejercicios | Soluciones oficiales del tema | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=32761
+url | Ciclo de vida de una aplicación en Android | Vídeo explicativo | https://youtu.be/E1vAobJ8Fxo
+url | Manifiesto de la app | Documentación oficial de Android | https://developer.android.com/guide/topics/manifest/manifest-intro?hl=es-419
+:::

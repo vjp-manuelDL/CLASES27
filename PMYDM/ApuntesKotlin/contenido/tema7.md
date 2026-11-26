@@ -1394,3 +1394,68 @@ fun PantallaActividades() {
 </resources>
 ```
 :::
+
+## 7. Trucos y errores típicos
+
+### LazyColumn o Column con scroll
+
+| Usa | Cuándo |
+|---|---|
+| `LazyColumn` | Muchos elementos o un número que cambia (listas de datos). Solo crea los que se ven |
+| `Column` + `Modifier.verticalScroll(rememberScrollState())` | Pocos elementos fijos que no caben en la pantalla (un formulario largo) |
+
+> !**No metas un `LazyColumn` dentro de un `Column` con `verticalScroll`:** la app casca con un error de altura infinita (*"Vertically scrollable component was measured with an infinity maximum height constraints"*). Si necesitas cabecera y lista, mete la cabecera dentro del propio `LazyColumn` con un bloque `item { }`.
+
+### Listas que cambian
+
+```kotlin
+// con remember, NUNCA con rememberSaveable
+val tareas = remember { mutableStateListOf("Estudiar", "Comprar") }
+
+tareas.add("Nueva")          // la pantalla se actualiza sola
+tareas.remove("Comprar")
+tareas[0] = "Estudiar mas"   // cambiar un elemento
+```
+
+Si la lista guarda objetos de una `data class`, para cambiar **un campo** hay que reemplazar el elemento entero; si modificas el objeto por dentro, Compose no se entera:
+
+```kotlin
+// marcar como favorita la actividad de la posicion i
+lista[i] = lista[i].copy(favorita = true)
+```
+
+### Problemas frecuentes
+
+| Síntoma | Causa | Solución |
+|---|---|---|
+| `items(lista)` aparece en rojo | Falta el import correcto | `import androidx.compose.foundation.lazy.items` (o `itemsIndexed`) |
+| La barra superior tapa el contenido | No aplicas el padding del `Scaffold` | `Column(modifier = Modifier.padding(innerPadding))` |
+| `TopAppBar` da error de API experimental | Material 3 la marca así | Pon `@OptIn(ExperimentalMaterial3Api::class)` encima de la función |
+| El menú desplegable sale en una esquina rara | No tiene ancla | Mete el botón y el `DropdownMenu` dentro del mismo `Box` |
+| El menú no se cierra al elegir | Falta apagar el estado | En el `onClick` de cada opción: `expandido = false` |
+| Al añadir un elemento no aparece | Has usado `listOf` o `mutableListOf` normal | Tiene que ser `mutableStateListOf` |
+| Al girar se vacía la lista | `mutableStateListOf` no se guarda en el Bundle | Es lo normal: para conservarla hace falta ViewModel o base de datos (temas siguientes) |
+| El FAB tapa el último elemento de la lista | El contenido llega hasta abajo | Añade `contentPadding = PaddingValues(bottom = 80.dp)` en el `LazyColumn` |
+
+### State hoisting en una frase
+
+El componente de abajo **no guarda nada**: recibe el valor y una función para avisar de que ha cambiado. Así el mismo componente sirve en varias pantallas y el padre decide qué hacer.
+
+```kotlin
+// hijo: sin estado, reutilizable
+@Composable
+fun Contador(valor: Int, onSumar: () -> Unit) { … }
+
+// padre: el dueño del estado
+var valor by rememberSaveable { mutableIntStateOf(0) }
+Contador(valor = valor, onSumar = { valor++ })
+```
+
+> **Truco para el examen:** si te piden «reutiliza el mismo componente», casi siempre la respuesta es *state hoisting*: saca el `remember` al padre y pasa `valor` + `onCambio` por parámetro.
+
+## 8. Recursos del tema
+
+:::recursos
+pdf | Tema 07 - Componentes avanzados | Los apuntes originales en PDF | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=33345
+entrega | Entrega Ejercicio 8 (T7) | Tarea de Moodle | https://moodle.educarex.es/ccff_iesvjp/mod/assign/view.php?id=49998
+:::

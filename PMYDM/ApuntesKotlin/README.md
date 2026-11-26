@@ -14,6 +14,15 @@ ejemplos de código y **todos los ejercicios resueltos** con cada fichero del pr
 
 Hay 4 cuentas: `Manuel` (admin), `Manuel2`, `Manuel3` y `Manuel4`.
 
+## Qué tiene la web
+
+- **Temas 3 a 7** divididos por apartados, con apuntes, tablas y ejemplos de código.
+- **✏️ Ejercicios**: todos los ejercicios agrupados por tema, con un resumen, el apartado donde se explica,
+  un enlace que abre la solución completa y, en los que hay que entregar, un acceso directo a la tarea de Moodle.
+- **Trucos y errores típicos** al final de cada tema: los fallos que salen siempre y cómo arreglarlos.
+- **Recursos del tema**: los PDF, enlaces y soluciones que el profesor sube a Moodle.
+- Buscador (Ctrl+K), modo claro/oscuro y diseño adaptado a móvil.
+
 ## Panel de administración (solo admin)
 
 - **Cuentas**: crear, eliminar, habilitar/deshabilitar, cambiar rol y contraseña.

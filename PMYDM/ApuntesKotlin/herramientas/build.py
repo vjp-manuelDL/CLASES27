@@ -26,6 +26,8 @@ Formato soportado en los .md:
 import html, json, re, sys, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+# Datos del tema que se esta procesando (para poder numerar los ejercicios)
+CURRENT = {"tema": "", "lista": []}
 SRC = ROOT / "contenido"
 OUT = ROOT / "js" / "contenido.js"
 
@@ -179,11 +181,45 @@ def render(lines):
             else:
                 enun, sol = buf, []
             ej_id = re.sub(r'[^a-z0-9]+', '-', title.lower().split("·")[0].strip())
+            # numero del ejercicio y titulo corto, para el apartado "Ejercicios"
+            mnum = re.search(r'(\d+)', title.split("·")[0])
+            num = int(mnum.group(1)) if mnum else len(CURRENT["lista"]) + 1
+            corto = title.split("·", 1)[1].strip() if "·" in title else title
+            anchor = f'ej-{CURRENT["tema"]}-{num}'
+            CURRENT["lista"].append({
+                "num": num, "titulo": corto, "anchor": anchor,
+                "resumen": resumen_texto(enun), "resuelto": bool(sol)
+            })
             out.append(
-                f'<section class="ejercicio" data-ej="{html.escape(ej_id)}"><header class="ej-head"><span class="ej-badge">Ejercicio</span>'
-                f'<h3>{inline(title)}</h3></header><div class="ej-enunciado">{render(enun)}</div>'
+                f'<section class="ejercicio" id="{anchor}" data-ej="{html.escape(ej_id)}" data-num="{num}">'
+                f'<header class="ej-head"><span class="ej-badge">Ejercicio {num:02d}</span>'
+                f'<h3>{inline(corto)}</h3></header><div class="ej-enunciado">{render(enun)}</div>'
                 + (f'<button class="ej-toggle" type="button">Ver solución</button><div class="ej-solucion" hidden>{render(sol)}</div>' if sol else "")
                 + '</section>')
+            continue
+        # lista de recursos:  tipo | titulo | descripcion | url
+        if s == ":::recursos":
+            buf = []
+            i += 1
+            while i < n and lines[i].strip() != ":::":
+                if lines[i].strip():
+                    buf.append(lines[i].strip())
+                i += 1
+            i += 1
+            ICONOS = {"pdf": "📄", "url": "🔗", "sol": "✅", "img": "🖼️", "cfg": "⚙️", "entrega": "📤", "doc": "📝"}
+            filas = []
+            for b in buf:
+                partes = [x.strip() for x in b.split("|")]
+                tipo = partes[0] if partes else "url"
+                titulo = partes[1] if len(partes) > 1 else ""
+                desc = partes[2] if len(partes) > 2 else ""
+                url = partes[3] if len(partes) > 3 else "#"
+                filas.append(
+                    f'<a class="recurso" href="{html.escape(url)}" target="_blank" rel="noopener">'
+                    f'<span class="ico">{ICONOS.get(tipo, "🔗")}</span>'
+                    f'<span><b>{inline(titulo)}</b><small>{inline(desc)}</small></span>'
+                    f'<span class="flecha">↗</span></a>')
+            out.append('<div class="recursos">' + "".join(filas) + '</div>')
             continue
         if s == ":::tree":
             buf = []
@@ -255,6 +291,22 @@ def render(lines):
     flush_tabs()
     return "".join(out)
 
+def resumen_texto(lines):
+    """Primeras palabras del enunciado, en texto plano, para el listado de ejercicios."""
+    txt = []
+    for l in lines:
+        s = l.strip()
+        if not s or s.startswith(("```", ":::", "|", ">", "#")):
+            if txt:
+                break
+            continue
+        txt.append(re.sub(r'[*`\[\]]', '', s))
+        if sum(len(x) for x in txt) > 150:
+            break
+    t = " ".join(txt)
+    return (t[:170].rsplit(" ", 1)[0] + "…") if len(t) > 170 else t
+
+
 def parse_file(path):
     text = path.read_text(encoding="utf-8")
     meta, sections, cur = {}, [], None
@@ -270,16 +322,26 @@ def parse_file(path):
         if cur is not None:
             cur["lines"].append(line)
     secs = []
+    CURRENT["tema"] = meta["id"]
+    CURRENT["lista"] = []
+    ejercicios = []
     for k, s in enumerate(sections):
+        CURRENT["lista"] = []
         body = render(s["lines"])
+        sec_id = f'{meta["id"]}-s{k + 1}'
+        for e in CURRENT["lista"]:
+            e["seccion"] = sec_id
+            e["seccionTitulo"] = s["titulo"]
+            ejercicios.append(e)
         secs.append({
             "id": f'{meta["id"]}-s{k + 1}',
             "titulo": s["titulo"],
             "html": body,
             "ejercicios": len(re.findall(r'class="ejercicio"', body)),
         })
+    ejercicios.sort(key=lambda e: e["num"])
     return {"id": meta["id"], "numero": int(meta.get("numero", 0)), "titulo": meta["titulo"],
-            "resumen": meta.get("resumen", ""), "secciones": secs}
+            "resumen": meta.get("resumen", ""), "secciones": secs, "ejercicios": ejercicios}
 
 def main():
     temas = [parse_file(p) for p in sorted(SRC.glob("tema*.md"))]
