@@ -221,6 +221,42 @@ dialog h3 { margin-top: 0; }
 dialog form { display: grid; gap: .9rem; }
 dialog .actions { justify-content: flex-end; margin-top: .4rem; }
 
+/* ---------- Apartado de ejercicios ---------- */
+.intro { color: var(--txt2); max-width: 80ch; }
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1rem 0 1.6rem; }
+.chip { padding: .35rem .8rem; border-radius: 99px; border: 1px solid var(--line); text-decoration: none;
+  color: var(--txt2); font-size: .88rem; font-weight: 600; background: var(--panel); }
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip.on { background: var(--grad); color: #fff; border-color: transparent; }
+.ej-grupo { margin-bottom: 2.2rem; }
+.ej-grupo h2 { margin: 0 0 .8rem; padding-bottom: .4rem; border-bottom: 2px solid var(--line); }
+.ej-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+.ej-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 1rem 1.1rem;
+  display: flex; flex-direction: column; gap: .5rem; }
+.ej-card:hover { border-color: var(--accent); }
+.ej-card > header { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.ej-card h3 { margin: 0; font-size: 1.02rem; flex: 1; }
+.ej-num { width: 30px; height: 30px; flex: none; border-radius: 8px; background: var(--grad); color: #fff;
+  display: grid; place-items: center; font-weight: 800; font-size: .8rem; }
+.ej-card p { margin: 0; color: var(--txt2); font-size: .9rem; flex: 1; }
+.pill.entregable { background: var(--warn-soft); color: var(--warn); }
+.ej-card-foot { display: flex; flex-direction: column; gap: .5rem; border-top: 1px solid var(--line); padding-top: .6rem; }
+.ej-donde { font-size: .8rem; color: var(--txt2); }
+.ej-links { display: flex; gap: .4rem; flex-wrap: wrap; }
+.ejercicio.resaltado { outline: 3px solid var(--accent); outline-offset: 3px; transition: outline-color .4s; }
+.content .ejercicio { scroll-margin-top: calc(var(--top) + 1rem); }
+
+/* ---------- Recursos del tema ---------- */
+.recursos { display: grid; gap: .6rem; margin: 1rem 0; }
+.recurso { display: flex; align-items: center; gap: .7rem; padding: .7rem .9rem; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 12px; text-decoration: none; color: var(--txt); }
+.recurso:hover { border-color: var(--accent); transform: translateX(2px); }
+.recurso .ico { width: 34px; height: 34px; flex: none; border-radius: 9px; background: var(--panel2);
+  display: grid; place-items: center; font-size: 1.05rem; }
+.recurso b { display: block; font-size: .95rem; }
+.recurso small { color: var(--txt2); font-size: .8rem; }
+.recurso .flecha { margin-left: auto; color: var(--txt2); }
+
 /* ---------- Tarjetas del panel (se usan en móvil) ---------- */
 .cards { display: grid; gap: .8rem; }
 .ucard, .vcard { border: 1px solid var(--line); border-radius: 12px; padding: .9rem; background: var(--bg); }
@@ -310,6 +346,10 @@ body.busy, body.busy * { cursor: progress !important; }
   .pager { flex-direction: column; gap: .6rem; }
   .pager a { max-width: none; }
   .pager .next { text-align: left; }
+
+  .ej-grid { grid-template-columns: 1fr; }
+  .chips { gap: .3rem; }
+  .chip { font-size: .8rem; padding: .3rem .6rem; }
 
   /* Formularios y paneles */
   .panel { padding: .9rem; }

@@ -67,7 +67,8 @@
   /* ---------------- sidebar ---------------- */
   function renderSidebar(u, route) {
     const temas = visibleTemas(u);
-    let h = `<a class="nav-home ${route.view === "inicio" ? "active" : ""}" href="#/inicio">🏠 Inicio</a>`;
+    let h = `<a class="nav-home ${route.view === "inicio" ? "active" : ""}" href="#/inicio">🏠 Inicio</a>` +
+      `<a class="nav-home ${route.view === "ejercicios" ? "active" : ""}" href="#/ejercicios">✏️ Ejercicios</a>`;
     if (u.role === "admin") h += `<a class="nav-home ${route.view === "admin" ? "active" : ""}" href="#/admin">🛡️ Panel de administración</a>`;
     if (!temas.length) h += `<p class="nav-empty">No tienes temas visibles. Pide al administrador que te los habilite.</p>`;
     temas.forEach((t) => {
@@ -97,9 +98,58 @@
         : `<div class="callout aviso">Ahora mismo no tienes ningún tema visible. El administrador puede habilitártelos desde su panel.</div>`}
       <h2>Cómo usar los apuntes</h2>
       <ul><li>Usa el menú lateral para moverte por <strong>temas y apartados</strong>. El número naranja indica cuántos ejercicios hay en ese apartado.</li>
+      <li>En <strong>✏️ Ejercicios</strong> los tienes todos juntos, agrupados por tema y con un enlace directo a su solución y a la tarea de Moodle.</li>
       <li>En cada ejercicio pulsa <strong>«Ver solución»</strong>: verás la solución completa con una pestaña por fichero (<code>MainActivity.kt</code>, <code>strings.xml</code>, <code>Color.kt</code>…).</li>
+      <li>Al final de cada tema tienes <strong>«Trucos y errores típicos»</strong> y <strong>«Recursos del tema»</strong> con los PDF y enlaces del profesor.</li>
       <li>Cada bloque de código tiene un botón <strong>Copiar</strong> para pegarlo directamente en Android Studio.</li>
-      <li>Busca cualquier cosa con <strong>Ctrl + K</strong> (por ejemplo: <code>remember</code>, <code>LazyColumn</code>, <code>when</code>).</li></ul>`;
+      <li>Busca cualquier cosa con <strong>Ctrl + K</strong> (por ejemplo: <code>remember</code>, <code>LazyColumn</code>, <code>when</code>).</li></ul>
+      <h2>Recursos del curso</h2>
+      <div class="recursos">
+        ${[["🎓", "Curso PMYDM en Moodle", "Daniel Fernández · IES Valle del Jerte", "https://moodle.educarex.es/ccff_iesvjp/course/view.php?id=228"],
+           ["📄", "Criterios de calificación", "Cómo se puntúan las actividades diarias", "https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=38914"],
+           ["📝", "Evaluación por RA", "Resultados de aprendizaje del módulo", "https://moodle.educarex.es/ccff_iesvjp/mod/page/view.php?id=49318"],
+           ["📄", "Informe de programación", "Programación del módulo", "https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=33065"],
+           ["✅", "Calificaciones por RA (1ª evaluación)", "Tus notas por resultado de aprendizaje", "https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=45986"]]
+          .map(([i, t, d, u]) => `<a class="recurso" href="${u}" target="_blank" rel="noopener"><span class="ico">${i}</span><span><b>${t}</b><small>${d}</small></span><span class="flecha">↗</span></a>`).join("")}
+      </div>`;
+  }
+
+  const entregas = (window.APUNTES_CONFIG || {}).entregas || {};
+  const urlEntrega = (temaId, num) => entregas[temaId + "-" + num];
+
+  function tarjetaEjercicio(t, e) {
+    const ent = urlEntrega(t.id, e.num);
+    return `<article class="ej-card">
+      <header><span class="ej-num">${String(e.num).padStart(2, "0")}</span>
+        <h3>${esc(e.titulo)}</h3>
+        ${ent ? '<span class="pill entregable" title="Hay que entregarlo en Moodle">Entregable</span>' : ""}</header>
+      <p>${esc(e.resumen || "")}</p>
+      <div class="ej-card-foot">
+        <span class="ej-donde" title="Apartado de los apuntes donde se explica">📘 ${esc(e.seccionTitulo)}</span>
+        <span class="ej-links">
+          <a class="btn small primary" href="#/ej/${t.id}/${e.num}">Ver resuelto</a>
+          ${ent ? `<a class="btn small" href="${ent}" target="_blank" rel="noopener">Entregar ↗</a>` : ""}
+        </span>
+      </div>
+    </article>`;
+  }
+
+  function viewEjercicios(u, soloTema) {
+    const temas = visibleTemas(u).filter((t) => !soloTema || t.id === soloTema);
+    const total = temas.reduce((a, t) => a + (t.ejercicios || []).length, 0);
+    if (!temas.length) return `<h1>✏️ Ejercicios</h1><div class="callout aviso">No tienes temas visibles ahora mismo.</div>`;
+    return `<h1>✏️ Ejercicios por tema</h1>
+      <p class="intro">Todos los ejercicios de los apuntes, agrupados por tema y <strong>resueltos tal y como se explica en ese tema</strong>.
+      Cada tarjeta dice en qué apartado se explica lo que necesitas; «Ver resuelto» te lleva al ejercicio con su solución abierta,
+      con un fichero por pestaña (<code>MainActivity.kt</code>, <code>strings.xml</code>…).</p>
+      <div class="chips">
+        <a class="chip ${!soloTema ? "on" : ""}" href="#/ejercicios">Todos (${total})</a>
+        ${visibleTemas(u).map((t) => `<a class="chip ${soloTema === t.id ? "on" : ""}" href="#/ejercicios/${t.id}">Tema ${t.numero} (${(t.ejercicios || []).length})</a>`).join("")}
+      </div>
+      ${temas.map((t) => `<section class="ej-grupo">
+        <h2>Tema ${t.numero}. ${esc(t.titulo)}</h2>
+        <div class="ej-grid">${(t.ejercicios || []).map((e) => tarjetaEjercicio(t, e)).join("")}</div>
+      </section>`).join("")}`;
   }
 
   function viewSeccion(u, tema, sec) {
@@ -124,6 +174,13 @@
     const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
     if (!parts.length || parts[0] === "inicio") return { view: "inicio" };
     if (parts[0] === "admin") return { view: "admin", tab: parts[1] || "cuentas" };
+    if (parts[0] === "ejercicios") return { view: "ejercicios", tema: parts[1] };
+    // #/ej/tema6/8 -> abre la seccion del ejercicio 8 del tema 6 y baja hasta el
+    if (parts[0] === "ej" && parts[1]) {
+      const t = findTema(parts[1]);
+      const e = t && (t.ejercicios || []).find((x) => String(x.num) === String(parts[2]));
+      if (e) return { view: "seccion", tema: t.id, sec: e.seccion, anchor: e.anchor };
+    }
     return { view: "seccion", tema: parts[0], sec: parts[1] };
   }
 
@@ -149,16 +206,30 @@
         route.sec = sec.id;
         html = viewSeccion(u, tema, sec);
       }
+    } else if (route.view === "ejercicios") {
+      html = viewEjercicios(u, route.tema);
     } else {
       html = viewInicio(u);
     }
     renderSidebar(u, route);
     main.innerHTML = html;
-    afterRender();
+    afterRender(route.anchor);
   }
 
-  function afterRender() {
-    window.scrollTo(0, 0);
+  function afterRender(anchor) {
+    if (anchor) {
+      const el = document.getElementById(anchor);
+      if (el) {
+        // abre la solucion y deja el ejercicio a la vista
+        const tog = el.querySelector(".ej-toggle");
+        if (tog && el.querySelector(".ej-solucion").hidden) tog.click();
+        el.classList.add("resaltado");
+        setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+        setTimeout(() => el.classList.remove("resaltado"), 2600);
+      }
+    } else {
+      window.scrollTo(0, 0);
+    }
     $("#sidebar").classList.remove("open");
     $("#overlay").classList.remove("show");
   }

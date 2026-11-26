@@ -1183,3 +1183,43 @@ D   - Videojuegos
 D   - Fútbol
 ```
 :::
+
+## 8. Trucos y errores típicos
+
+Cosas que fallan siempre al empezar con Kotlin, y cómo salir del paso.
+
+| Síntoma | Qué pasa | Solución |
+|---|---|---|
+| `Val cannot be reassigned` | Has declarado con `val` algo que luego cambias | Cámbialo a `var` |
+| `Variable must be initialized` | Usas una variable antes de darle valor | Dale valor al declararla o antes de usarla |
+| `Null can not be a value of a non-null type` | Asignas `null` a un tipo normal | Añade `?` al tipo: `String?` |
+| Una división da un número redondo | Estás dividiendo dos `Int` | Pasa uno a decimal: `/ 3.0` o `.toDouble()` |
+| `NumberFormatException` | `toInt()` sobre un texto que no es número | Usa `toIntOrNull()` y comprueba si es `null` |
+| `IndexOutOfBoundsException` | Recorres el listado con `..size` | Usa `until size` o `0..size - 1` |
+| En Logcat no sale nada | Filtro mal puesto | Filtra por `package:mine`, nivel `Debug`, y limpia la consola antes de ejecutar |
+
+> **Truco:** antes de pelearte con el código, pon `Log.d("TAG", "valor: $variable")` en varios puntos. Ver el valor real de cada variable resuelve la mayoría de los errores de lógica.
+
+> !**Ojo con `val` y las colecciones:** `val lista = arrayListOf(...)` **sí** deja añadir y borrar elementos. `val` impide cambiar *a qué* lista apunta la variable, no lo que hay dentro.
+
+### Atajos de Android Studio que ahorran tiempo
+
+| Atajo | Para qué |
+|---|---|
+| `Ctrl + Alt + L` | Formatear el código (sangría correcta) |
+| `Ctrl + Alt + O` | Quitar los imports que sobran |
+| `Alt + Enter` | Arreglar el error de debajo del cursor (añade el import que falta) |
+| `Ctrl + /` | Comentar o descomentar la línea |
+| `Ctrl + D` | Duplicar la línea |
+| `Shift + F10` | Ejecutar la app |
+
+## 9. Recursos del tema
+
+:::recursos
+pdf | Tema 03 - Introducción al lenguaje de programación Kotlin | Los apuntes originales en PDF | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=32648
+url | Uso de clases y objetos en Kotlin | Material de apoyo sobre clases y objetos | https://moodle.educarex.es/ccff_iesvjp/mod/url/view.php?id=37707
+doc | Ejemplo de utilización de Clases en Kotlin | Ejemplo resuelto del profesor | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=32705
+sol | Soluciones ejercicios | Soluciones oficiales del tema | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=32706
+entrega | Entrega Ejercicio 5 (T3) | Tarea de Moodle | https://moodle.educarex.es/ccff_iesvjp/mod/assign/view.php?id=49311
+entrega | Entrega Ejercicio 11 (T3) | Tarea de Moodle | https://moodle.educarex.es/ccff_iesvjp/mod/assign/view.php?id=49312
+:::

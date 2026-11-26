@@ -1206,3 +1206,77 @@ fun Mando() {
 </resources>
 ```
 :::
+
+## 6. Trucos y errores típicos
+
+### Alignment o Arrangement: cuál toca
+
+Es la duda número uno. La regla: **Arrangement reparte en el eje principal** (donde se apilan los hijos) y **Alignment alinea en el otro eje**.
+
+| Layout | Eje principal (Arrangement) | Eje secundario (Alignment) |
+|---|---|---|
+| `Column` | Vertical → `verticalArrangement` | Horizontal → `horizontalAlignment` |
+| `Row` | Horizontal → `horizontalArrangement` | Vertical → `verticalAlignment` |
+| `Box` | — | Los dos a la vez → `contentAlignment` |
+
+```kotlin
+// centrar algo del todo en la pantalla: las dos formas
+Column(
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Center,          // centrado arriba-abajo
+    horizontalAlignment = Alignment.CenterHorizontally // centrado izquierda-derecha
+) { Text("Centrado") }
+
+Box(
+    modifier = Modifier.fillMaxSize(),
+    contentAlignment = Alignment.Center                // mucho más corto
+) { Text("Centrado") }
+```
+
+### El orden de los modificadores cambia el resultado
+
+```kotlin
+// el amarillo cubre tambien el margen
+Modifier.padding(16.dp).background(Color.Yellow)   // NO: el padding queda fuera del color
+Modifier.background(Color.Yellow).padding(16.dp)   // SI: color primero, hueco dentro
+```
+
+> **Regla práctica:** `size` y `background` primero, `padding` después si quieres que el hueco quede *dentro* del color, y antes si lo quieres *fuera*.
+
+### Problemas frecuentes
+
+| Síntoma | Causa | Solución |
+|---|---|---|
+| `weight` aparece en rojo | Lo usas fuera de un `Row` o `Column` | `weight` solo existe dentro de ellos (`RowScope` / `ColumnScope`) |
+| `weight` no reparte nada | El contenedor no tiene alto o ancho definido | Añade `fillMaxSize()` o `fillMaxHeight()` al `Row`/`Column` padre |
+| Los colores que pongo en `Color.kt` no se ven | El tema usa *dynamic color* y coge los del fondo de pantalla | En `Theme.kt` pon `dynamicColor: Boolean = false` |
+| El texto no se centra | `Alignment` centra la caja, no el texto de dentro | Añade `textAlign = TextAlign.Center` al `Text` |
+| El texto largo se corta | Falta sitio | `lineHeight`, `maxLines` + `overflow = TextOverflow.Ellipsis`, o baja el `fontSize` |
+| Un elemento tapa a otro en un `Box` | En `Box` se dibuja en orden | El **último** queda arriba: pon la imagen primero y el texto después |
+| Todo se ve enorme o diminuto en otro móvil | Has usado medidas fijas | Reparte con `weight` y `fillMaxWidth` en vez de `height(400.dp)` |
+
+> !**sp para texto, dp para todo lo demás.** Si pones el tamaño de letra en `dp`, el texto no crece cuando el usuario sube el tamaño de fuente del sistema, y eso es un fallo de accesibilidad.
+
+### Ver la pantalla sin ejecutar la app
+
+```kotlin
+@Preview(showBackground = true)
+@Composable
+fun MiPantallaPreview() {
+    MiAppTheme { MiPantalla() }   // envuelve SIEMPRE en el tema
+}
+```
+
+Con `@Preview(showSystemUi = true)` ves el móvil entero, y poniendo varias anotaciones `@Preview` seguidas comparas la misma pantalla en claro y en oscuro (`uiMode = Configuration.UI_MODE_NIGHT_YES`).
+
+## 7. Recursos del tema
+
+:::recursos
+pdf | Tema 05 - Diseño de interfaces de usuario | Los apuntes originales en PDF | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=32823
+url | Paleta de colores | Para elegir los códigos de color | https://moodle.educarex.es/ccff_iesvjp/mod/url/view.php?id=28734
+doc | MaterialTheme.colorScheme | Todos los colores del tema | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=49524
+doc | MaterialTheme.typography | Todos los estilos de texto | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=49525
+sol | Soluciones ejercicios | Soluciones oficiales del tema | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=32992
+entrega | Entrega Ejercicio 6 (T5) | Tarea de Moodle | https://moodle.educarex.es/ccff_iesvjp/mod/assign/view.php?id=49671
+entrega | Entrega Ejercicio 9 (T5) | Tarea de Moodle | https://moodle.educarex.es/ccff_iesvjp/mod/assign/view.php?id=49672
+:::

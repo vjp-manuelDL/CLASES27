@@ -1638,3 +1638,74 @@ fun Monumento(@DrawableRes imagen: Int, nombre: String, marcado: Boolean, onCamb
 </resources>
 ```
 :::
+
+## 13. Trucos y errores típicos
+
+### remember, rememberSaveable y el `by`
+
+| Qué usar | Cuándo |
+|---|---|
+| `remember { mutableStateOf(...) }` | Valor que solo importa mientras la pantalla está abierta (si abres un menú, un desplegable...) |
+| `rememberSaveable { mutableStateOf(...) }` | Lo que no quieres perder al **girar la pantalla**: formularios, marcas, contadores |
+| `remember { mutableStateListOf(...) }` | Listas que crecen o menguan (Tema 7). **Nunca** con `rememberSaveable` |
+
+```kotlin
+// las tres cosas que no pueden faltar
+import androidx.compose.runtime.getValue   // sin estos dos imports
+import androidx.compose.runtime.setValue   // el "by" da error
+var contador by rememberSaveable { mutableIntStateOf(0) }
+```
+
+> **Truco:** usa `mutableIntStateOf` para enteros, `mutableFloatStateOf` / `mutableDoubleStateOf` para decimales y `mutableStateOf` para texto, booleanos y objetos. Si pones `mutableStateOf(0)` para un `Int` funciona, pero el editor te avisa de que hay una versión mejor.
+
+### stringResource vs getString
+
+```kotlin
+@Composable
+fun Pantalla() {
+    val context = LocalContext.current
+    // dentro de un composable: stringResource
+    val aviso = stringResource(R.string.aviso)
+
+    Button(onClick = {
+        // dentro de onClick NO es composable -> hay que usar el contexto
+        Toast.makeText(context, context.getString(R.string.aviso), Toast.LENGTH_SHORT).show()
+        // o directamente el ID, que Toast lo acepta:
+        Toast.makeText(context, R.string.aviso, Toast.LENGTH_SHORT).show()
+    }) { Text(stringResource(R.string.boton)) }
+}
+```
+
+> !**El error más repetido del tema:** llamar a `stringResource()` dentro de un `onClick` o de una función normal. El editor dice *"@Composable invocations can only happen from the context of a @Composable function"*. Guarda el texto antes en una variable, o pasa el `context`.
+
+### Problemas frecuentes
+
+| Síntoma | Causa | Solución |
+|---|---|---|
+| Escribo en el `TextField` y no aparece nada | Falta actualizar el estado | `onValueChange = { texto = it }`: sin eso el campo nunca cambia |
+| El contador vuelve a 0 al girar el móvil | `remember` se pierde al recrear la Activity | Cambia a `rememberSaveable` |
+| `Icons.Filled.DirectionsCar` no existe | Es de la librería extendida | Añade `implementation("androidx.compose.material:material-icons-extended")` y pulsa **Sync Now** |
+| La app se cierra al pulsar el botón | Has hecho `toInt()` de algo que no era número | Usa `toIntOrNull()` / `toDoubleOrNull()` y comprueba `null` |
+| Los Checkbox se marcan todos a la vez | Comparten el mismo estado | Cada uno necesita **su propia** variable de estado |
+| Los RadioButton se marcan todos | Les falta compararse con el estado | `selected = seleccion == opcion` |
+| El teclado tapa el campo de texto | La ventana no se reajusta | `android:windowSoftInputMode="adjustResize"` en el manifiesto, o `Modifier.imePadding()` |
+| El `Toast` no sale | Lo lanzas fuera de un evento o sin contexto válido | Saca el contexto con `LocalContext.current` dentro del composable |
+
+### Detalles que suman nota
+
+- `contentDescription` en **todas** las imágenes e iconos (y en los decorativos, `null`).
+- Textos en `strings.xml`, incluidos los mensajes de los Toast.
+- Botones deshabilitados cuando no tienen sentido: `enabled = contador > 0`.
+- Validar antes de operar, y avisar al usuario con un Toast claro en vez de dejar que la app pete.
+
+## 14. Recursos del tema
+
+:::recursos
+pdf | Tema 06 - Componentes básicos | Los apuntes originales en PDF | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=32991
+cfg | Configurar Material Icons Extended | Cómo añadir la librería de iconos | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=49703
+url | Crear imágenes e iconos en Android Studio | Image Asset y Vector Asset | https://moodle.educarex.es/ccff_iesvjp/mod/url/view.php?id=33326
+img | Imágenes Mr. Potato | Las imágenes del ejercicio 6 | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=28745
+sol | Soluciones ejercicios | Soluciones oficiales del tema | https://moodle.educarex.es/ccff_iesvjp/mod/resource/view.php?id=33323
+entrega | Entrega Ejercicio 8 (T6) | Tarea de Moodle | https://moodle.educarex.es/ccff_iesvjp/mod/assign/view.php?id=49868
+entrega | Entrega Ejercicio 10 (T6) | Tarea de Moodle | https://moodle.educarex.es/ccff_iesvjp/mod/assign/view.php?id=49869
+:::
