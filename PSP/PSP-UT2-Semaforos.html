@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSP UT2 · Semáforos en Java — Resumen y ejercicios</title>
+<style>
+:root{
+  --bg:#f7f6f2; --card:#ffffff; --ink:#1d1d1b; --muted:#5f5e58; --line:#e3e1da;
+  --accent:#c2410c; --accent-soft:#fff1e8; --green:#15803d; --green-soft:#ecfdf3;
+  --code-bg:#1e1e2a; --code-ink:#e6e6f0;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#16161a; --card:#1f1f25; --ink:#ececec; --muted:#a3a3a8; --line:#33333b;
+    --accent:#fb923c; --accent-soft:#2b1e15; --green:#4ade80; --green-soft:#16261c; --code-bg:#121218; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:48px 24px 28px;max-width:960px;margin:0 auto}
+header small{color:var(--accent);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+header h1{font-size:2.2rem;line-height:1.15;margin:.3em 0 .2em}
+header p{color:var(--muted);margin:0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .in{max-width:960px;margin:0 auto;padding:10px 24px;display:flex;gap:6px;flex-wrap:wrap}
+nav a{font-size:.85rem;text-decoration:none;color:var(--ink);padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+nav a:hover{border-color:var(--accent);color:var(--accent)}
+main{max-width:960px;margin:0 auto;padding:12px 24px 80px}
+h2{font-size:1.5rem;margin:48px 0 12px;padding-top:8px}
+h3{font-size:1.15rem;margin:28px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.92rem;margin:8px 0}
+th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600}
+code{font-family:"JetBrains Mono",Consolas,ui-monospace,monospace;font-size:.88em;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:10px;overflow-x:auto;font-size:.82rem;line-height:1.5;margin:10px 0}
+pre code{background:none;padding:0;font-size:inherit;color:inherit}
+.c{color:#8b8fa8;font-style:italic}
+.k{color:#ff9e64}
+.s{color:#9ece6a}
+.tip{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:6px;margin:10px 0}
+.ok{border-left:4px solid var(--green);background:var(--green-soft);padding:10px 14px;border-radius:6px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.pat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.pat b{display:block;margin-bottom:4px}
+.pat pre{font-size:.78rem;margin:8px 0 0}
+details.ej{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:12px 0;overflow:hidden}
+details.ej summary{cursor:pointer;padding:14px 18px;font-weight:650;list-style:none;display:flex;gap:10px;align-items:baseline}
+details.ej summary::-webkit-details-marker{display:none}
+details.ej summary .n{color:var(--accent);min-width:2.2em}
+details.ej summary .tag{margin-left:auto;font-size:.75rem;font-weight:500;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px;white-space:nowrap}
+details.ej[open] summary{border-bottom:1px solid var(--line)}
+details.ej .body{padding:6px 18px 16px}
+.enun{color:var(--muted);font-size:.93rem}
+.file{margin:12px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.fh{display:flex;align-items:center;justify-content:space-between;background:var(--accent-soft);padding:6px 12px;font:600 .85rem "JetBrains Mono",Consolas,ui-monospace,monospace;color:var(--accent)}
+.fh button{font:500 .78rem system-ui,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:4px 10px;cursor:pointer;min-height:30px}
+.fh button:hover{border-color:var(--accent)}
+.file pre{margin:0;border-radius:0}
+.t{color:#7dcfff}
+footer{color:var(--muted);font-size:.85rem;text-align:center;padding:30px}
+</style>
+</head>
+<body>
+
+<header>
+  <small>Programación de Servicios y Procesos · UT2</small>
+  <h1>Semáforos en Java</h1>
+  <p>Resumen de los apuntes y resolución de las 14 actividades usando solo lo que se ve en el tema (<code>Semaphore</code>, <code>acquire</code>, <code>release</code>, mutex y colas de espera).</p>
+</header>
+
+<nav><div class="in">
+  <a href="#resumen">Resumen</a>
+  <a href="#api">API</a>
+  <a href="#patrones">Patrones</a>
+  <a href="#consejos">Consejos</a>
+  <a href="#ejercicios">Ejercicios 1–14</a>
+</div></nav>
+
+<main>
+
+<!-- ======================= RESUMEN ======================= -->
+<h2 id="resumen">1. Qué es un semáforo</h2>
+<div class="card">
+  <ul>
+    <li>Inventado por <b>Dijkstra</b> (finales de los 60). Primer mecanismo que sincroniza <b>sin espera activa</b>: el hilo se bloquea y no consume CPU.</li>
+    <li>Es un <b>contador entero</b> + dos operaciones atómicas: <b>adquirir</b> (<code>acquire</code>) y <b>liberar</b> (<code>release</code>).</li>
+    <li>Valor <b>0</b> = semáforo en rojo (cerrado). Valor <b>&gt;0</b> = en verde; el número indica cuántos hilos pueden pasar.</li>
+    <li><b>Binario</b>: valores 0–1 (se usa como <i>mutex</i>). <b>General</b>: valores 0..N.</li>
+  </ul>
+  <table>
+    <tr><th>Operación</th><th>Efecto sobre el contador</th><th>Si el contador es 0…</th></tr>
+    <tr><td><code>acquire()</code></td><td>Resta 1</td><td>El hilo se <b>bloquea</b> hasta que otro haga <code>release()</code></td></tr>
+    <tr><td><code>release()</code></td><td>Suma 1 (despierta a un hilo bloqueado si lo hay)</td><td>Nunca bloquea</td></tr>
+  </table>
+  <div class="tip">El contador <b>nunca baja de 0</b>, pero sí puede subir por encima del valor inicial: <code>new Semaphore(0)</code> + <code>release(10)</code> → 10 permisos.</div>
+</div>
+
+<h2 id="api">2. La clase <code>java.util.concurrent.Semaphore</code></h2>
+<div class="card">
+  <h3 style="margin-top:0">Constructores</h3>
+  <table>
+    <tr><th>Constructor</th><th>Qué hace</th></tr>
+    <tr><td><code>Semaphore(int permits)</code></td><td>Crea el semáforo con N permisos. <b>No justo</b> por defecto (más eficiente).</td></tr>
+    <tr><td><code>Semaphore(int permits, boolean fair)</code></td><td><code>fair = true</code> → los hilos se despiertan en orden de llegada (cola <b>FIFO</b>). <code>false</code> → orden aleatorio.</td></tr>
+  </table>
+  <h3>Métodos</h3>
+  <table>
+    <tr><th>Método</th><th>Qué hace</th></tr>
+    <tr><td><code>acquire()</code></td><td>Coge 1 permiso; se bloquea si no hay. Lanza <code>InterruptedException</code>.</td></tr>
+    <tr><td><code>acquire(int n)</code></td><td>Coge n permisos de golpe; se bloquea hasta que haya n.</td></tr>
+    <tr><td><code>release()</code> / <code>release(int n)</code></td><td>Devuelve 1 o n permisos.</td></tr>
+    <tr><td><code>tryAcquire()</code></td><td>Intenta coger 1 permiso sin bloquear: <code>true</code> si lo consigue, <code>false</code> si no.</td></tr>
+    <tr><td><code>availablePermits()</code></td><td>Permisos disponibles ahora mismo.</td></tr>
+    <tr><td><code>getQueueLength()</code></td><td>Estimación de hilos esperando.</td></tr>
+    <tr><td><code>reducePermits(int n)</code></td><td>Reduce los permisos disponibles.</td></tr>
+    <tr><td><code>toString()</code></td><td>Identificador + estado del semáforo.</td></tr>
+  </table>
+</div>
+
+<h2 id="patrones">3. Los 4 usos que aparecen en el tema</h2>
+<div class="grid">
+  <div class="pat"><b>① Sincronizar / ordenar (permisos = 0)</b>
+    El que debe ir después hace <code>acquire()</code> y se bloquea; el que va primero hace <code>release()</code> al terminar. <i>Ej. 1: BUENAS → TARDES.</i>
+<pre><code>Semaphore turno = new Semaphore(0);
+// Hilo B:  turno.acquire(); ...
+// Hilo A:  ...; turno.release();</code></pre></div>
+  <div class="pat"><b>② Limitar hilos en la región crítica (permisos = N)</b>
+    Como máximo N hilos dentro a la vez. <i>Ej. 2: parking de 2 plazas.</i>
+<pre><code>Semaphore sem = new Semaphore(5);
+sem.acquire();
+// región crítica
+sem.release();</code></pre></div>
+  <div class="pat"><b>③ Mutex (permisos = 1)</b>
+    Exclusión mutua para tocar variables compartidas (sustituye a <code>synchronized</code>).
+<pre><code>Semaphore mutex = new Semaphore(1);
+mutex.acquire();
+contador++;
+mutex.release();</code></pre></div>
+  <div class="pat"><b>④ Productor‑Consumidor (3 semáforos)</b>
+    <code>lleno</code> = huecos libres (N), <code>vacio</code> = elementos (0), <code>mutex</code> = acceso a la cola (1).
+<pre><code>// Productor        // Consumidor
+lleno.acquire();    vacio.acquire();
+mutex.acquire();    mutex.acquire();
+cola.offer(x);      x = cola.poll();
+mutex.release();    mutex.release();
+vacio.release();    lleno.release();</code></pre></div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Patrón extra: esperar a que se cumpla una condición</h3>
+  <p>Lo necesitan los ejercicios 8, 9, 11 y 12. Es la aplicación directa de los consejos del tema: <i>un semáforo sin permisos por cada condición de bloqueo</i>, <i>abrir el mutex antes de bloquearse</i> y <i>llamar a <code>release()</code> tantas veces como hilos esperan</i> (no hay <code>notifyAll()</code>).</p>
+<pre><code><span class="k">int</span> esperando = 0;                       <span class="c">// cuántos hilos hay bloqueados en 'cola'</span>
+Semaphore mutex = <span class="k">new</span> Semaphore(1);
+Semaphore cola  = <span class="k">new</span> Semaphore(0);      <span class="c">// aquí se duermen los que no pueden pasar</span>
+
+<span class="c">// ---- entrar ----</span>
+mutex.acquire();
+<span class="k">while</span> (!condicion) {                    <span class="c">// while, no if: al despertar se vuelve a comprobar</span>
+    esperando++;
+    mutex.release();                       <span class="c">// ¡soltar el mutex ANTES de dormir! (evita interbloqueo)</span>
+    cola.acquire();
+    mutex.acquire();
+}
+<span class="c">/* modificar estado */</span>
+mutex.release();
+
+<span class="c">// ---- salir / cambiar estado ----</span>
+mutex.acquire();
+<span class="c">/* modificar estado */</span>
+cola.release(esperando);                   <span class="c">// "notifyAll" casero</span>
+esperando = 0;
+mutex.release();</code></pre>
+</div>
+
+<h2 id="consejos">4. Consejos del tema</h2>
+<div class="card">
+  <ul>
+    <li>Los semáforos binarios de exclusión mutua se llaman <b>mutex</b>.</li>
+    <li>Usa un semáforo <b>sin permisos</b> para bloquear hilos que esperan una condición (el equivalente al <code>wait()</code>). <b>Uno por cada condición</b>.</li>
+    <li><b>Libera el mutex</b> siempre que puedas antes de bloquearte o de abrir/cerrar otro semáforo → evita interbloqueos.</li>
+    <li>No hay <code>notifyAll()</code>: llama a <code>release()</code> tantas veces como <code>acquire()</code> pendientes haya.</li>
+    <li>Orden en productor/consumidor: <b>primero el semáforo de condición, luego el mutex</b>. Al revés puedes bloquearte con el mutex cogido.</li>
+    <li><code>Queue</code>: usar <code>offer()</code> y <code>poll()</code> (devuelven false/null en vez de lanzar excepción).</li>
+  </ul>
+</div>
+
+<!-- ======================= EJERCICIOS ======================= -->
+<h2 id="ejercicios">5. Actividades resueltas</h2>
+<p class="enun">Pulsa cada ejercicio para desplegarlo. Cada clase va en su propio bloque con el nombre del fichero (<code>Clase.java</code>) y un botón para copiarla. Todas las clases de un ejercicio van en el mismo paquete (<code>ejercicioN</code>).</p>
+
+<!-- 1 -->
+<details class="ej"><summary><span class="n">1</span>TIC‑TAC intercalado<span class="tag">Patrón ① · 3 clases</span></summary><div class="body">
+<p class="enun">Dos <code>Runnable</code> (hiloTIC, hiloTAC) que imprimen sin parar; la salida debe ser TIC‑TAC‑TIC‑TAC…, empezando por TIC.</p>
+<p><b>Idea:</b> dos semáforos que se pasan el turno. <code>semTic</code> empieza con 1 (TIC arranca) y <code>semTac</code> con 0.</p>
+<div class="file"><div class="fh"><span>HiloTIC.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio1;
+
+import java.util.concurrent.Semaphore;
+
+public class HiloTIC implements Runnable {
+    Semaphore semTic, semTac;
+
+    public HiloTIC(Semaphore semTic, Semaphore semTac) {
+        this.semTic = semTic;
+        this.semTac = semTac;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                semTic.acquire();      // espero mi turno
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.print("TIC-");
+            semTac.release();          // le doy el turno a TAC
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>HiloTAC.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio1;
+
+import java.util.concurrent.Semaphore;
+
+public class HiloTAC implements Runnable {
+    Semaphore semTic, semTac;
+
+    public HiloTAC(Semaphore semTic, Semaphore semTac) {
+        this.semTic = semTic;
+        this.semTac = semTac;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                semTac.acquire();      // espero a que TIC haya escrito
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.print("TAC-");
+            semTic.release();          // le devuelvo el turno a TIC
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio1;
+
+import java.util.concurrent.Semaphore;
+
+public class Principal {
+    public static void main(String[] args) {
+        Semaphore semTic = new Semaphore(1);   // TIC empieza
+        Semaphore semTac = new Semaphore(0);
+
+        new Thread(new HiloTAC(semTic, semTac)).start();
+        new Thread(new HiloTIC(semTic, semTac)).start();
+    }
+}</code></pre></div>
+</div></details>
+
+<!-- 2 -->
+<details class="ej"><summary><span class="n">2</span>30 HiloInicial + 1 HiloFinal<span class="tag">Patrón ① · 3 clases</span></summary><div class="body">
+<p class="enun">Los 30 iniciales pintan su id en cualquier orden; el final solo escribe cuando los 30 han terminado.</p>
+<p><b>Idea:</b> semáforo con 0 permisos. Cada inicial hace <code>release()</code> al pintar; el final pide los 30 de golpe con <code>acquire(30)</code>.</p>
+<div class="file"><div class="fh"><span>HiloInicial.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio2;
+
+import java.util.concurrent.Semaphore;
+
+public class HiloInicial extends Thread {
+    int id;
+    Semaphore sem;
+
+    public HiloInicial(int id, Semaphore sem) {
+        this.id = id;
+        this.sem = sem;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Hilo " + id);
+        sem.release();                 // +1 permiso: "yo ya he terminado"
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>HiloFinal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio2;
+
+import java.util.concurrent.Semaphore;
+
+public class HiloFinal extends Thread {
+    Semaphore sem;
+
+    public HiloFinal(Semaphore sem) {
+        this.sem = sem;
+    }
+
+    @Override
+    public void run() {
+        try {
+            sem.acquire(30);           // espera hasta que los 30 hayan hecho release()
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Hola soy el hilo final");
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio2;
+
+import java.util.concurrent.Semaphore;
+
+public class Principal {
+    public static void main(String[] args) {
+        Semaphore sem = new Semaphore(0);
+
+        new HiloFinal(sem).start();    // aunque arranque el primero, espera
+        for (int i = 1; i &lt;= 30; i++) {
+            new HiloInicial(i, sem).start();
+        }
+    }
+}</code></pre></div>
+<div class="tip">Alternativa sin <code>acquire(30)</code>: un bucle de 30 <code>acquire()</code> en el HiloFinal.</div>
+</div></details>
+
+<!-- 3 -->
+<details class="ej"><summary><span class="n">3</span>Parking con plazas numeradas<span class="tag">Patrón ② + ③ · 3 clases</span></summary><div class="body">
+<p class="enun">Sobre el ejemplo 2: saber qué plaza ocupa cada coche, mostrar plazas libres en cada entrada/salida y que los mensajes salgan ordenados.</p>
+<p><b>Idea:</b> mantener el semáforo de capacidad (con justicia) y añadir un array <code>boolean[] plazas</code> protegido por un <b>mutex</b>. Todos los mensajes se imprimen dentro del mutex para que no se mezclen.</p>
+<div class="file"><div class="fh"><span>Coche.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio3;
+
+public class Coche implements Runnable {
+    Parking parking;
+    int numcoche;
+
+    public Coche(Parking parking, int numcoche) {
+        this.parking = parking;
+        this.numcoche = numcoche;
+    }
+
+    public int getNumcoche() {
+        return numcoche;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Arranca el coche número " + numcoche);
+        try {
+            Thread.sleep((long) (Math.random() * 4000));   // vuelta por Plasencia
+            System.out.println("\t||El coche número " + numcoche + " llega al parking e intenta entrar");
+            int plaza = parking.entrarParking(this);
+            Thread.sleep((long) (Math.random() * 9000));   // de compras
+            parking.salirParking(this, plaza);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Parking.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio3;
+
+import java.util.concurrent.Semaphore;
+
+public class Parking {
+    static final int CAPACIDAD = 2;
+    private Semaphore semaforo = new Semaphore(CAPACIDAD, true);  // plazas (FIFO)
+    private Semaphore mutex = new Semaphore(1);                   // protege el array
+    private boolean[] plazas = new boolean[CAPACIDAD];            // false = libre
+
+    private int libres() {
+        int n = 0;
+        for (boolean p : plazas) {
+            if (!p) n++;
+        }
+        return n;
+    }
+
+    public int entrarParking(Coche coche) throws InterruptedException {
+        semaforo.acquire();            // espero a que haya plaza
+        mutex.acquire();
+        int plaza = 0;
+        while (plazas[plaza]) plaza++; // primera libre (seguro que hay una)
+        plazas[plaza] = true;
+        System.out.println("=&gt;El coche número " + coche.getNumcoche() + " entra al Parking");
+        System.out.println("---------Coche número " + coche.getNumcoche()
+                + " ha aparcado en la plaza " + plaza + ". Quedan libres " + libres());
+        mutex.release();
+        return plaza;
+    }
+
+    public void salirParking(Coche coche, int plaza) throws InterruptedException {
+        mutex.acquire();
+        plazas[plaza] = false;
+        System.out.println("&lt;= Coche número " + coche.getNumcoche()
+                + " abandona el parking. Quedan libres " + libres());
+        mutex.release();
+        semaforo.release();            // dejo pasar al siguiente
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio3;
+
+public class Principal {
+    public static void main(String[] args) {
+        Parking parking = new Parking();
+        for (int i = 1; i &lt;= 4; i++) {
+            new Thread(new Coche(parking, i)).start();
+        }
+    }
+}</code></pre></div>
+<div class="tip">Ojo con el <code>(long)Math.random() * 40000</code> del ejemplo: el cast se aplica antes de multiplicar y siempre da 0. Aquí se usa <code>(long)(Math.random() * 4000)</code>.</div>
+</div></details>
+
+<!-- 4 -->
+<details class="ej"><summary><span class="n">4</span>3 amigos y 1000 globos (sin synchronized)<span class="tag">Patrón ③ · 2 clases</span></summary><div class="body">
+<p class="enun">Variable compartida <code>explotados</code>; el total debe ser exactamente 1000. Al final, cuántos ha explotado cada uno.</p>
+<p><b>Idea:</b> mutex para la comprobación <i>y</i> el incremento juntos (si comprobaras fuera del mutex, dos amigos podrían pasar del 1000).</p>
+<div class="file"><div class="fh"><span>Amigo.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio4;
+
+import java.util.concurrent.Semaphore;
+
+public class Amigo extends Thread {
+    static int explotados = 0;                       // variable compartida
+    static Semaphore mutex = new Semaphore(1, true); // justo: se reparten los globos
+    int misGlobos = 0;
+
+    public Amigo(String nombre) {
+        super(nombre);
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                mutex.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (explotados &gt;= 1000) {
+                mutex.release();                     // ¡soltar antes de salir!
+                break;
+            }
+            explotados++;
+            misGlobos++;
+            mutex.release();
+            try {
+                sleep(1);                            // tiempo en explotar el globo
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio4;
+
+public class Principal {
+    public static void main(String[] args) throws InterruptedException {
+        Amigo[] amigos = { new Amigo("Ana"), new Amigo("Luis"), new Amigo("Eva") };
+
+        for (Amigo a : amigos) a.start();
+        for (Amigo a : amigos) a.join();             // esperar a que acaben
+
+        for (Amigo a : amigos) {
+            System.out.println(a.getName() + " ha explotado " + a.misGlobos + " globos");
+        }
+        System.out.println("Total: " + Amigo.explotados);   // 1000
+    }
+}</code></pre></div>
+</div></details>
+
+<!-- 5 -->
+<details class="ej"><summary><span class="n">5</span>Sala de profesores (máx. 3 de 7)<span class="tag">Patrón ② · 2 clases</span></summary><div class="body">
+<p class="enun">7 profesores, máximo 3 dentro. 200 ms dentro, 20 ms fuera antes de volver. Mensajes de entrar/salir dentro de la zona sincronizada.</p>
+<div class="file"><div class="fh"><span>Profesor.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio5;
+
+import java.util.concurrent.Semaphore;
+
+public class Profesor extends Thread {
+    Semaphore sala;
+
+    public Profesor(String nombre, Semaphore sala) {
+        super(nombre);
+        this.sala = sala;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                sala.acquire();                              // --- zona sincronizada ---
+                System.out.println(getName() + " entra en la sala");
+                sleep(200);
+                System.out.println(getName() + " se dispone a salir");
+                sala.release();                              // -------------------------
+                sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio5;
+
+import java.util.concurrent.Semaphore;
+
+public class Principal {
+    public static void main(String[] args) {
+        Semaphore sala = new Semaphore(3, true);    // justo: nadie se queda sin entrar
+        for (int i = 1; i &lt;= 7; i++) {
+            new Profesor("Profesor " + i, sala).start();
+        }
+    }
+}</code></pre></div>
+</div></details>
+
+<!-- 6 -->
+<details class="ej"><summary><span class="n">6</span>10 canarios: plato (3) y columpio (1)<span class="tag">Patrón ② ×2 · 2 clases</span></summary><div class="body">
+<p class="enun">Cada canario come (5 s, máx. 3 a la vez) y después se columpia (6 s, solo 1). Solo semáforos, sin más variables.</p>
+<div class="file"><div class="fh"><span>Canario.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio6;
+
+import java.util.concurrent.Semaphore;
+
+public class Canario extends Thread {
+    Semaphore plato, columpio;
+
+    public Canario(String nombre, Semaphore plato, Semaphore columpio) {
+        super(nombre);
+        this.plato = plato;
+        this.columpio = columpio;
+    }
+
+    @Override
+    public void run() {
+        try {
+            plato.acquire();
+            System.out.println(getName() + " está comiendo");
+            sleep(5000);
+            System.out.println(getName() + " termina de comer");
+            plato.release();
+
+            columpio.acquire();
+            System.out.println(getName() + " se está columpiando");
+            sleep(6000);
+            System.out.println(getName() + " deja el columpio");
+            columpio.release();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio6;
+
+import java.util.concurrent.Semaphore;
+
+public class Principal {
+    public static void main(String[] args) {
+        Semaphore plato = new Semaphore(3);
+        Semaphore columpio = new Semaphore(1);
+        for (int i = 1; i &lt;= 10; i++) {
+            new Canario("Canario " + i, plato, columpio).start();
+        }
+    }
+}</code></pre></div>
+</div></details>
+
+<!-- 7 -->
+<details class="ej"><summary><span class="n">7</span>Productor‑Consumidor con fichero<span class="tag">Patrón ④ · 4 clases</span></summary><div class="body">
+<p class="enun">Igual que el ejemplo 3, pero el buffer es un fichero de texto: el productor escribe una cadena y el consumidor la lee de ahí.</p>
+<p><b>Idea:</b> los semáforos (<code>lleno</code>=5, <code>vacio</code>=0, <code>mutex</code>=1) y el orden de <code>acquire/release</code> se quedan <b>igual</b>. Solo cambia <code>Buffer</code>: el fichero hace de cola (se escribe al final, se lee la primera línea).</p>
+<div class="file"><div class="fh"><span>Buffer.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio7;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Buffer {
+    static final String FICHERO = "buffer.txt";
+
+    // encolar: añadir una línea al final (append = true)
+    public static void escribir(String dato) throws IOException {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(FICHERO, true))) {
+            pw.println(dato);
+        }
+    }
+
+    // desencolar: leer la primera línea y reescribir el resto
+    public static String leer() throws IOException {
+        List&lt;String&gt; lineas = new ArrayList&lt;&gt;();
+        try (BufferedReader br = new BufferedReader(new FileReader(FICHERO))) {
+            String l;
+            while ((l = br.readLine()) != null) lineas.add(l);
+        }
+        String primera = lineas.remove(0);
+        try (PrintWriter pw = new PrintWriter(new FileWriter(FICHERO, false))) {
+            for (String l : lineas) pw.println(l);
+        }
+        return primera;
+    }
+
+    // vaciar el fichero al empezar
+    public static void vaciar() throws IOException {
+        new FileWriter(FICHERO, false).close();
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Productor.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio7;
+
+import java.io.IOException;
+import java.util.concurrent.Semaphore;
+
+public class Productor extends Thread {
+    String name;
+    Semaphore vacio, lleno, mutex;
+
+    public Productor(String name, Semaphore vacio, Semaphore lleno, Semaphore mutex) {
+        this.name = name;
+        this.vacio = vacio;
+        this.lleno = lleno;
+        this.mutex = mutex;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i &lt; 5; i++) {
+            try {
+                lleno.acquire();       // ¿hay hueco?
+                mutex.acquire();       // exclusión mutua sobre el fichero
+                String produce = name + "-" + i;
+                Buffer.escribir(produce);
+                System.out.println("Productor " + name + " escribe " + produce);
+                mutex.release();
+                vacio.release();       // aviso: hay un elemento más
+            } catch (InterruptedException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Consumidor.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio7;
+
+import java.io.IOException;
+import java.util.concurrent.Semaphore;
+
+public class Consumidor extends Thread {
+    String name;
+    Semaphore vacio, lleno, mutex;
+
+    public Consumidor(String name, Semaphore vacio, Semaphore lleno, Semaphore mutex) {
+        this.name = name;
+        this.vacio = vacio;
+        this.lleno = lleno;
+        this.mutex = mutex;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i &lt; 5; i++) {
+            try {
+                vacio.acquire();       // ¿hay algo que leer?
+                mutex.acquire();
+                String leido = Buffer.leer();
+                System.out.println("Consumidor " + name + " ==&gt; " + leido);
+                mutex.release();
+                lleno.release();       // queda un hueco libre
+            } catch (InterruptedException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Main.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio7;
+
+import java.io.IOException;
+import java.util.concurrent.Semaphore;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        Buffer.vaciar();
+
+        Semaphore vacio = new Semaphore(0);   // elementos en el fichero
+        Semaphore lleno = new Semaphore(5);   // huecos libres
+        Semaphore mutex = new Semaphore(1);   // acceso al fichero
+
+        for (int i = 0; i &lt; 2; i++) {
+            new Consumidor("C" + (i + 1), vacio, lleno, mutex).start();
+        }
+        for (int i = 0; i &lt; 2; i++) {
+            new Productor("P" + (i + 1), vacio, lleno, mutex).start();
+        }
+    }
+}</code></pre></div>
+<div class="tip">El <code>mutex</code> es imprescindible: leer y reescribir el fichero no es atómico; dos hilos a la vez lo corromperían.</div>
+</div></details>
+
+<!-- 8 -->
+<details class="ej"><summary><span class="n">8</span>Baño público y limpiador<span class="tag">Torniquete + condición · 4 clases</span></summary><div class="body">
+<p class="enun">Capacidad ilimitada. El limpiador pone el letrero (nadie más entra), espera a que salgan todos, limpia y quita el letrero.</p>
+<table>
+  <tr><th>Elemento</th><th>Inicial</th><th>Uso</th></tr>
+  <tr><td><code>letrero</code></td><td>1</td><td>"Puerta". La persona hace <code>acquire()+release()</code> (pasa y la deja abierta). El limpiador hace <code>acquire()</code> y la deja cerrada mientras limpia.</td></tr>
+  <tr><td><code>mutex</code></td><td>1</td><td>Proteger <code>dentro</code> y <code>limpiadorEsperando</code>.</td></tr>
+  <tr><td><code>vacio</code></td><td>0</td><td>El limpiador se duerme aquí hasta que el último en salir le avise.</td></tr>
+</table>
+<div class="file"><div class="fh"><span>Banio.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio8;
+
+import java.util.concurrent.Semaphore;
+
+public class Banio {
+    private Semaphore letrero = new Semaphore(1, true);
+    private Semaphore mutex = new Semaphore(1);
+    private Semaphore vacio = new Semaphore(0);
+    private int dentro = 0;
+    private boolean limpiadorEsperando = false;
+
+    public void usarBanio(String nombre) throws InterruptedException {
+        System.out.println(nombre + " quiere entrar en el baño");
+        letrero.acquire();             // si hay letrero, me quedo aquí esperando
+        letrero.release();             // paso y dejo la puerta libre al siguiente
+
+        mutex.acquire();
+        dentro++;
+        System.out.println("\t" + nombre + " está utilizando el baño");
+        mutex.release();
+
+        Thread.sleep((long) (Math.random() * 1000));   // hacer lo habitual
+
+        mutex.acquire();
+        dentro--;
+        System.out.println("\t\t=&gt;" + nombre + " abandona el baño");
+        if (dentro == 0 &amp;&amp; limpiadorEsperando) {
+            System.out.println("\t\t=&gt;" + nombre + " es el último, avisa al limpiador");
+            vacio.release();
+        }
+        mutex.release();
+    }
+
+    public void limpiarBanio() throws InterruptedException {
+        letrero.acquire();             // poner letrero: ya no entra nadie
+        System.out.println("--El limpiador pone el cartel para limpiar el baño");
+
+        mutex.acquire();
+        if (dentro &gt; 0) {
+            limpiadorEsperando = true;
+            mutex.release();           // soltar mutex antes de dormir
+            vacio.acquire();           // esperar a que se vacíe
+            mutex.acquire();
+            limpiadorEsperando = false;
+        }
+        mutex.release();
+
+        System.out.println("XX Limpiando baño");
+        Thread.sleep(2000);
+        System.out.println("XX Baño limpio");
+        letrero.release();             // quitar letrero
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Persona.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio8;
+
+public class Persona extends Thread {
+    Banio banio;
+
+    public Persona(String nombre, Banio banio) {
+        super(nombre);
+        this.banio = banio;
+    }
+
+    @Override
+    public void run() {
+        try {
+            sleep((long) (Math.random() * 2000));    // llega en un momento aleatorio
+            banio.usarBanio(getName());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Limpiador.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio8;
+
+public class Limpiador extends Thread {
+    Banio banio;
+
+    public Limpiador(Banio banio) {
+        this.banio = banio;
+    }
+
+    @Override
+    public void run() {
+        try {
+            sleep(800);                              // llega a mitad del uso
+            banio.limpiarBanio();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio8;
+
+public class Principal {
+    public static void main(String[] args) {
+        Banio banio = new Banio();
+        String[] nombres = {"Ana", "Natalia", "Victor", "Jesus", "Sergio",
+                            "Pepe", "Luis", "Claudia", "Maria", "Juan"};
+        for (String n : nombres) {
+            new Persona(n, banio).start();
+        }
+        new Limpiador(banio).start();
+    }
+}</code></pre></div>
+</div></details>
+
+<!-- 9 -->
+<details class="ej"><summary><span class="n">9</span>Sala de baile equilibrada<span class="tag">Patrón condición · 3 clases</span></summary><div class="body">
+<p class="enun">Si al entrar hay más personas de tu sexo que del contrario, esperas hasta que se equilibre.</p>
+<p><b>Condición para entrar:</b> un hombre entra si <code>hombres &lt;= mujeres</code>; una mujer si <code>mujeres &lt;= hombres</code>. Un semáforo de espera por cada condición (<code>colaH</code>, <code>colaM</code>). Cada vez que alguien entra o sale se despierta a los que esperan para que lo vuelvan a comprobar.</p>
+<div class="file"><div class="fh"><span>SalaBaile.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio9;
+
+import java.util.concurrent.Semaphore;
+
+public class SalaBaile {
+    private int hombres = 0, mujeres = 0;
+    private int espH = 0, espM = 0;                  // cuántos esperan de cada sexo
+    private Semaphore mutex = new Semaphore(1);
+    private Semaphore colaH = new Semaphore(0);
+    private Semaphore colaM = new Semaphore(0);
+
+    // despierta a todos los que esperan (llamar con el mutex cogido)
+    private void avisar() {
+        colaH.release(espH);
+        espH = 0;
+        colaM.release(espM);
+        espM = 0;
+    }
+
+    private String estado() {
+        return " [H=" + hombres + " M=" + mujeres + "]";
+    }
+
+    public void entraHombre(String n) throws InterruptedException {
+        mutex.acquire();
+        while (hombres &gt; mujeres) {
+            System.out.println("  " + n + " espera" + estado());
+            espH++;
+            mutex.release();
+            colaH.acquire();
+            mutex.acquire();
+        }
+        hombres++;
+        System.out.println("=&gt; " + n + " entra" + estado());
+        avisar();
+        mutex.release();
+    }
+
+    public void saleHombre(String n) throws InterruptedException {
+        mutex.acquire();
+        hombres--;
+        System.out.println("&lt;= " + n + " sale" + estado());
+        avisar();
+        mutex.release();
+    }
+
+    public void entraMujer(String n) throws InterruptedException {
+        mutex.acquire();
+        while (mujeres &gt; hombres) {
+            System.out.println("  " + n + " espera" + estado());
+            espM++;
+            mutex.release();
+            colaM.acquire();
+            mutex.acquire();
+        }
+        mujeres++;
+        System.out.println("=&gt; " + n + " entra" + estado());
+        avisar();
+        mutex.release();
+    }
+
+    public void saleMujer(String n) throws InterruptedException {
+        mutex.acquire();
+        mujeres--;
+        System.out.println("&lt;= " + n + " sale" + estado());
+        avisar();
+        mutex.release();
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Persona.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio9;
+
+public class Persona extends Thread {
+    SalaBaile sala;
+    boolean esHombre;
+
+    public Persona(String nombre, boolean esHombre, SalaBaile sala) {
+        super(nombre);
+        this.esHombre = esHombre;
+        this.sala = sala;
+    }
+
+    @Override
+    public void run() {
+        try {
+            sleep((long) (Math.random() * 1000));
+            if (esHombre) sala.entraHombre(getName());
+            else sala.entraMujer(getName());
+
+            sleep((long) (Math.random() * 2000));    // baila
+
+            if (esHombre) sala.saleHombre(getName());
+            else sala.saleMujer(getName());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio9;
+
+public class Principal {
+    public static void main(String[] args) {
+        SalaBaile sala = new SalaBaile();
+        for (int i = 1; i &lt;= 6; i++) {
+            new Persona("Hombre " + i, true, sala).start();
+            new Persona("Mujer " + i, false, sala).start();
+        }
+    }
+}</code></pre></div>
+</div></details>
+
+<!-- 10 -->
+<details class="ej"><summary><span class="n">10</span>Canarios y encargado que repone<span class="tag">Patrón ② + acquire(n) · 4 clases</span></summary><div class="body">
+<p class="enun">10 canarios, comedero de 3. El encargado repone cada 10 ms: espera a que no haya nadie comiendo y, mientras repone, nadie entra.</p>
+<p><b>Idea:</b> el encargado pide <b>los 3 permisos a la vez</b> con <code>acquire(3)</code>. Solo los consigue con el comedero vacío, y mientras los tiene nadie entra. Con <code>fair = true</code>, los canarios que lleguen después de él no lo adelantan.</p>
+<div class="file"><div class="fh"><span>Comedero.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio10;
+
+import java.util.concurrent.Semaphore;
+
+public class Comedero {
+    static final int HUECOS = 3;
+    private Semaphore huecos = new Semaphore(HUECOS, true);   // justo (FIFO)
+
+    public void comer(String n) throws InterruptedException {
+        huecos.acquire();
+        System.out.println(n + " come. Huecos libres: " + huecos.availablePermits());
+        Thread.sleep(10);
+        System.out.println(n + " deja de comer");
+        huecos.release();
+    }
+
+    public void reponer() throws InterruptedException {
+        System.out.println("** Encargado quiere reponer");
+        huecos.acquire(HUECOS);        // espera a que salgan todos y bloquea la entrada
+        System.out.println("** Encargado reponiendo alpiste...");
+        Thread.sleep(10);
+        System.out.println("** Encargado termina de reponer");
+        huecos.release(HUECOS);
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Canario.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio10;
+
+public class Canario extends Thread {
+    Comedero comedero;
+
+    public Canario(String nombre, Comedero comedero) {
+        super(nombre);
+        this.comedero = comedero;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                sleep(10);             // revolotea
+                comedero.comer(getName());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Encargado.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio10;
+
+public class Encargado extends Thread {
+    Comedero comedero;
+
+    public Encargado(Comedero comedero) {
+        this.comedero = comedero;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                sleep(10);
+                comedero.reponer();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio10;
+
+public class Principal {
+    public static void main(String[] args) {
+        Comedero comedero = new Comedero();
+        for (int i = 1; i &lt;= 10; i++) {
+            new Canario("Canario " + i, comedero).start();
+        }
+        new Encargado(comedero).start();
+    }
+}</code></pre></div>
+<div class="tip">Si el profe pide hacerlo "a mano": variables <code>comiendo</code> y <code>reponiendo</code> + mutex + dos semáforos de espera (<code>colaCanarios</code>, <code>colaEncargado</code>), siguiendo el patrón de condición.</div>
+</div></details>
+
+<!-- 11 -->
+<details class="ej"><summary><span class="n">11</span>Depósito de agua de 200 L<span class="tag">Patrón condición · 4 clases</span></summary><div class="body">
+<p class="enun"><code>mete_agua(L)</code> espera si no cabe; <code>saca_agua(L)</code> espera si no hay suficiente.</p>
+<p><b>Idea:</b> dos condiciones → dos semáforos de espera (<code>colaMeter</code>, <code>colaSacar</code>). Al meter agua se despierta a los que querían sacar, y al sacar, a los que querían meter.</p>
+<div class="file"><div class="fh"><span>Deposito.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio11;
+
+import java.util.concurrent.Semaphore;
+
+public class Deposito {
+    static final int CAPACIDAD = 200;
+    private int litros = 0;
+    private int espMeter = 0, espSacar = 0;
+    private Semaphore mutex = new Semaphore(1);
+    private Semaphore colaMeter = new Semaphore(0);
+    private Semaphore colaSacar = new Semaphore(0);
+
+    public void meteAgua(String n, int L) throws InterruptedException {
+        mutex.acquire();
+        while (litros + L &gt; CAPACIDAD) {
+            System.out.println("  " + n + " quiere meter " + L + "L pero no cabe (" + litros + "L)");
+            espMeter++;
+            mutex.release();
+            colaMeter.acquire();
+            mutex.acquire();
+        }
+        litros += L;
+        System.out.println("+ " + n + " mete " + L + "L -&gt; " + litros + "L");
+        colaSacar.release(espSacar);   // ahora hay más agua: que lo reintenten
+        espSacar = 0;
+        mutex.release();
+    }
+
+    public void sacaAgua(String n, int L) throws InterruptedException {
+        mutex.acquire();
+        while (litros &lt; L) {
+            System.out.println("  " + n + " quiere sacar " + L + "L pero solo hay " + litros + "L");
+            espSacar++;
+            mutex.release();
+            colaSacar.acquire();
+            mutex.acquire();
+        }
+        litros -= L;
+        System.out.println("- " + n + " saca " + L + "L -&gt; " + litros + "L");
+        colaMeter.release(espMeter);   // ahora hay más hueco
+        espMeter = 0;
+        mutex.release();
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>HiloMete.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio11;
+
+public class HiloMete extends Thread {
+    Deposito deposito;
+
+    public HiloMete(String nombre, Deposito deposito) {
+        super(nombre);
+        this.deposito = deposito;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i &lt; 5; i++) {
+            try {
+                int litros = (int) (Math.random() * 100) + 1;    // 1..100 L
+                deposito.meteAgua(getName(), litros);
+                sleep((long) (Math.random() * 500));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>HiloSaca.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio11;
+
+public class HiloSaca extends Thread {
+    Deposito deposito;
+
+    public HiloSaca(String nombre, Deposito deposito) {
+        super(nombre);
+        this.deposito = deposito;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i &lt; 5; i++) {
+            try {
+                int litros = (int) (Math.random() * 100) + 1;
+                deposito.sacaAgua(getName(), litros);
+                sleep((long) (Math.random() * 500));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio11;
+
+public class Principal {
+    public static void main(String[] args) {
+        Deposito deposito = new Deposito();
+        for (int i = 1; i &lt;= 3; i++) {
+            new HiloMete("Mete" + i, deposito).start();
+            new HiloSaca("Saca" + i, deposito).start();
+        }
+    }
+}</code></pre></div>
+<div class="tip">Con cantidades aleatorias el programa puede acabar con algún hilo esperando para siempre (p. ej., uno quiere sacar 90 L y ya nadie mete). Es normal; en la prueba puedes poner los mismos litros para meter y sacar.</div>
+</div></details>
+
+<!-- 12 -->
+<details class="ej"><summary><span class="n">12</span>Ascensor (6 personas / 450 kg)<span class="tag">Patrón condición · 3 clases</span></summary><div class="body">
+<p class="enun"><code>sube_persona(nombre, peso)</code> bloquea si está lleno o si el peso se pasa; <code>baja_persona</code> actualiza y despierta a quien pueda subir.</p>
+<p><b>Condición para subir:</b> <code>personas &lt; 6 &amp;&amp; kilos + peso &lt;= 450</code>. Al bajar alguien se despierta a <b>todos</b> los que esperan (un ligero puede caber aunque uno pesado no).</p>
+<div class="file"><div class="fh"><span>Ascensor.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio12;
+
+import java.util.concurrent.Semaphore;
+
+public class Ascensor {
+    static final int MAX_PERSONAS = 6;
+    static final float MAX_KG = 450;
+    private int personas = 0, esperando = 0;
+    private float kilos = 0;
+    private Semaphore mutex = new Semaphore(1);
+    private Semaphore cola = new Semaphore(0);
+
+    public void subePersona(String nombre, float peso) throws InterruptedException {
+        mutex.acquire();
+        while (personas == MAX_PERSONAS || kilos + peso &gt; MAX_KG) {
+            System.out.println("  " + nombre + " (" + peso + "kg) espera. Dentro: "
+                    + personas + " / " + kilos + "kg");
+            esperando++;
+            mutex.release();
+            cola.acquire();
+            mutex.acquire();
+        }
+        personas++;
+        kilos += peso;
+        System.out.println("↑ " + nombre + " sube. Dentro: " + personas + " / " + kilos + "kg");
+        mutex.release();
+    }
+
+    public void bajaPersona(String nombre, float peso) throws InterruptedException {
+        mutex.acquire();
+        personas--;
+        kilos -= peso;
+        System.out.println("↓ " + nombre + " baja. Dentro: " + personas + " / " + kilos + "kg");
+        cola.release(esperando);       // todos reintentan
+        esperando = 0;
+        mutex.release();
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Persona.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio12;
+
+public class Persona extends Thread {
+    Ascensor ascensor;
+    float peso;
+
+    public Persona(String nombre, float peso, Ascensor ascensor) {
+        super(nombre);
+        this.peso = peso;
+        this.ascensor = ascensor;
+    }
+
+    @Override
+    public void run() {
+        try {
+            sleep((long) (Math.random() * 1000));
+            ascensor.subePersona(getName(), peso);
+            sleep((long) (Math.random() * 2000));    // viaje
+            ascensor.bajaPersona(getName(), peso);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio12;
+
+public class Principal {
+    public static void main(String[] args) {
+        Ascensor ascensor = new Ascensor();
+        for (int i = 1; i &lt;= 12; i++) {
+            float peso = 50 + (int) (Math.random() * 60);   // 50..109 kg
+            new Persona("Persona " + i, peso, ascensor).start();
+        }
+    }
+}</code></pre></div>
+</div></details>
+
+<!-- 13 -->
+<details class="ej"><summary><span class="n">13</span>Cancha de pádel (grupos de 4)<span class="tag">Patrón ② + barrera · 3 clases</span></summary><div class="body">
+<p class="enun">Los jugadores ocupan puesto hasta ser 4; con el cuarto se juega (10 s). Los que llegan durante el partido esperan. El último en salir avisa a los que esperan.</p>
+<table>
+  <tr><th>Semáforo</th><th>Inicial</th><th>Uso</th></tr>
+  <tr><td><code>cancha</code></td><td>4</td><td>Puestos. <b>No se devuelve al salir uno a uno</b>: solo el último devuelve los 4 → nadie entra a mitad de partido.</td></tr>
+  <tr><td><code>empezar</code></td><td>0</td><td>Barrera: los 3 primeros esperan aquí; el 4º hace <code>release(3)</code>.</td></tr>
+  <tr><td><code>mutex</code></td><td>1</td><td>Proteger <code>enCancha</code>.</td></tr>
+</table>
+<div class="file"><div class="fh"><span>Cancha.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio13;
+
+import java.util.concurrent.Semaphore;
+
+public class Cancha {
+    private Semaphore cancha = new Semaphore(4, true);
+    private Semaphore empezar = new Semaphore(0);
+    private Semaphore mutex = new Semaphore(1);
+    private int enCancha = 0;
+
+    public void jugar(String n) throws InterruptedException {
+        cancha.acquire();              // ocupo un puesto (o espero)
+        mutex.acquire();
+        enCancha++;
+        System.out.println(n + " ocupa puesto. Jugadores: " + enCancha + "/4");
+        if (enCancha &lt; 4) {
+            mutex.release();
+            empezar.acquire();         // espero al cuarto
+        } else {
+            System.out.println("### Empieza el partido ###");
+            empezar.release(3);        // despierto a los otros 3
+            mutex.release();
+        }
+
+        Thread.sleep(10000);           // partido
+
+        mutex.acquire();
+        enCancha--;
+        System.out.println(n + " abandona la cancha");
+        if (enCancha == 0) {
+            System.out.println(n + " es el último: avisa a los que esperan");
+            cancha.release(4);         // cancha libre para 4 nuevos
+        }
+        mutex.release();
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Jugador.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio13;
+
+public class Jugador extends Thread {
+    Cancha cancha;
+
+    public Jugador(String nombre, Cancha cancha) {
+        super(nombre);
+        this.cancha = cancha;
+    }
+
+    @Override
+    public void run() {
+        try {
+            cancha.jugar(getName());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio13;
+
+public class Principal {
+    public static void main(String[] args) throws InterruptedException {
+        Cancha cancha = new Cancha();
+        int i = 1;
+        while (true) {                 // llegan jugadores continuamente
+            new Jugador("Jugador " + i, cancha).start();
+            i++;
+            Thread.sleep(1500);
+        }
+    }
+}</code></pre></div>
+</div></details>
+
+<!-- 14 -->
+<details class="ej"><summary><span class="n">14</span>Cinta de plátanos (calidad A / B)<span class="tag">Patrón ④ con turnos · 4 clases</span></summary><div class="body">
+<p class="enun">Productores ponen manojos A o B en una cinta ilimitada. El señor A recoge solo A y el señor B solo B, siempre en orden: solo se recoge el primero de la cinta.</p>
+<p><b>Idea:</b> cinta = <code>Queue&lt;Character&gt;</code> con <code>mutex</code>. Un semáforo por consumidor (<code>turnoA</code>, <code>turnoB</code>, a 0). Regla: <b>si la cinta no está vacía, hay exactamente un permiso dado al consumidor de la calidad del primer manojo</b>. Cinta ilimitada → no hace falta semáforo <code>lleno</code>.</p>
+<div class="file"><div class="fh"><span>Cinta.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio14;
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.Semaphore;
+
+public class Cinta {
+    private Queue&lt;Character&gt; cinta = new LinkedList&lt;&gt;();
+    private Semaphore mutex = new Semaphore(1);
+    private Semaphore turnoA = new Semaphore(0);
+    private Semaphore turnoB = new Semaphore(0);
+
+    private void avisar(char calidad) {
+        if (calidad == 'A') turnoA.release();
+        else turnoB.release();
+    }
+
+    public void poner(String productor, char calidad) throws InterruptedException {
+        mutex.acquire();
+        cinta.offer(calidad);
+        System.out.println(productor + " pone un manojo " + calidad + "   Cinta: " + cinta);
+        if (cinta.size() == 1) avisar(calidad);      // es el primero de la cinta
+        mutex.release();
+    }
+
+    public void recoger(char miCalidad) throws InterruptedException {
+        Semaphore miTurno = (miCalidad == 'A') ? turnoA : turnoB;
+        miTurno.acquire();             // espero a que el primero sea de mi calidad
+        mutex.acquire();
+        cinta.poll();
+        System.out.println("\tSeñor " + miCalidad + " recoge un manojo " + miCalidad + "   Cinta: " + cinta);
+        if (!cinta.isEmpty()) avisar(cinta.peek());  // aviso al dueño del nuevo primero
+        mutex.release();
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Productor.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio14;
+
+public class Productor extends Thread {
+    Cinta cinta;
+
+    public Productor(String nombre, Cinta cinta) {
+        super(nombre);
+        this.cinta = cinta;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                char calidad = Math.random() &lt; 0.5 ? 'A' : 'B';
+                cinta.poner(getName(), calidad);
+                sleep((long) (Math.random() * 1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Consumidor.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio14;
+
+public class Consumidor extends Thread {
+    Cinta cinta;
+    char calidad;
+
+    public Consumidor(char calidad, Cinta cinta) {
+        super("Señor " + calidad);
+        this.calidad = calidad;
+        this.cinta = cinta;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                cinta.recoger(calidad);
+                sleep((long) (Math.random() * 800));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre></div>
+<div class="file"><div class="fh"><span>Principal.java</span><button class="cp">Copiar</button></div><pre><code>package ejercicio14;
+
+public class Principal {
+    public static void main(String[] args) {
+        Cinta cinta = new Cinta();
+        for (int i = 1; i &lt;= 3; i++) {
+            new Productor("Productor " + i, cinta).start();
+        }
+        new Consumidor('A', cinta).start();
+        new Consumidor('B', cinta).start();
+    }
+}</code></pre></div>
+<div class="tip"><code>peek()</code> no está en la tabla de los apuntes: devuelve el primero de la cola <b>sin sacarlo</b> (o <code>null</code> si está vacía).</div>
+</div></details>
+
+<div class="ok"><b>Resumen para el examen:</b> ¿hay que ordenar? → semáforo a 0. ¿Hay que limitar a N? → semáforo a N. ¿Variable compartida? → mutex a 1. ¿Hay que esperar a una condición con números (kilos, litros, balance)? → mutex + contador de esperando + semáforo a 0 + <code>while</code> + <code>release(esperando)</code>.</div>
+
+</main>
+<footer>PSP · UT2 Semáforos en Java · Resumen de los apuntes y soluciones propuestas</footer>
+<script>
+{
+const KW=/\b(package|import|public|private|protected|static|final|class|extends|implements|void|int|float|boolean|char|long|new|return|if|else|while|for|try|catch|throws|throw|true|false|null|this|super|break)\b/;
+const TY=/\b(Semaphore|Thread|String|System|InterruptedException|IOException|Math|Queue|LinkedList|List|ArrayList|PrintWriter|FileWriter|BufferedReader|FileReader|Runnable)\b/;
+const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const RE=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)')|(@Override)|([A-Za-z_]\w*)/g;
+for(const c of document.querySelectorAll('.file pre code')){
+  const src=c.textContent;let out='',last=0,m;RE.lastIndex=0;
+  while((m=RE.exec(src))){
+    out+=esc(src.slice(last,m.index));
+    const w=m[0];
+    if(m[1])out+='<span class="c">'+esc(w)+'</span>';
+    else if(m[2])out+='<span class="s">'+esc(w)+'</span>';
+    else if(m[3])out+='<span class="k">'+w+'</span>';
+    else if(KW.test(w)&&w.match(KW)[0]===w)out+='<span class="k">'+w+'</span>';
+    else if(TY.test(w)&&w.match(TY)[0]===w)out+='<span class="t">'+w+'</span>';
+    else out+=w;
+    last=m.index+w.length;
+  }
+  c.innerHTML=out+esc(src.slice(last));
+}
+for(const b of document.querySelectorAll('.cp')){
+  b.addEventListener('click',async()=>{
+    const txt=b.closest('.file').querySelector('code').textContent;
+    try{await navigator.clipboard.writeText(txt);b.textContent='Copiado ✓';}
+    catch(e){const r=document.createRange();r.selectNodeContents(b.closest('.file').querySelector('code'));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);b.textContent='Seleccionado: Ctrl+C';}
+    setTimeout(()=>b.textContent='Copiar',1800);
+  });
+}
+}
+</script>
+</body>
+</html>

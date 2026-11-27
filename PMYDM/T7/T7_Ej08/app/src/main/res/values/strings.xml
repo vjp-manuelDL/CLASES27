@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">T7_Ej08</string>
-    <string name="titulo">Mis actividades</string>
+    <string name="titulo">Lista de actividades</string>
+    <string name="anadir_titulo">Añadir actividad</string>
+    <string name="lista_titulo">Lista de actividades</string>
     <string name="favoritas">Favoritas</string>
     <string name="informacion">Información</string>
     <string name="eliminar_todas">Eliminar todas</string>
-    <string name="nueva">Nueva actividad</string>
+    <string name="nueva">Nombre actividad</string>
     <string name="anadir">Añadir actividad</string>
 
 

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -41,10 +42,16 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.t7_ej08.ui.theme.AzulOscuro
+import com.example.t7_ej08.ui.theme.AzulTexto
+import com.example.t7_ej08.ui.theme.FondoApp
+import com.example.t7_ej08.ui.theme.FondoTarjeta
 import com.example.t7_ej08.ui.theme.T7_Ej08Theme
 
 class MainActivity : ComponentActivity() {
@@ -123,6 +130,7 @@ fun PantallaActividades() {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        containerColor = FondoApp, // color de fondo de la pantalla
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.titulo)) },
@@ -135,16 +143,17 @@ fun PantallaActividades() {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = AzulOscuro,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
                 )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { eliminarTodas(context, actividades) },
-                containerColor = MaterialTheme.colorScheme.errorContainer
+                containerColor = AzulOscuro,
+                contentColor = Color.White
             ) {
                 Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.eliminar_todas))
             }
@@ -155,13 +164,21 @@ fun PantallaActividades() {
                 .padding(innerPadding) // hueco de la barra superior, si no la tapa
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(22.dp)
         ) {
+            Text(
+                text = stringResource(R.string.anadir_titulo),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = AzulOscuro
+            )
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 OutlinedTextField(
                     value = nueva,
                     onValueChange = { nueva = it }, // it es lo que acaba de escribir
-                    label = { Text(stringResource(R.string.nueva)) },
+                    placeholder = { Text(stringResource(R.string.nueva)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f) // ocupa el hueco y deja sitio al boton
                 )
@@ -169,10 +186,18 @@ fun PantallaActividades() {
                     Icon(
                         Icons.Filled.AddCircle,
                         contentDescription = stringResource(R.string.anadir),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = AzulOscuro
                     )
                 }
             }
+
+            Text(
+                text = stringResource(R.string.lista_titulo),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = AzulOscuro ,
+                modifier = Modifier.padding(top = 16.dp)
+            )
 
             // lazycolumn solo pinta las filas que se ven
             LazyColumn(
@@ -181,14 +206,18 @@ fun PantallaActividades() {
             ) {
                 // necesito la posicion para poder cambiar el checkbox
                 itemsIndexed(actividades) { posicion, actividad ->
-                    Card(modifier = Modifier.fillMaxWidth()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = FondoTarjeta)
+                    ) {
                         Row(
                             modifier = Modifier.padding(start = 16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = actividad.nombre,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleSmall,
+                                color = AzulTexto,
                                 modifier = Modifier.weight(1f)
                             )
                             Checkbox(

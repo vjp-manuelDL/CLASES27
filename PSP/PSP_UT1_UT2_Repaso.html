@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSP · Repaso UT1 y UT2</title>
+<style>
+
+:root{
+  --bg:#f4f6f9; --card:#fff; --ink:#1d2430; --muted:#5d6878; --line:#dfe4ea;
+  --brand:#0f6cbf; --brand2:#0a4f8c; --ok:#2e7d32; --okbg:#e8f5e9; --bad:#c62828; --badbg:#fdecea;
+  --warn:#b26a00; --warnbg:#fff4e0; --code:#1e1f29; --codeink:#e6e6e6;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header.top{background:linear-gradient(90deg,var(--brand2),var(--brand));color:#fff;padding:18px 24px}
+header.top h1{margin:0;font-size:1.35rem}
+header.top p{margin:4px 0 0;opacity:.85;font-size:.92rem}
+nav.tabs{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px;padding:8px 16px}
+nav.tabs button{border:0;background:transparent;padding:9px 16px;border-radius:8px;font-size:.95rem;cursor:pointer;color:var(--muted);font-weight:600}
+nav.tabs button:hover{background:#eef3f8;color:var(--ink)}
+nav.tabs button.active{background:var(--brand);color:#fff}
+nav.tabs .sep{width:1px;background:var(--line);margin:4px 6px}
+main{max-width:1100px;margin:0 auto;padding:22px 16px 80px}
+.view{display:none}.view.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+h2{margin:0 0 12px;font-size:1.3rem;color:var(--brand2)}
+h3{margin:18px 0 8px;font-size:1.05rem}
+.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.toc a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink);background:#fafbfd;font-weight:600;font-size:.93rem}
+.toc a:hover{border-color:var(--brand);color:var(--brand)}
+pre.code{background:var(--code);color:var(--codeink);padding:12px 14px;border-radius:8px;overflow:auto;font-size:.86rem;line-height:1.45;margin:8px 0;font-family:"JetBrains Mono",Consolas,"Courier New",monospace;white-space:pre}
+code{background:#eef1f5;padding:1px 5px;border-radius:4px;font-family:Consolas,"Courier New",monospace;font-size:.88em}
+.k{color:#ff79c6}.s{color:#f1fa8c}.c{color:#7f8aa3;font-style:italic}.t{color:#8be9fd}.n{color:#bd93f9}.tag{color:#ff79c6}.attr{color:#50fa7b}
+table.t1{border-collapse:collapse;width:100%;font-size:.9rem;margin:8px 0}
+table.t1 th,table.t1 td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+table.t1 th{background:#eef3f8}
+.tip{background:var(--warnbg);border-left:4px solid var(--warn);padding:10px 14px;border-radius:6px;margin:10px 0;font-size:.93rem}
+.ok{background:var(--okbg);border-left:4px solid var(--ok);padding:10px 14px;border-radius:6px;margin:10px 0;font-size:.93rem}
+.bad{background:var(--badbg);border-left:4px solid var(--bad);padding:10px 14px;border-radius:6px;margin:10px 0;font-size:.93rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid2>*{min-width:0}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+figure{margin:12px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:.83rem;color:var(--muted);margin-top:4px}
+/* ---- examen revisión ---- */
+.sum{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.pill{padding:6px 12px;border-radius:20px;background:#eef3f8;font-size:.88rem;font-weight:600}
+.pill.r{background:var(--badbg);color:var(--bad)}.pill.g{background:var(--okbg);color:var(--ok)}
+.q{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:16px;display:flex;overflow:hidden}
+.qinfo{width:130px;flex:none;background:#f1f4f8;padding:14px;font-size:.82rem;border-right:1px solid var(--line)}
+.qinfo b{display:block;font-size:1rem;margin-bottom:6px}
+.qinfo .st{font-weight:700}
+.qinfo .st.g{color:var(--ok)}.qinfo .st.r{color:var(--bad)}.qinfo .st.n{color:var(--muted)}
+.qbody{padding:16px 18px;flex:1;min-width:0}
+@media(max-width:700px){.q{flex-direction:column}.qinfo{width:auto;border-right:0;border-bottom:1px solid var(--line)}}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:7px 0;background:#fff}
+.opt .l{font-weight:700;min-width:22px;padding-top:2px}
+.opt .ob{flex:1;min-width:0}
+.opt pre.code{margin:0}
+.opt.correct{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.badge{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;white-space:nowrap}
+.badge.g{background:var(--ok);color:#fff}.badge.r{background:var(--bad);color:#fff}.badge.b{background:var(--brand);color:#fff}
+.why{margin-top:10px;padding:10px 14px;border-radius:8px;background:#f3f7fc;border:1px solid #d6e4f3;font-size:.92rem}
+.why h4{margin:0 0 4px;font-size:.92rem;color:var(--brand2)}
+.why a{color:var(--brand)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn{border:1px solid var(--brand);background:var(--brand);color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:.92rem;font-weight:600}
+.btn:hover{background:var(--brand2)}
+.btn.sec{background:#fff;color:var(--brand)}
+.btn.sec:hover{background:#eef3f8}
+.btn:disabled{opacity:.4;cursor:default}
+/* ---- quiz moodle ---- */
+.quiz{display:grid;grid-template-columns:1fr 250px;gap:18px;align-items:start}
+@media(max-width:850px){.quiz{grid-template-columns:1fr}.quiz .side{order:-1}}
+.side{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;position:sticky;top:64px}
+.side h4{margin:0 0 10px;font-size:.92rem}
+.navgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.navgrid button{height:38px;border:1px solid #b9c3cf;background:#fff;border-radius:4px;cursor:pointer;font-weight:600;position:relative;font-size:.85rem}
+.navgrid button.ans{background:#cfd8e3}
+.navgrid button.cur{outline:2px solid var(--brand);outline-offset:1px}
+.navgrid button.flag::after{content:"";position:absolute;top:0;right:0;border-style:solid;border-width:0 10px 10px 0;border-color:transparent var(--bad) transparent transparent}
+.navgrid button.g{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+.navgrid button.r{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.navgrid button.n{background:#f0f0f0;color:#999}
+.side .lnk{display:block;margin-top:12px;color:var(--brand);cursor:pointer;font-size:.9rem;text-decoration:underline;background:none;border:0;padding:0}
+.qcard .qinfo .flagbtn{margin-top:8px;font-size:.78rem;cursor:pointer;color:var(--brand);background:none;border:0;padding:0;text-decoration:underline}
+.qcard .opt{cursor:pointer}
+.qcard .opt:hover{border-color:#9fb6cf}
+.qcard .opt.sel{border-color:var(--brand);background:#eaf2fb}
+.qcard .opt input{margin-top:5px}
+.qnav{display:flex;justify-content:space-between;margin-top:12px;gap:8px}
+.clear{font-size:.83rem;color:var(--brand);cursor:pointer;background:none;border:0;text-decoration:underline;padding:0;margin-top:6px}
+.res{font-size:1rem}
+.res table td{padding:6px 12px;border-bottom:1px solid var(--line)}
+.res table td:first-child{font-weight:700;background:#f6f8fb;width:200px}
+.big{font-size:2rem;font-weight:800}
+
+.home{max-width:900px;margin:30px auto;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:700px){.home{grid-template-columns:1fr}}
+.utcard{background:#fff;border:2px solid var(--line);border-radius:16px;padding:28px;cursor:pointer;transition:.15s;text-align:left}
+.utcard:hover{border-color:var(--brand);transform:translateY(-3px);box-shadow:0 8px 24px rgba(15,108,191,.12)}
+.utcard .num{font-size:2.6rem;font-weight:800;color:var(--brand)}
+.utcard h3{margin:4px 0 8px;font-size:1.25rem}
+.utcard p{margin:0;color:var(--muted);font-size:.93rem}
+.utcard ul{margin:12px 0 0;padding-left:18px;color:var(--ink);font-size:.9rem}
+.utbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.utbar .back{background:#eef3f8;color:var(--brand2)}
+.utbar .ttl{font-weight:800;color:var(--brand2);margin-right:8px}
+details.sol{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:#fafbfd}
+details.sol summary{cursor:pointer;padding:9px 12px;font-weight:700;color:var(--brand)}
+details.sol>div{padding:0 12px 10px}
+.ej{border-left:4px solid var(--brand);padding:4px 0 4px 14px;margin:18px 0}
+.ej h3{margin-top:0}
+.diff{font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:10px;background:#eef3f8;color:var(--brand2);margin-left:6px}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Programación de Servicios y Procesos · 2º DAM</h1>
+  <p>UT1 Hilos y monitores · UT2 Semáforos · Resumen, ejercicios resueltos, tips y test</p>
+</header>
+<nav class="tabs" id="tabs" style="display:none">
+  <span class="utbar"><button class="btn back" onclick="goHome()">← Temas</button><span class="ttl" id="utTitle"></span></span>
+  <span class="sep"></span>
+  <button data-p="resumen" class="active">📘 Resumen</button>
+  <button data-p="ejercicios">💻 Ejercicios</button>
+  <button data-p="tips">💡 Tips</button>
+  <button data-p="test">📝 Test</button>
+</nav>
+<main>
+
+<!-- ========================= HOME ========================= -->
+<section class="view active" id="v-home">
+<h2 style="text-align:center;margin-top:10px">¿Qué tema quieres repasar?</h2>
+<div class="home">
+  <div class="utcard" onclick="openUT(1)">
+    <div class="num">UT1</div>
+    <h3>Hilos. Sincronización en Java</h3>
+    <p>Procesos, concurrencia, Thread/Runnable, prioridades, daemon, monitores (synchronized), wait/notify, productor-consumidor.</p>
+    <ul><li>Resumen completo</li><li>8 ejercicios resueltos</li><li>Tips y autoevaluación</li><li>Test de 20 preguntas</li></ul>
+  </div>
+  <div class="utcard" onclick="openUT(2)">
+    <div class="num">UT2</div>
+    <h3>Semáforos en Java</h3>
+    <p>Semaphore, acquire/release, permisos, justicia, sincronizar el orden, limitar la región crítica, productor-consumidor con 3 semáforos.</p>
+    <ul><li>Resumen completo</li><li>7 ejercicios resueltos</li><li>Tips</li><li>Test de 20 preguntas</li></ul>
+  </div>
+</div>
+</section>
+
+<!-- ========================= UT1 ========================= -->
+<section class="view" id="v-ut1-resumen">
+<div class="card">
+<h2>UT1 · Índice</h2>
+<div class="toc">
+<a href="#u1-proc">1. Programa, proceso, ciclo de vida</a>
+<a href="#u1-conc">2. Concurrencia y sus problemas</a>
+<a href="#u1-hilos">3. Hilos vs procesos y estados</a>
+<a href="#u1-api">4. Constructores y métodos de Thread</a>
+<a href="#u1-crear">5. Crear hilos: Thread y Runnable</a>
+<a href="#u1-prio">6. Prioridades, yield, join, daemon</a>
+<a href="#u1-sync">7. Monitores: synchronized</a>
+<a href="#u1-wait">8. wait/notify y productor-consumidor</a>
+</div>
+</div>
+
+<div class="card" id="u1-proc">
+<h2>1. Programa, proceso y ciclo de vida</h2>
+<div class="grid2">
+<div>
+<p><b>Programa</b> = conjunto de instrucciones, algo <b>estático</b> (como una <i>clase</i> en POO).</p>
+<p><b>Proceso</b> = programa en ejecución, algo <b>dinámico</b> (como un <i>objeto</i>). Un mismo programa puede dar lugar a varios procesos (ej.: 3 usuarios usando la misma app web = 3 procesos).</p>
+<p>Definición más precisa: <b>actividad asíncrona susceptible de ser asignada a un procesador</b>. Un programa puede tener varios procesos.</p>
+<p>El SO guarda de cada proceso:</p>
+<ul>
+<li><b>Imagen de memoria</b>: <b>código</b> (texto), <b>datos</b> (constantes y variables estáticas), <b>pila/stack</b> (argumentos, retornos, variables locales) y <b>heap</b> (memoria dinámica).</li>
+<li><b>Tablas de control de procesos</b>: registros, tablas de páginas, E/S, estadísticas...</li>
+</ul>
+</div>
+<figure>
+<svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,Arial" font-size="13">
+<defs><marker id="m1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#333"/></marker></defs>
+<rect x="10" y="90" width="80" height="36" rx="18" fill="#eee" stroke="#999"/><text x="50" y="113" text-anchor="middle">Nuevo</text>
+<rect x="135" y="20" width="90" height="36" rx="18" fill="#fff4e0" stroke="#b26a00"/><text x="180" y="43" text-anchor="middle">Listo</text>
+<rect x="135" y="160" width="90" height="36" rx="18" fill="#fdecea" stroke="#c62828"/><text x="180" y="183" text-anchor="middle">Bloqueado</text>
+<rect x="260" y="90" width="90" height="36" rx="18" fill="#e8f5e9" stroke="#2e7d32"/><text x="305" y="113" text-anchor="middle">Ejecución</text>
+<path d="M60 90 L140 52" stroke="#333" fill="none" marker-end="url(#m1)"/><text x="62" y="66" font-size="11">creado</text>
+<path d="M225 35 Q290 40 300 88" stroke="#333" fill="none" marker-end="url(#m1)"/><text x="262" y="30" font-size="11">planificador</text>
+<path d="M265 98 Q230 70 220 58" stroke="#333" fill="none" marker-end="url(#m1)"/><text x="232" y="88" font-size="11">fin cuantum</text>
+<path d="M300 126 Q290 170 228 178" stroke="#333" fill="none" marker-end="url(#m1)"/><text x="270" y="160" font-size="11">espera E/S</text>
+<path d="M170 160 L170 58" stroke="#333" fill="none" marker-end="url(#m1)"/><text x="105" y="115" font-size="11">llega evento</text>
+</svg>
+<figcaption>Ciclo de vida de un proceso. Cambiar de estado = <b>cambio de contexto</b>. Quien da la CPU = <b>planificador (scheduler)</b>.</figcaption>
+</figure>
+</div>
+<div class="tip">De Bloqueado <b>nunca</b> se pasa directamente a Ejecución: primero vuelve a <b>Listo</b>.</div>
+</div>
+
+<div class="card" id="u1-conc">
+<h2>2. Concurrencia y sus problemas</h2>
+<p>Dos procesos son <b>concurrentes</b> cuando la primera instrucción de uno se ejecuta <b>después de la primera y antes de la última</b> del otro (sus ejecuciones se solapan o intercalan). Si se ejecutan <b>a la vez de verdad</b> (varias CPU) es <b>paralelismo</b>. La concurrencia es un <b>paralelismo potencial</b>.</p>
+<table class="t1"><tr><th>Modo</th><th>Ejemplo de los ladrillos (4 paredes)</th></tr>
+<tr><td>Secuencial</td><td>1 albañil termina una pared, luego otra...</td></tr>
+<tr><td>Paralelo</td><td>2 albañiles, 2 paredes cada uno, a la vez → mitad de tiempo</td></tr>
+<tr><td>Concurrente</td><td>1 albañil pone 2 ladrillos en una pared, 2 en otra... (intercala)</td></tr></table>
+<p><b>Ventaja</b>: velocidad. <b>Riesgo</b>: compartir recursos (memoria) provoca errores difíciles de depurar → <b>problemas de concurrencia</b>:</p>
+<table class="t1"><tr><th>Problema</th><th>Qué es</th><th>Ejemplo (juego del pañuelo)</th></tr>
+<tr><td><b>Exclusión mutua / sección crítica</b></td><td>Un recurso solo puede usarlo un proceso a la vez</td><td>El pañuelo lo coge uno u otro, no los dos. Impresora sin mezclar páginas</td></tr>
+<tr><td><b>Condición de sincronización</b></td><td>Un proceso debe esperar a que ocurra un evento</td><td>El jugador espera a que digan su número</td></tr>
+<tr><td><b>Interbloqueo (deadlock, abrazo mortal)</b></td><td>Todos esperan un evento que nunca ocurrirá</td><td>Un jugador se lleva el pañuelo a casa</td></tr></table>
+<p><b>Condición de carrera</b>: varios hilos acceden a la vez a los mismos datos y el resultado depende de quién «corra» más (ej.: saldo negativo en la cuenta).</p>
+</div>
+
+<div class="card" id="u1-hilos">
+<h2>3. Hilos vs procesos y estados de un hilo</h2>
+<p><b>Hilo</b> = cada secuencia de control <b>dentro de un proceso</b> que ejecuta sus instrucciones de forma independiente. Hay concurrencia a dos niveles: entre procesos y entre hilos de un mismo proceso.</p>
+<table class="t1"><tr><th></th><th>Proceso</th><th>Hilo</th></tr>
+<tr><td>Peso</td><td><b>Pesado</b> (estructura en el núcleo, llamadas al sistema)</td><td><b>Ligero</b> (estructura en espacio de usuario)</td></tr>
+<tr><td>Memoria</td><td>Propia</td><td><b>Comparten</b> código y datos del proceso: si uno cambia una variable, los demás lo ven</td></tr>
+<tr><td>Cambio de contexto</td><td>Costoso</td><td>Barato</td></tr></table>
+<figure>
+<svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,Arial" font-size="12">
+<defs><marker id="m2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#333"/></marker></defs>
+<rect x="10" y="80" width="80" height="34" rx="17" fill="#eee" stroke="#999"/><text x="50" y="102" text-anchor="middle">Nuevo</text>
+<rect x="160" y="80" width="80" height="34" rx="17" fill="#fff4e0" stroke="#b26a00"/><text x="200" y="102" text-anchor="middle">Listo</text>
+<rect x="320" y="80" width="90" height="34" rx="17" fill="#e8f5e9" stroke="#2e7d32"/><text x="365" y="102" text-anchor="middle">Ejecución</text>
+<rect x="320" y="155" width="90" height="34" rx="17" fill="#fdecea" stroke="#c62828"/><text x="365" y="177" text-anchor="middle">Bloqueado</text>
+<rect x="500" y="80" width="80" height="34" rx="17" fill="#333"/><text x="540" y="102" text-anchor="middle" fill="#fff">Muerto</text>
+<path d="M90 97H158" stroke="#333" marker-end="url(#m2)"/><text x="100" y="90">new → start()</text>
+<path d="M240 90H318" stroke="#333" marker-end="url(#m2)"/><text x="255" y="83">planificador</text>
+<path d="M320 106H242" stroke="#333" marker-end="url(#m2)"/><text x="262" y="122">yield()</text>
+<path d="M410 97H498" stroke="#333" marker-end="url(#m2)"/><text x="420" y="90">fin de run()</text>
+<path d="M365 114V153" stroke="#333" marker-end="url(#m2)"/>
+<text x="420" y="160">sleep() · wait() · E/S · esperar cerrojo</text>
+<path d="M320 172Q200 172 200 116" stroke="#333" fill="none" marker-end="url(#m2)"/>
+<text x="60" y="160">fin sleep · notify() · fin E/S · cerrojo libre</text>
+<text x="10" y="30" font-size="13" font-weight="700">Estados de un hilo en Java</text>
+</svg>
+</figure>
+<p>Todo programa Java empieza con un hilo: el <b>hilo principal</b> (<code>main</code>). Un <b>objeto</b> es estático; quien ejecuta sus métodos es un <b>hilo</b> (varios hilos pueden estar ejecutando el mismo método del mismo objeto a la vez).</p>
+</div>
+
+<div class="card" id="u1-api">
+<h2>4. Constructores y métodos de <code>Thread</code></h2>
+<table class="t1"><tr><th>Constructor</th><th>Qué hace</th></tr>
+<tr><td><code>Thread()</code></td><td>Nombre automático <code>"Thread-" + n</code> (Thread-0, Thread-1...)</td></tr>
+<tr><td><code>Thread(String name)</code></td><td>Con nombre</td></tr>
+<tr><td><code>Thread(Runnable target)</code></td><td>Ejecutará el <code>run()</code> de target</td></tr>
+<tr><td><code>Thread(Runnable target, String name)</code></td><td>Lo anterior + nombre</td></tr></table>
+<table class="t1"><tr><th>Método</th><th>Qué hace</th></tr>
+<tr><td><code>start()</code></td><td>Arranca el hilo; la JVM llama a <code>run()</code> <b>en un hilo nuevo</b></td></tr>
+<tr><td><code>run()</code></td><td>Cuerpo del hilo. Único método de <code>Runnable</code>. Llamarlo directamente NO crea hilo</td></tr>
+<tr><td><code>sleep(ms)</code> (static)</td><td>Duerme el hilo actual. Lanza <code>InterruptedException</code></td></tr>
+<tr><td><code>join()</code> / <code>join(ms)</code></td><td>Espera a que ese hilo termine. Lanza <code>InterruptedException</code></td></tr>
+<tr><td><code>yield()</code></td><td>Cede la CPU: Ejecución → Listo</td></tr>
+<tr><td><code>isAlive()</code></td><td>true si arrancado y no terminado</td></tr>
+<tr><td><code>getName()/setName()</code>, <code>getId()</code></td><td>Nombre e identificador</td></tr>
+<tr><td><code>getPriority()/setPriority(p)</code></td><td>Prioridad 1..10</td></tr>
+<tr><td><code>interrupt()</code>, <code>interrupted()</code></td><td>Interrumpir / comprobar</td></tr>
+<tr><td><code>Thread.currentThread()</code></td><td>Referencia al hilo que se está ejecutando</td></tr>
+<tr><td><code>setDaemon(true)</code>, <code>isDaemon()</code></td><td>Demonio (antes de start)</td></tr>
+<tr><td><code>stop()</code></td><td><b>Deprecated</b> (obsoleto)</td></tr>
+<tr><td><code>toString()</code></td><td>Nombre, prioridad y grupo</td></tr></table>
+</div>
+
+<div class="card" id="u1-crear">
+<h2>5. Crear hilos: heredar de <code>Thread</code> o implementar <code>Runnable</code></h2>
+<div class="grid2">
+<div><h3>A) extends Thread</h3>
+<script type="text/x-code" data-lang="java">public class ThreadConHerencia extends Thread {
+    int numHilo;
+    public ThreadConHerencia(int hilo) { this.numHilo = hilo; }
+    @Override
+    public void run() {
+        for (int i = 0; i < 4; i++)
+            System.out.println("Hilo " + numHilo);
+    }
+}
+// main
+ThreadConHerencia h1 = new ThreadConHerencia(1);
+ThreadConHerencia h2 = new ThreadConHerencia(2);
+h1.start();
+h2.start();
+System.out.println("Fin del hilo principal");</script></div>
+<div><h3>B) implements Runnable ✅ (preferida)</h3>
+<script type="text/x-code" data-lang="java">public class ThreadConRunnable implements Runnable {
+    String palabra;
+    public ThreadConRunnable(String p) { this.palabra = p; }
+    @Override
+    public void run() {
+        for (int i = 0; i < 10; i++)
+            System.out.println(palabra);
+    }
+}
+// main: el objeto NO es un hilo → se lo paso a un Thread
+Thread th1 = new Thread(new ThreadConRunnable("Hilo 1"));
+Thread th2 = new Thread(new ThreadConRunnable("Hilo 2"));
+th1.start();
+th2.start();</script></div>
+</div>
+<div class="ok"><b>¿Por qué Runnable es mejor?</b> Java no tiene herencia múltiple: si heredas de Thread ya no puedes heredar de otra clase. Con Runnable sí.</div>
+<div class="bad"><b>Salida NO determinista:</b> «Fin del hilo principal» puede salir el primero, en medio o al final; Hilo 2 puede empezar antes que Hilo 1. Nunca supongas un orden entre hilos.</div>
+<div class="bad"><code>h1.run()</code> en vez de <code>h1.start()</code> → se ejecuta como un método normal, en el hilo main, <b>secuencialmente</b>.</div>
+<h3>Ejemplo del reloj: dos hilos a la vez</h3>
+<script type="text/x-code" data-lang="java">public class Hora extends Thread {
+    @Override public void run() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println(LocalDateTime.now());
+            try { sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+// Sonido igual pero con System.out.println("Beep!!") y Toolkit.getDefaultToolkit().beep();
+new Hora().start();
+new Sonido().start();</script>
+</div>
+
+<div class="card" id="u1-prio">
+<h2>6. Planificación, prioridades, join y daemon</h2>
+<ul>
+<li>Prioridad de <b>1</b> (<code>MIN_PRIORITY</code>) a <b>10</b> (<code>MAX_PRIORITY</code>). Por defecto <b>5</b> (<code>NORM_PRIORITY</code>), o la del hilo que lo creó.</li>
+<li>El planificador <i>intenta</i> dar preferencia al de más prioridad, pero <b>no hay garantía</b>. Las rodajas de tiempo pueden aplicarse o no (depende de la plataforma).</li>
+<li>Regla de oro: <b>asume que los hilos se pueden intercalar en cualquier punto</b>. Si necesitas un orden, sincroniza.</li>
+<li><code>yield()</code>: cede el paso; el elegido puede ser él mismo.</li>
+</ul>
+<script type="text/x-code" data-lang="java">Thread th1 = new Thread(new Ejemplo2("Hilo 1"));
+th1.setPriority(Thread.MIN_PRIORITY);   // 1
+th1.start();
+System.out.println(th1.getPriority());  // 1</script>
+<h3>join(): esperar a que terminen los hilos</h3>
+<script type="text/x-code" data-lang="java">Thread[] hilos = new Thread[9];
+for (int i = 0; i < 9; i++) { hilos[i] = new SumaCelda(i); hilos[i].start(); }
+for (Thread h : hilos) h.join();           // main espera a TODOS
+System.out.println("Resultado listo");      // ahora sí es seguro pintar</script>
+<h3>Hilos daemon (demonio / servicios)</h3>
+<ul>
+<li>Tareas de fondo, normalmente de prioridad baja. Ej.: <b>garbage collector</b>.</li>
+<li>La JVM <b>termina cuando todos los hilos NO daemon han acabado</b>, aunque queden daemons funcionando.</li>
+<li><code>setDaemon(true)</code> <b>antes de start()</b> (después → IllegalThreadStateException). Se hereda del hilo creador.</li>
+</ul>
+</div>
+
+<div class="card" id="u1-sync">
+<h2>7. Sincronización con monitores: <code>synchronized</code></h2>
+<p>Cada objeto Java tiene un <b>monitor</b> (un cerrojo/lock). Solo un hilo puede tenerlo a la vez. Para cogerlo se entra en un método o bloque <code>synchronized</code>; el resto de hilos que quieran entrar en código sincronizado <b>del mismo objeto</b> esperan.</p>
+<figure>
+<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,Arial" font-size="13">
+<rect x="230" y="20" width="200" height="110" rx="12" fill="#e3ecf7" stroke="#0f6cbf" stroke-width="2"/>
+<text x="330" y="45" text-anchor="middle" font-weight="700">Objeto cuenta 🔒</text>
+<text x="330" y="70" text-anchor="middle">synchronized retirar()</text>
+<rect x="285" y="85" width="90" height="30" rx="6" fill="#e8f5e9" stroke="#2e7d32"/><text x="330" y="105" text-anchor="middle">Ana (dentro)</text>
+<rect x="30" y="55" width="80" height="30" rx="6" fill="#fdecea" stroke="#c62828"/><text x="70" y="75" text-anchor="middle">Juan</text>
+<text x="20" y="110" fill="#c62828">espera el cerrojo</text>
+<path d="M110 70H228" stroke="#c62828" stroke-dasharray="5 4"/>
+<text x="460" y="60">Cuando Ana sale del</text><text x="460" y="80">método, libera el cerrojo</text><text x="460" y="100">y entra Juan.</text>
+</svg>
+</figure>
+<div class="grid2">
+<div><h3>Sin sincronizar → saldo negativo</h3>
+<script type="text/x-code" data-lang="java">public void retirar(double cantidad, String persona) {
+    if (getSaldo() >= cantidad) {          // Ana y Juan ven 10€
+        saldo = saldo - cantidad;          // los dos restan
+        System.out.println(persona + " retira " + cantidad);
+    } else { ... }
+}  // → saldo -10 (condición de carrera)</script></div>
+<div><h3>Con synchronized → atómico</h3>
+<script type="text/x-code" data-lang="java">synchronized public void retirar(double cantidad, String persona) {
+    // mismas instrucciones: ahora comprobar+restar
+    // es indivisible, el saldo nunca baja de 0
+}
+
+// Bloque sincronizado sobre un objeto compartido:
+synchronized (objetoCompartido) {
+    // sección crítica
+}</script></div>
+</div>
+<h3>Claves del cerrojo (¡caen seguro!)</h3>
+<ul>
+<li>Solo se sincronizan <b>métodos y bloques de código</b>, nunca variables ni clases.</li>
+<li>Cada objeto tiene <b>un solo cerrojo</b>.</li>
+<li>Una clase puede mezclar métodos sincronizados y no sincronizados; a los <b>no sincronizados pueden entrar muchos hilos a la vez</b>.</li>
+<li><code>sleep()</code> <b>NO libera</b> el cerrojo. <code>wait()</code> <b>SÍ lo libera</b>.</li>
+<li>El bloqueo es <b>por objeto</b>: dos hilos con dos objetos distintos no se bloquean entre sí.</li>
+</ul>
+</div>
+
+<div class="card" id="u1-wait">
+<h2>8. Comunicación entre hilos: <code>wait()</code>, <code>notify()</code>, <code>notifyAll()</code></h2>
+<table class="t1"><tr><th>Método</th><th>Qué hace</th></tr>
+<tr><td><code>wait()</code></td><td>El hilo <b>suelta el monitor</b> y se duerme hasta que otro haga notify/notifyAll sobre el mismo objeto</td></tr>
+<tr><td><code>notify()</code></td><td>Despierta a <b>uno</b> de los hilos en wait de ese objeto</td></tr>
+<tr><td><code>notifyAll()</code></td><td>Despierta a <b>todos</b> (el de mayor prioridad suele ir primero). ✅ Recomendado</td></tr></table>
+<div class="tip"><b>Requisitos:</b> se usan dentro de código <code>synchronized</code> (si no → <code>IllegalMonitorStateException</code>) y <code>wait()</code> obliga a capturar <code>InterruptedException</code>.<br><b>Siempre</b> <code>while (condición) wait();</code> y nunca <code>if</code>: al despertar hay que volver a comprobar la condición.</div>
+<h3>Productor-consumidor con monitor</h3>
+<div class="grid2">
+<script type="text/x-code" data-lang="java">public class Cola {
+    private int numero;
+    private boolean llena = false;   // empieza vacía
+
+    public synchronized void put(int valor) {
+        while (llena) {               // espera a que se vacíe
+            try { wait(); } catch (InterruptedException e) { }
+        }
+        numero = valor;
+        llena = true;
+        System.out.println("=>Productor produce: " + valor);
+        notifyAll();                  // avisa al consumidor
+    }
+
+    public synchronized int get() {
+        while (!llena) {              // espera a que haya dato
+            try { wait(); } catch (InterruptedException e) { }
+        }
+        llena = false;
+        System.out.println("<=Consumidor consume: " + numero);
+        notifyAll();                  // avisa al productor
+        return numero;
+    }
+}</script>
+<script type="text/x-code" data-lang="java">public class Productor extends Thread {
+    private Cola cola;
+    public Productor(Cola c) { cola = c; }
+    public void run() {
+        for (int i = 1; i <= 5; i++) {
+            cola.put(i);
+            try { sleep(1000); } catch (InterruptedException e) { }
+        }
+    }
+}
+public class Consumidor extends Thread {
+    private Cola cola;
+    public Consumidor(Cola c) { cola = c; }
+    public void run() {
+        for (int i = 1; i <= 5; i++) {
+            int valor = cola.get();
+            try { sleep(1000); } catch (InterruptedException e) { }
+        }
+    }
+}
+// main
+Cola cola = new Cola();
+new Productor(cola).start();
+new Consumidor(cola).start();</script>
+</div>
+<p>Salida garantizada: produce 1, consume 1, produce 2, consume 2... (nunca se salta ni repite un dato).</p>
+</div>
+</section>
+
+<section class="view" id="v-ut1-ejercicios">
+<div class="card"><h2>UT1 · Ejercicios resueltos</h2><p>Primero intenta hacerlo tú y después abre «Ver solución». Son los ejercicios del tema que más se parecen a lo que suele caer.</p></div>
+
+<div class="card ej"><h3>Ej. 3 · Reloj con Runnable <span class="diff">Fácil</span></h3>
+<p>Transforma el reloj (Hora + Sonido) para que implemente <code>Runnable</code>.</p>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Hora implements Runnable {
+    @Override public void run() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println(LocalDateTime.now());
+            try { Thread.sleep(1000); }          // ojo: Thread.sleep, ya no heredamos sleep
+            catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+public class Sonido implements Runnable {
+    @Override public void run() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println("Beep!!");
+            java.awt.Toolkit.getDefaultToolkit().beep();
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+public class Reloj {
+    public static void main(String[] args) {
+        new Thread(new Hora()).start();
+        new Thread(new Sonido()).start();
+    }
+}</script></div></details></div>
+
+<div class="card ej"><h3>Ej. 8 · Suma de 3 matrices con 9 hilos + join <span class="diff">Media</span></h3>
+<p>Un hilo por celda suma las 3 matrices en esa posición. El principal pinta el resultado cuando terminen todos.</p>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Principal {
+    static int[][] m1 = {{1,2,3},{4,5,6},{7,8,9}};
+    static int[][] m2 = {{1,1,1},{1,1,1},{1,1,1}};
+    static int[][] m3 = {{2,2,2},{2,2,2},{2,2,2}};
+    static int[][] resultado = new int[3][3];
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread[] hilos = new Thread[9];
+        int k = 0;
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++) {
+                hilos[k] = new SumaCelda(i, j);
+                hilos[k].start();
+                k++;
+            }
+        for (Thread h : hilos) h.join();       // ¡esperar a todos antes de pintar!
+        for (int[] fila : resultado) System.out.println(Arrays.toString(fila));
+    }
+}
+class SumaCelda extends Thread {
+    private int f, c;
+    public SumaCelda(int f, int c) { this.f = f; this.c = c; }
+    @Override public void run() {
+        try { sleep(1); } catch (InterruptedException e) { }
+        Principal.resultado[f][c] = Principal.m1[f][c] + Principal.m2[f][c] + Principal.m3[f][c];
+    }
+}</script>
+<div class="tip">No hace falta synchronized: cada hilo escribe en una celda distinta, no hay dato compartido que se pise.</div></div></details></div>
+
+<div class="card ej"><h3>Ej. 9 · Puente colgante (1 coche a la vez) <span class="diff">Media</span></h3>
+<p>4 coches recorren 12 km: 5 km libres, 4 km de puente (solo 1 coche), 3 km libres.</p>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Puente {
+    public synchronized void cruzar(String coche) {    // exclusión mutua
+        System.out.println(coche + " ENTRA en el puente");
+        for (int km = 6; km <= 9; km++) {
+            System.out.println("   " + coche + " km " + km + " (puente)");
+            try { Thread.sleep(200); } catch (InterruptedException e) { }
+        }
+        System.out.println(coche + " SALE del puente");
+    }   // al salir del método se libera el cerrojo
+}
+public class Coche extends Thread {
+    private Puente puente;
+    public Coche(String nombre, Puente p) { super(nombre); puente = p; }
+    private void avanzar(int desde, int hasta) {
+        for (int km = desde; km <= hasta; km++) {
+            System.out.println(getName() + " km " + km);
+            try { sleep((long)(Math.random() * 200)); } catch (InterruptedException e) { }
+        }
+    }
+    @Override public void run() {
+        avanzar(1, 5);
+        puente.cruzar(getName());
+        avanzar(10, 12);
+        System.out.println(getName() + " llega a Malpartida");
+    }
+}
+// main
+Puente p = new Puente();                 // UN SOLO puente compartido
+for (int i = 1; i <= 4; i++) new Coche("Coche" + i, p).start();</script>
+<div class="tip">Aquí sleep dentro de synchronized es justo lo que queremos: el coche mantiene el puente ocupado mientras lo cruza.</div></div></details></div>
+
+<div class="card ej"><h3>Ej. 11 · 1000 flyers y 5 repartidores <span class="diff">Media</span></h3>
+<p>Que se repartan 1000 y solo 1000; contar cuántos reparte cada uno y el total desde el principal.</p>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Pila {
+    private int flyers = 1000;
+    public synchronized boolean coger() {    // comprobar + restar = atómico
+        if (flyers > 0) { flyers--; return true; }
+        return false;
+    }
+}
+public class Repartidor extends Thread {
+    private Pila pila;
+    private int repartidos = 0;
+    public Repartidor(String n, Pila p) { super(n); pila = p; }
+    public int getRepartidos() { return repartidos; }
+    @Override public void run() {
+        while (pila.coger()) {
+            repartidos++;
+            try { sleep(1); } catch (InterruptedException e) { }
+        }
+    }
+}
+public class Principal {
+    public static void main(String[] args) throws InterruptedException {
+        Pila pila = new Pila();
+        Repartidor[] r = new Repartidor[5];
+        for (int i = 0; i < 5; i++) { r[i] = new Repartidor("R" + (i+1), pila); r[i].start(); }
+        int total = 0;
+        for (Repartidor x : r) {
+            x.join();
+            System.out.println(x.getName() + ": " + x.getRepartidos());
+            total += x.getRepartidos();
+        }
+        System.out.println("TOTAL: " + total);   // siempre 1000
+    }
+}</script></div></details></div>
+
+<div class="card ej"><h3>Ej. 13 · TIC-TAC sin repetir (token) <span class="diff">Media</span></h3>
+<p>Dos hilos pintan TIC y TAC, nunca dos veces seguidas el mismo.</p>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Token {
+    private boolean turnoTic = true;
+    public synchronized void tic() throws InterruptedException {
+        while (!turnoTic) wait();
+        System.out.print("TIC ");
+        turnoTic = false;
+        notifyAll();
+    }
+    public synchronized void tac() throws InterruptedException {
+        while (turnoTic) wait();
+        System.out.println("TAC");
+        turnoTic = true;
+        notifyAll();
+    }
+}
+public class HiloTic extends Thread {
+    private Token t;
+    public HiloTic(Token t) { this.t = t; }
+    public void run() {
+        try { while (true) { t.tic(); sleep(500); } } catch (InterruptedException e) { }
+    }
+}
+// HiloTac igual llamando a t.tac()
+Token t = new Token();
+new HiloTic(t).start();
+new HiloTac(t).start();</script></div></details></div>
+
+<div class="card ej"><h3>Ej. 14 · TIC → TAC → TOC (3 hilos) <span class="diff">Media</span></h3>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Reloj {
+    private int turno = 0;                       // 0 TIC, 1 TAC, 2 TOC
+    public synchronized void sonar(int miTurno, String sonido) throws InterruptedException {
+        while (turno != miTurno) wait();
+        System.out.println(sonido);
+        turno = (turno + 1) % 3;
+        notifyAll();                             // notifyAll: hay 2 esperando y solo 1 es el bueno
+    }
+}
+public class HiloSonido extends Thread {
+    private Reloj r; private int turno; private String sonido;
+    public HiloSonido(Reloj r, int turno, String sonido) { this.r = r; this.turno = turno; this.sonido = sonido; }
+    public void run() {
+        try { for (int i = 0; i < 10; i++) r.sonar(turno, sonido); } catch (InterruptedException e) { }
+    }
+}
+Reloj r = new Reloj();
+new HiloSonido(r, 0, "TIC").start();
+new HiloSonido(r, 1, "TAC").start();
+new HiloSonido(r, 2, "TOC").start();</script>
+<div class="bad">Con <code>notify()</code> podría despertar al hilo equivocado, que vuelve a dormir → todos dormidos (interbloqueo).</div></div></details></div>
+
+<div class="card ej"><h3>Ej. 16 · Baño con máximo 3 personas <span class="diff">Media</span></h3>
+<p>5 personas, máximo 3 dentro. Tardan hasta 20 ms dentro y esperan 0,5 s fuera.</p>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Banio {
+    private int dentro = 0;
+    public synchronized void entrar(String p) throws InterruptedException {
+        while (dentro == 3) wait();
+        dentro++;
+        System.out.println(p + " entra. Dentro: " + dentro);
+    }
+    public synchronized void salir(String p) {
+        dentro--;
+        System.out.println(p + " sale. Dentro: " + dentro);
+        notifyAll();
+    }
+}
+public class Persona extends Thread {
+    private Banio b;
+    public Persona(String n, Banio b) { super(n); this.b = b; }
+    public void run() {
+        try {
+            while (true) {
+                b.entrar(getName());
+                sleep((long)(Math.random() * 20));   // dentro (fuera del synchronized)
+                b.salir(getName());
+                sleep(500);
+            }
+        } catch (InterruptedException e) { }
+    }
+}</script>
+<div class="tip">El sleep de «estar dentro» va FUERA de los métodos synchronized: si no, solo habría 1 persona dentro a la vez.</div></div></details></div>
+
+<div class="card ej"><h3>Ej. 12 · Un productor y varios consumidores <span class="diff">Media</span></h3>
+<details class="sol"><summary>Ver solución</summary><div>
+<p>La <code>Cola</code> del resumen ya sirve tal cual (usa <code>while</code> + <code>notifyAll</code>). Solo hay que lanzar varios consumidores y repartir el trabajo para que consuman tantos como se producen:</p>
+<script type="text/x-code" data-lang="java">Cola cola = new Cola();
+int N = 9, CONSUMIDORES = 3;
+new Productor(cola, N).start();                         // produce 1..9
+for (int i = 1; i <= CONSUMIDORES; i++)
+    new Consumidor(cola, N / CONSUMIDORES, "C" + i).start(); // cada uno consume 3</script>
+<div class="bad">Con <code>if</code> en vez de <code>while</code>: dos consumidores despiertos a la vez podrían consumir el mismo dato o uno inexistente.</div></div></details></div>
+
+<div class="card ej"><h3>Autoevaluación del tema (con soluciones)</h3>
+<details class="sol"><summary>1. Verdadero o falso</summary><div>
+<table class="t1"><tr><th>Afirmación</th><th>V/F</th></tr>
+<tr><td>Una clase no puede tener métodos sincronizados y no sincronizados</td><td><b>F</b></td></tr>
+<tr><td>A un método no sincronizado pueden acceder muchos hilos a la vez</td><td><b>V</b></td></tr>
+<tr><td>Si un hilo ejecuta wait(), pierde el bloqueo del monitor</td><td><b>V</b></td></tr>
+<tr><td>Si un hilo ejecuta sleep(), pierde el bloqueo del monitor</td><td><b>F</b></td></tr>
+<tr><td>wait(), notify() y notifyAll() siempre se ejecutan en código sincronizado</td><td><b>V</b></td></tr></table></div></details>
+<details class="sol"><summary>2 y 3. Completar</summary><div>
+<p>«Si dos <b>hilos</b> quieren ejecutar un método <b>sincronizado</b> de una clase y los dos usan la misma <b>instancia</b>, únicamente uno de los dos podrá <b>ejecutar</b> el código en un momento determinado. El otro hilo deberá <b>esperar</b> a que el primero termine.»</p>
+<p>«Para garantizar <b>exclusión mutua</b> tendremos que garantizar que en una <b>sección crítica</b> no puede haber más <b>de un proceso</b> en ejecución. Los <b>procesos</b> que no se encuentran en la región crítica no pueden <b>bloquear</b> otros procesos. Todos los procesos que quieren entrar a <b>ejecutar</b> la región crítica esperan un tiempo <b>limitado</b>.»</p></div></details>
+<details class="sol"><summary>4. Relacionar</summary><div>
+<p>1 (palabra para sincronizar) → <b>e. synchronized</b> · 2 (Runnable es una) → <b>a. interfaz</b> · 3 (yield envía a) → <b>d. preparado (Listo)</b> · 4 (dos hilos con el cerrojo que necesita el otro) → <b>c. interbloqueo</b> · 5 (wait envía a) → <b>b. en espera</b></p></div></details>
+<details class="sol"><summary>5 y 6. V/F y qué se puede sincronizar</summary><div>
+<p>Un proceso siempre tiene un estado: <b>V</b> · Proceso y aplicación son sinónimos: <b>F</b> · El planificador da la CPU: <b>V</b> · «Dos procesos serán <i>secuenciales</i> cuando la primera instrucción de uno se ejecuta después de la primera y antes de la última del otro»: <b>F</b> (esa es la definición de <b>concurrentes</b>).</p>
+<p>Se pueden sincronizar: <b>métodos ✔</b>, <b>bloques de código ✔</b>, variables ✘, clases ✘.</p></div></details>
+</div>
+</section>
+
+<section class="view" id="v-ut1-tips">
+<div class="card"><h2>UT1 · Tips y trampas típicas</h2>
+<table class="t1">
+<tr><th>Si te preguntan...</th><th>Respuesta rápida</th></tr>
+<tr><td>Programa vs proceso</td><td>Programa = estático (clase). Proceso = en ejecución, dinámico (objeto)</td></tr>
+<tr><td>Concurrente vs paralelo</td><td>Concurrente = se intercalan (1 CPU vale). Paralelo = a la vez de verdad (varias CPU)</td></tr>
+<tr><td>Proceso vs hilo</td><td>Hilo = ligero, comparte memoria del proceso, cambio de contexto barato</td></tr>
+<tr><td>start() vs run()</td><td>start() crea un hilo nuevo y este llama a run(). run() a pelo = método normal en el mismo hilo</td></tr>
+<tr><td>¿Thread o Runnable?</td><td>Runnable: permite heredar de otra clase (no hay herencia múltiple)</td></tr>
+<tr><td>Prioridades</td><td>1..10, defecto 5. Sin garantías</td></tr>
+<tr><td>join()</td><td>Espera a que ESE hilo termine</td></tr>
+<tr><td>yield()</td><td>Ejecución → Listo</td></tr>
+<tr><td>Daemon</td><td>setDaemon(true) antes de start; la JVM acaba cuando solo quedan daemons; ej. garbage collector</td></tr>
+<tr><td>sleep vs wait</td><td>sleep mantiene el cerrojo; wait lo suelta</td></tr>
+<tr><td>wait sin synchronized</td><td>IllegalMonitorStateException</td></tr>
+<tr><td>if o while con wait</td><td><b>while</b>, siempre</td></tr>
+<tr><td>notify o notifyAll</td><td>notifyAll (más seguro)</td></tr>
+<tr><td>¿Qué se sincroniza?</td><td>Métodos y bloques. Nunca variables ni clases</td></tr>
+<tr><td>Excepción de sleep/join/wait</td><td>InterruptedException (comprobada → try-catch o throws)</td></tr>
+<tr><td>Orden de salida con varios hilos</td><td>«No se puede saber»: no determinista</td></tr>
+</table>
+<h3>Plantilla para cualquier ejercicio con monitor</h3>
+<script type="text/x-code" data-lang="java">class Recurso {                               // 1. objeto compartido
+    private int estado;                       // 2. variables de condición
+    public synchronized void accion() throws InterruptedException {
+        while (!puedoPasar()) wait();         // 3. esperar con while
+        // 4. modificar estado
+        notifyAll();                          // 5. avisar
+    }
+}
+class MiHilo extends Thread {                 // 6. cada hilo recibe el MISMO objeto
+    private Recurso r;
+    public MiHilo(Recurso r) { this.r = r; }
+    public void run() { ... r.accion(); ... }
+}</script>
+<div class="tip">Error número 1 en el examen práctico: crear un <code>new Recurso()</code> dentro de cada hilo. ¡Debe ser <b>uno</b> creado en el main y pasado por constructor!</div>
+</div></section>
+
+<section class="view" id="v-ut1-test"><div id="quiz-0"></div></section>
+
+<!-- ========================= UT2 ========================= -->
+<section class="view" id="v-ut2-resumen">
+<div class="card">
+<h2>UT2 · Índice</h2>
+<div class="toc">
+<a href="#u2-def">1. ¿Qué es un semáforo?</a>
+<a href="#u2-java">2. Semaphore en Java (API)</a>
+<a href="#u2-orden">3. Sincronizar el orden (0 permisos)</a>
+<a href="#u2-limite">4. Limitar hilos en la región crítica</a>
+<a href="#u2-prodcons">5. Productor-consumidor con 3 semáforos</a>
+<a href="#u2-vs">6. Semáforos vs monitores</a>
+</div></div>
+
+<div class="card" id="u2-def">
+<h2>1. ¿Qué es un semáforo?</h2>
+<p>Inventado por <b>Edsger W. Dijkstra</b> (finales de los 60), inspirado en las señales de tren. Fue el primer mecanismo que resolvió la sincronización <b>sin espera activa</b>: el hilo se bloquea (no gasta CPU) hasta que puede seguir.</p>
+<p>Es un <b>contador entero</b> con dos operaciones <b>atómicas</b>:</p>
+<figure>
+<svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,Arial" font-size="13">
+<rect x="250" y="35" width="140" height="90" rx="14" fill="#e3ecf7" stroke="#0f6cbf" stroke-width="2"/>
+<text x="320" y="62" text-anchor="middle" font-weight="700">Semáforo</text>
+<text x="320" y="95" text-anchor="middle" font-size="28" font-weight="800" fill="#0f6cbf">2</text>
+<text x="320" y="115" text-anchor="middle" font-size="11">permisos</text>
+<rect x="20" y="40" width="190" height="36" rx="8" fill="#fdecea" stroke="#c62828"/><text x="115" y="63" text-anchor="middle">acquire() → contador − 1</text>
+<text x="20" y="100" font-size="12" fill="#c62828">Si está a 0 → el hilo se BLOQUEA</text>
+<rect x="430" y="40" width="190" height="36" rx="8" fill="#e8f5e9" stroke="#2e7d32"/><text x="525" y="63" text-anchor="middle">release() → contador + 1</text>
+<text x="430" y="100" font-size="12" fill="#2e7d32">Despierta a un hilo bloqueado</text>
+<text x="320" y="155" text-anchor="middle" font-size="12">0 = rojo (cerrado) · &gt;0 = verde (pueden pasar tantos hilos como indique)</text>
+</svg>
+</figure>
+<table class="t1"><tr><th>Tipo</th><th>Valores</th><th>Uso</th></tr>
+<tr><td><b>Binario (mutex)</b></td><td>0 – 1</td><td>Exclusión mutua: solo 1 hilo en la sección crítica</td></tr>
+<tr><td><b>General</b></td><td>0 – N</td><td>Hasta N hilos a la vez (ej.: plazas de parking)</td></tr></table>
+<div class="tip">Ojo con el apunte: dice «0-1 → Semáforo / 0..N → binario», está cruzado. Lo correcto: <b>0-1 = binario</b>, <b>0..N = general</b>.</div>
+</div>
+
+<div class="card" id="u2-java">
+<h2>2. <code>java.util.concurrent.Semaphore</code></h2>
+<table class="t1"><tr><th>Constructor</th><th>Qué hace</th></tr>
+<tr><td><code>Semaphore(int permits)</code></td><td>Con N permisos. <b>No justo</b> por defecto (más eficiente)</td></tr>
+<tr><td><code>Semaphore(int permits, boolean fair)</code></td><td><code>fair = true</code> → desbloquea en orden de llegada (<b>FIFO</b>). <code>false</code> → orden aleatorio</td></tr></table>
+<table class="t1"><tr><th>Método</th><th>Qué hace</th></tr>
+<tr><td><code>acquire()</code></td><td>Coge 1 permiso; si no hay, se bloquea. Lanza <code>InterruptedException</code></td></tr>
+<tr><td><code>acquire(int n)</code></td><td>Coge n permisos (se bloquea hasta que haya n)</td></tr>
+<tr><td><code>release()</code> / <code>release(int n)</code></td><td>Devuelve 1 / n permisos</td></tr>
+<tr><td><code>tryAcquire()</code></td><td>Si hay permiso lo coge y devuelve <b>true</b>; si no, devuelve <b>false al instante sin bloquearse</b></td></tr>
+<tr><td><code>availablePermits()</code></td><td>Permisos disponibles ahora</td></tr>
+<tr><td><code>getQueueLength()</code></td><td>Estimación de hilos esperando</td></tr>
+<tr><td><code>reducePermits(int n)</code></td><td>Reduce permisos</td></tr></table>
+<script type="text/x-code" data-lang="java">Semaphore s = new Semaphore(0);
+s.release(10);                                   // release NO tiene tope
+System.out.println(s.availablePermits());        // 10</script>
+</div>
+
+<div class="card" id="u2-orden">
+<h2>3. Sincronizar el ORDEN entre hilos: semáforo con 0 permisos</h2>
+<p>Con <code>new Semaphore(0)</code>, quien haga <code>acquire()</code> se queda bloqueado hasta que otro haga <code>release()</code>. Así obligas a que algo pase <b>antes</b> que otra cosa.</p>
+<figure>
+<svg viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,Arial" font-size="12">
+<text x="10" y="30" font-weight="700">HiloTardes</text><rect x="100" y="15" width="200" height="24" fill="#fdecea" stroke="#c62828"/><text x="200" y="32" text-anchor="middle">acquire() → BLOQUEADO (0)</text>
+<rect x="420" y="15" width="100" height="24" fill="#e8f5e9" stroke="#2e7d32"/><text x="470" y="32" text-anchor="middle">"TARDES"</text>
+<text x="10" y="90" font-weight="700">HiloBuenas</text><rect x="100" y="75" width="180" height="24" fill="#eee" stroke="#999"/><text x="190" y="92" text-anchor="middle">sleep(1000)</text>
+<rect x="280" y="75" width="90" height="24" fill="#e8f5e9" stroke="#2e7d32"/><text x="325" y="92" text-anchor="middle">"BUENAS"</text>
+<rect x="370" y="75" width="80" height="24" fill="#e3ecf7" stroke="#0f6cbf"/><text x="410" y="92" text-anchor="middle">release()</text>
+<path d="M410 75 L430 40" stroke="#0f6cbf" stroke-width="2"/>
+<text x="10" y="130" fill="#555">Aunque Tardes arranque primero y Buenas duerma 1 s, siempre sale BUENAS TARDES.</text>
+</svg>
+</figure>
+<div class="grid2">
+<script type="text/x-code" data-lang="java">public class HiloTardes extends Thread {
+    Semaphore semaforo;
+    public HiloTardes(Semaphore s) { semaforo = s; }
+    @Override public void run() {
+        try {
+            semaforo.acquire();          // espera a BUENAS
+        } catch (InterruptedException e) { e.printStackTrace(); }
+        System.out.println("TARDES");
+    }
+}</script>
+<script type="text/x-code" data-lang="java">public class HiloBuenas extends Thread {
+    Semaphore semaforo;
+    public HiloBuenas(Semaphore s) { semaforo = s; }
+    @Override public void run() {
+        try { sleep(1000); } catch (InterruptedException e) { }
+        System.out.println("BUENAS");
+        semaforo.release();              // da paso a TARDES
+    }
+}
+// main
+Semaphore semaforo = new Semaphore(0);   // ¡0 permisos!
+new HiloTardes(semaforo).start();
+new HiloBuenas(semaforo).start();</script>
+</div>
+</div>
+
+<div class="card" id="u2-limite">
+<h2>4. Limitar cuántos hilos entran en la región crítica</h2>
+<script type="text/x-code" data-lang="java">Semaphore sem = new Semaphore(5);   // máximo 5 hilos a la vez
+sem.acquire();
+// región crítica
+sem.release();</script>
+<h3>Ejemplo: parking de 2 plazas</h3>
+<script type="text/x-code" data-lang="java">public class Parking {
+    static final int CAPACIDAD = 2;
+    private Semaphore semaforo = new Semaphore(CAPACIDAD, true);   // 2 plazas, justo (FIFO)
+
+    public void entrarParking(Coche coche) {
+        try {
+            semaforo.acquire();                                     // si no hay plaza, espera
+            System.out.println("Entra coche " + coche.getNumcoche()
+                + ". Plazas libres: " + semaforo.availablePermits());
+            System.out.println("Esperando: " + semaforo.getQueueLength());
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+    public void salirParking(Coche coche) {
+        System.out.println("Sale coche " + coche.getNumcoche());
+        semaforo.release();                                         // libera plaza
+    }
+}
+// Coche implements Runnable: da una vuelta (sleep), entrarParking, compra (sleep), salirParking
+// main: for 1..5 → new Thread(new Coche(parking, i)).start();</script>
+<h3>Consejos del profe</h3>
+<ul>
+<li>Semáforo binario para acceso exclusivo a variables compartidas = <b>mutex</b> (mutual exclusion): <code>new Semaphore(1)</code>.</li>
+<li>Semáforo <b>sin permisos</b> para bloquear a los hilos que deben esperar una condición (equivale a <code>wait()</code>). <b>Un semáforo por cada condición</b>.</li>
+<li>Libera el mutex <b>antes</b> de bloquearte en otro semáforo para evitar interbloqueos.</li>
+<li><b>No hay notifyAll()</b>: tienes que llamar a <code>release()</code> tantas veces como hilos quieras despertar.</li>
+</ul>
+</div>
+
+<div class="card" id="u2-prodcons">
+<h2>5. Productor-consumidor con 3 semáforos y una <code>Queue</code></h2>
+<table class="t1"><tr><th>Método de Queue</th><th>Si no puede...</th></tr>
+<tr><td><code>offer(e)</code> ✅</td><td>devuelve false</td></tr>
+<tr><td><code>add(e)</code></td><td>lanza IllegalStateException</td></tr>
+<tr><td><code>poll()</code> ✅</td><td>devuelve null si está vacía</td></tr>
+<tr><td><code>remove()</code></td><td>lanza NoSuchElementException</td></tr></table>
+<p>Cola = estructura <b>FIFO</b>: entra por el final, sale por el principio. Se implementa con <code>new LinkedList&lt;&gt;()</code>.</p>
+<table class="t1"><tr><th>Semáforo</th><th>Inicial</th><th>Cuenta...</th><th>acquire lo hace</th><th>release lo hace</th></tr>
+<tr><td><code>lleno</code></td><td>5</td><td>huecos libres en el buffer</td><td>Productor (antes de meter)</td><td>Consumidor (tras sacar)</td></tr>
+<tr><td><code>vacio</code></td><td>0</td><td>elementos que hay para consumir</td><td>Consumidor (antes de sacar)</td><td>Productor (tras meter)</td></tr>
+<tr><td><code>mutex</code></td><td>1</td><td>acceso exclusivo a la cola</td><td>los dos</td><td>los dos</td></tr></table>
+<div class="tip">Los nombres del apunte son confusos: <code>lleno</code> es «el semáforo en el que espero cuando está lleno» (cuenta huecos) y <code>vacio</code> «en el que espero cuando está vacío» (cuenta elementos).</div>
+<div class="grid2">
+<script type="text/x-code" data-lang="java">// PRODUCTOR
+for (int i = 0; i < 5; i++) {
+    lleno.acquire();            // 1º ¿hay hueco?
+    mutex.acquire();            // 2º entro a la cola
+    String p = name + "-" + i;
+    Buffer.cola.offer(p);
+    System.out.println("Productor " + name + " produce " + p);
+    mutex.release();
+    vacio.release();            // aviso: hay 1 elemento más
+}</script>
+<script type="text/x-code" data-lang="java">// CONSUMIDOR
+for (int i = 0; i < 5; i++) {
+    vacio.acquire();            // 1º ¿hay algo?
+    mutex.acquire();
+    String c = Buffer.cola.poll();
+    System.out.println("Consumidor " + name + " ==> " + c);
+    mutex.release();
+    lleno.release();            // aviso: hay 1 hueco más
+}
+
+// MAIN
+Semaphore vacio = new Semaphore(0);
+Semaphore lleno = new Semaphore(5);
+Semaphore mutex = new Semaphore(1);</script>
+</div>
+<div class="bad"><b>Orden importante:</b> primero el semáforo de condición (lleno/vacio) y <b>después</b> el mutex. Si coges el mutex primero y te bloqueas en lleno, nadie más puede entrar a la cola para liberar huecos → <b>interbloqueo</b>.</div>
+</div>
+
+<div class="card" id="u2-vs">
+<h2>6. Semáforos vs monitores (UT1)</h2>
+<table class="t1"><tr><th>Monitor (UT1)</th><th>Semáforo (UT2)</th></tr>
+<tr><td><code>synchronized</code></td><td><code>mutex.acquire()</code> … <code>mutex.release()</code> (Semaphore(1))</td></tr>
+<tr><td><code>while(cond) wait();</code></td><td><code>semCondicion.acquire();</code> (Semaphore(0))</td></tr>
+<tr><td><code>notify()</code></td><td><code>semCondicion.release();</code></td></tr>
+<tr><td><code>notifyAll()</code></td><td>No existe: <code>release(n)</code> o un bucle de releases</td></tr>
+<tr><td>Solo 1 hilo dentro</td><td>Hasta N hilos dentro (Semaphore(N))</td></tr>
+<tr><td>El cerrojo se libera solo al salir del método</td><td><b>Tú</b> tienes que hacer release (¡no lo olvides en todos los caminos!)</td></tr></table>
+</div>
+</section>
+
+<section class="view" id="v-ut2-ejercicios">
+<div class="card"><h2>UT2 · Ejercicios resueltos</h2><p>Primero intenta hacerlo tú y después abre «Ver solución».</p></div>
+
+<div class="card ej"><h3>Act. 1 · TIC-TAC intercalado con semáforos (Runnable) <span class="diff">Fácil</span></h3>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class HiloTIC implements Runnable {
+    private Semaphore semTic, semTac;
+    public HiloTIC(Semaphore semTic, Semaphore semTac) { this.semTic = semTic; this.semTac = semTac; }
+    @Override public void run() {
+        try {
+            while (true) {
+                semTic.acquire();              // espero mi turno
+                System.out.print("TIC-");
+                semTac.release();              // turno de TAC
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+public class HiloTAC implements Runnable {
+    private Semaphore semTic, semTac;
+    public HiloTAC(Semaphore semTic, Semaphore semTac) { this.semTic = semTic; this.semTac = semTac; }
+    @Override public void run() {
+        try {
+            while (true) {
+                semTac.acquire();
+                System.out.print("TAC-");
+                semTic.release();
+            }
+        } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+}
+// main
+Semaphore semTic = new Semaphore(1);   // TIC empieza → 1 permiso
+Semaphore semTac = new Semaphore(0);   // TAC espera → 0
+new Thread(new HiloTIC(semTic, semTac)).start();
+new Thread(new HiloTAC(semTic, semTac)).start();</script>
+<div class="tip">Truco: «quien empieza tiene 1 permiso; el resto 0». Para TIC-TAC-TOC añade un tercer semáforo en cadena.</div></div></details></div>
+
+<div class="card ej"><h3>Act. 2 · 30 hilos iniciales + 1 hilo final <span class="diff">Fácil</span></h3>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class HiloInicial extends Thread {
+    private int id; private Semaphore sem;
+    public HiloInicial(int id, Semaphore sem) { this.id = id; this.sem = sem; }
+    public void run() {
+        System.out.println("Hilo " + id);
+        sem.release();                         // +1 permiso por cada inicial
+    }
+}
+public class HiloFinal extends Thread {
+    private Semaphore sem;
+    public HiloFinal(Semaphore sem) { this.sem = sem; }
+    public void run() {
+        try {
+            sem.acquire(30);                   // espera a que haya 30 permisos
+            System.out.println("Hola soy el hilo final");
+        } catch (InterruptedException e) { }
+    }
+}
+// main
+Semaphore sem = new Semaphore(0);
+new HiloFinal(sem).start();                    // aunque arranque el primero, espera
+for (int i = 1; i <= 30; i++) new HiloInicial(i, sem).start();</script></div></details></div>
+
+<div class="card ej"><h3>Act. 4 · 3 amigos explotan 1000 globos (sin synchronized) <span class="diff">Media</span></h3>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Globos {
+    static int explotados = 0;
+    static Semaphore mutex = new Semaphore(1);    // mutex en vez de synchronized
+}
+public class Amigo extends Thread {
+    private int mios = 0;
+    public Amigo(String n) { super(n); }
+    public int getMios() { return mios; }
+    public void run() {
+        try {
+            while (true) {
+                Globos.mutex.acquire();
+                if (Globos.explotados < 1000) {
+                    Globos.explotados++;
+                    mios++;
+                    Globos.mutex.release();
+                } else {
+                    Globos.mutex.release();       // ¡liberar también al salir!
+                    break;
+                }
+            }
+        } catch (InterruptedException e) { }
+    }
+}
+// main
+Amigo[] a = { new Amigo("Ana"), new Amigo("Luis"), new Amigo("Eva") };
+for (Amigo x : a) x.start();
+for (Amigo x : a) { x.join(); System.out.println(x.getName() + ": " + x.getMios()); }
+System.out.println("Total: " + Globos.explotados);   // 1000</script>
+<div class="bad">Si te olvidas el release en el else, el primero que acabe deja el mutex cogido y los demás se quedan bloqueados para siempre.</div></div></details></div>
+
+<div class="card ej"><h3>Act. 5 · Sala de profesores: máximo 3 de 7 <span class="diff">Fácil</span></h3>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Profesor extends Thread {
+    private Semaphore sala;
+    public Profesor(String n, Semaphore sala) { super(n); this.sala = sala; }
+    public void run() {
+        try {
+            while (true) {
+                sala.acquire();
+                System.out.println(getName() + " ENTRA en la sala");
+                sleep(200);
+                System.out.println(getName() + " se dispone a SALIR");   // mensajes dentro de la zona protegida
+                sala.release();
+                sleep(20);
+            }
+        } catch (InterruptedException e) { }
+    }
+}
+// main
+Semaphore sala = new Semaphore(3);
+for (int i = 1; i <= 7; i++) new Profesor("Profe" + i, sala).start();</script></div></details></div>
+
+<div class="card ej"><h3>Act. 6 · Canarios: plato (3) y columpio (1) <span class="diff">Fácil</span></h3>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Canario extends Thread {
+    private Semaphore plato, columpio;
+    public Canario(String n, Semaphore plato, Semaphore columpio) {
+        super(n); this.plato = plato; this.columpio = columpio;
+    }
+    public void run() {
+        try {
+            plato.acquire();
+            System.out.println(getName() + " come");
+            sleep(5000);
+            System.out.println(getName() + " deja de comer");
+            plato.release();
+
+            columpio.acquire();
+            System.out.println(getName() + " se columpia");
+            sleep(6000);
+            System.out.println(getName() + " deja el columpio");
+            columpio.release();
+        } catch (InterruptedException e) { }
+    }
+}
+// main: Semaphore plato = new Semaphore(3); Semaphore columpio = new Semaphore(1);
+// for 1..10 → new Canario("Canario" + i, plato, columpio).start();</script></div></details></div>
+
+<div class="card ej"><h3>Act. 3 · Parking con plazas numeradas <span class="diff">Media</span></h3>
+<details class="sol"><summary>Ver solución</summary><div>
+<script type="text/x-code" data-lang="java">public class Parking {
+    private final int CAPACIDAD = 2;
+    private Semaphore plazasLibres = new Semaphore(CAPACIDAD, true);
+    private Semaphore mutex = new Semaphore(1);          // protege el array de plazas
+    private int[] plazas = new int[CAPACIDAD];           // 0 = libre, si no nº del coche
+
+    public int entrar(int coche) throws InterruptedException {
+        plazasLibres.acquire();                          // 1º ¿hay plaza?
+        mutex.acquire();                                 // 2º elijo cuál
+        int p = 0;
+        while (plazas[p] != 0) p++;
+        plazas[p] = coche;
+        System.out.println("Entra coche " + coche + " a plaza " + p
+            + " | Libres: " + plazasLibres.availablePermits() + " " + Arrays.toString(plazas));
+        mutex.release();
+        return p;
+    }
+    public void salir(int coche, int p) throws InterruptedException {
+        mutex.acquire();
+        plazas[p] = 0;
+        System.out.println("Sale coche " + coche + " de plaza " + p);
+        mutex.release();
+        plazasLibres.release();
+    }
+}</script></div></details></div>
+
+<div class="card ej"><h3>Act. 11 · Depósito de agua de 200 L <span class="diff">Difícil</span></h3>
+<details class="sol"><summary>Ver solución (versión sencilla con mutex + semáforo de espera)</summary><div>
+<script type="text/x-code" data-lang="java">public class Deposito {
+    private final int CAP = 200;
+    private int litros = 0;
+    private Semaphore mutex = new Semaphore(1);
+    private Semaphore esperaMeter = new Semaphore(0);
+    private Semaphore esperaSacar = new Semaphore(0);
+    private int bloqMeter = 0, bloqSacar = 0;
+
+    public void meteAgua(int l) throws InterruptedException {
+        mutex.acquire();
+        while (litros + l > CAP) {          // no cabe → espero
+            bloqMeter++;
+            mutex.release();                // suelto el mutex ANTES de bloquearme
+            esperaMeter.acquire();
+            mutex.acquire();
+        }
+        litros += l;
+        System.out.println("Mete " + l + " → " + litros + " L");
+        despertarTodos();
+        mutex.release();
+    }
+    public void sacaAgua(int l) throws InterruptedException {
+        mutex.acquire();
+        while (litros < l) {
+            bloqSacar++;
+            mutex.release();
+            esperaSacar.acquire();
+            mutex.acquire();
+        }
+        litros -= l;
+        System.out.println("Saca " + l + " → " + litros + " L");
+        despertarTodos();
+        mutex.release();
+    }
+    private void despertarTodos() {         // equivalente a notifyAll
+        esperaMeter.release(bloqMeter); bloqMeter = 0;
+        esperaSacar.release(bloqSacar); bloqSacar = 0;
+    }
+}</script>
+<div class="tip">Patrón para «wait/notifyAll con semáforos»: contador de bloqueados + semáforo a 0 + soltar el mutex antes de bloquearse + release(bloqueados) para despertar a todos.</div></div></details></div>
+</section>
+
+<section class="view" id="v-ut2-tips">
+<div class="card"><h2>UT2 · Tips y trampas típicas</h2>
+<table class="t1">
+<tr><th>Si quieres...</th><th>Usa</th></tr>
+<tr><td>Que solo 1 hilo toque una variable</td><td><code>new Semaphore(1)</code> (mutex)</td></tr>
+<tr><td>Que como mucho N hilos estén dentro</td><td><code>new Semaphore(N)</code></td></tr>
+<tr><td>Que A pase antes que B</td><td><code>new Semaphore(0)</code>: B hace acquire, A hace release</td></tr>
+<tr><td>Esperar a que terminen N hilos</td><td>Semaphore(0), cada uno release(), el que espera <code>acquire(N)</code></td></tr>
+<tr><td>Turnos (TIC-TAC)</td><td>Un semáforo por hilo: el que empieza con 1, el resto con 0, en cadena</td></tr>
+<tr><td>Orden de llegada</td><td><code>new Semaphore(N, true)</code></td></tr>
+<tr><td>Intentar sin bloquearse</td><td><code>tryAcquire()</code></td></tr>
+<tr><td>Despertar a todos</td><td><code>release(numBloqueados)</code></td></tr>
+</table>
+<h3>Errores que restan puntos</h3>
+<ul>
+<li>Olvidar <code>release()</code> en algún camino (un <code>if/else</code>, un <code>break</code>, una excepción).</li>
+<li>Coger el <b>mutex antes</b> que el semáforo de condición → interbloqueo.</li>
+<li>Crear el semáforo dentro de cada hilo: tiene que ser <b>el mismo objeto</b> compartido (se pasa por constructor o es <code>static</code>).</li>
+<li>Confundir <code>acquire</code> (resta / puede bloquear) con <code>release</code> (suma / nunca bloquea).</li>
+<li>Pensar que release tiene tope: <code>new Semaphore(1)</code> + 2 releases = 3 permisos.</li>
+<li>Olvidar el <code>try-catch (InterruptedException)</code> de <code>acquire()</code>.</li>
+</ul>
+<h3>Plantilla general</h3>
+<script type="text/x-code" data-lang="java">class Recurso {
+    private Semaphore mutex = new Semaphore(1);     // protege variables compartidas
+    private Semaphore cond  = new Semaphore(0);     // donde se espera
+    private int bloqueados = 0, estado = 0;
+
+    public void accion() throws InterruptedException {
+        mutex.acquire();
+        while (!puedo()) {
+            bloqueados++;
+            mutex.release();      // 1. suelto
+            cond.acquire();       // 2. me bloqueo
+            mutex.acquire();      // 3. vuelvo a coger
+        }
+        // modificar estado
+        cond.release(bloqueados); bloqueados = 0;   // "notifyAll"
+        mutex.release();
+    }
+}</script>
+</div></section>
+
+<section class="view" id="v-ut2-test"><div id="quiz-1"></div></section>
+</main>
+
+<script>
+/* ======================= utilidades ======================= */
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const JAVA_KW = "public|private|protected|static|void|class|new|return|if|else|for|while|try|catch|throws|throw|extends|implements|int|double|boolean|char|long|true|false|null|import|final|transient|this|super|break|continue";
+function hlJava(src){
+  const re = new RegExp('(\\/\\/[^\\n]*|\\/\\*[\\s\\S]*?\\*\\/)|("(?:[^"\\\\\\n]|\\\\.)*")|\\b('+JAVA_KW+')\\b|(@\\w+)|\\b([A-Z]\\w*)\\b|\\b(\\d+(?:\\.\\d+)?)\\b','g');
+  let out="",last=0,m;
+  while((m=re.exec(src))){
+    out+=esc(src.slice(last,m.index));
+    const t=esc(m[0]);
+    if(m[1]) out+='<span class="c">'+t+'</span>';
+    else if(m[2]) out+='<span class="s">'+t+'</span>';
+    else if(m[3]||m[4]) out+='<span class="k">'+t+'</span>';
+    else if(m[5]) out+='<span class="t">'+t+'</span>';
+    else out+='<span class="n">'+t+'</span>';
+    last=re.lastIndex;
+  }
+  return out+esc(src.slice(last));
+}
+function hlXml(src){
+  const re=/(<!--[\s\S]*?-->)|(<\/?)([\w:]+)|([\w:]+)(=)("[^"]*")|(\/?>)/g;
+  let out="",last=0,m;
+  while((m=re.exec(src))){
+    out+=esc(src.slice(last,m.index));
+    if(m[1]) out+='<span class="c">'+esc(m[1])+'</span>';
+    else if(m[2]) out+='<span class="tag">'+esc(m[2]+m[3])+'</span>';
+    else if(m[4]) out+='<span class="attr">'+esc(m[4])+'</span>='+'<span class="s">'+esc(m[6])+'</span>';
+    else out+='<span class="tag">'+esc(m[7])+'</span>';
+    last=re.lastIndex;
+  }
+  return out+esc(src.slice(last));
+}
+function codeBlock(src){
+  src=src.replace(/^\n+|\s+$/g,"");
+  const isXml=/^\s*</.test(src);
+  return '<pre class="code">'+(isXml?hlXml(src):hlJava(src))+'</pre>';
+}
+// texto: ‹x› = código en línea ; @@ en línea propia separa texto / bloque de código
+function rich(s){
+  const parts=s.split(/\n?^@@$\n?/m);
+  return parts.map((p,i)=> i%2 ? codeBlock(p) : '<p>'+esc(p.trim()).replace(/‹([^›]*)›/g,'<code>$1</code>').replace(/\n/g,'<br>')+'</p>').join("");
+}
+// opción: "§" al principio = texto; si no, código
+function optHtml(o){ return o.startsWith("§") ? '<div>'+esc(o.slice(1)).replace(/‹([^›]*)›/g,'<code>$1</code>')+'</div>' : codeBlock(o); }
+const L="abcd";
+
+
+document.querySelectorAll('script[type="text/x-code"]').forEach(s=>{
+  const d=document.createElement("div");
+  d.innerHTML=codeBlock(s.textContent);
+  s.replaceWith(d.firstChild);
+});
+let UT=0;
+const subtabs=document.querySelectorAll("#tabs button[data-p]");
+function showView(id){document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===id));window.scrollTo(0,0);}
+function openUT(n,p){UT=n;p=p||"resumen";
+  document.getElementById("tabs").style.display="flex";
+  document.getElementById("utTitle").textContent=n===1?"UT1 · Hilos y monitores":"UT2 · Semáforos";
+  subtabs.forEach(b=>b.classList.toggle("active",b.dataset.p===p));
+  showView("v-ut"+n+"-"+p);}
+function goHome(){document.getElementById("tabs").style.display="none";showView("v-home");}
+subtabs.forEach(b=>b.onclick=()=>openUT(UT,b.dataset.p));
+document.addEventListener("click",e=>{
+  const a=e.target.closest('a[href^="#u1-"],a[href^="#u2-"]');
+  if(a){e.preventDefault();const h=a.getAttribute("href");openUT(+h[2],"resumen");setTimeout(()=>document.querySelector(h).scrollIntoView({behavior:"smooth"}),30);}
+});
+const APN={"u1-proc":"Programa y proceso","u1-conc":"Concurrencia","u1-hilos":"Hilos y estados","u1-api":"Métodos de Thread","u1-crear":"Crear hilos","u1-prio":"Prioridades, join, daemon","u1-sync":"synchronized","u1-wait":"wait/notify",
+"u2-def":"¿Qué es un semáforo?","u2-java":"API Semaphore","u2-orden":"Sincronizar el orden","u2-limite":"Limitar la región crítica","u2-prodcons":"Productor-consumidor","u2-vs":"Semáforos vs monitores"};
+</script>
+<script>
+const REP=[
+/* ================= UT1 ================= */
+[
+{q:`¿Cuál es la diferencia entre programa y proceso?`,o:["§El programa es estático (conjunto de instrucciones) y el proceso es un programa en ejecución, dinámico","§Son sinónimos","§El proceso es el código fuente y el programa el ejecutable","§Un programa solo puede dar lugar a un proceso"],c:0,e:`Programa ≈ clase (estático); proceso ≈ objeto (dinámico). Un programa puede generar varios procesos.`,ap:"u1-proc"},
+{q:`Dos procesos son concurrentes cuando...`,o:["§la primera instrucción de uno se ejecuta después de la primera y antes de la última del otro","§se ejecutan exactamente al mismo tiempo en dos CPU","§uno empieza cuando el otro ha terminado","§comparten el mismo código"],c:0,e:`Basta con que se intercalen. Si se ejecutan a la vez de verdad es paralelismo.`,ap:"u1-conc"},
+{q:`Todos los procesos esperan un evento que nunca va a ocurrir. ¿Cómo se llama?`,o:["§Interbloqueo (deadlock)","§Exclusión mutua","§Condición de sincronización","§Cambio de contexto"],c:0,e:`Interbloqueo o abrazo mortal: el jugador que se lleva el pañuelo a casa.`,ap:"u1-conc"},
+{q:`¿Qué afirmación sobre hilos es correcta?`,o:["§Los hilos de un mismo proceso comparten su código y sus datos","§Cada hilo tiene su propia copia de las variables del proceso","§Los hilos son más pesados que los procesos","§El cambio de contexto entre hilos es más costoso que entre procesos"],c:0,e:`Hilos = ligeros, comparten memoria del proceso, cambio de contexto barato.`,ap:"u1-hilos"},
+{q:`¿Qué ocurre aquí?
+@@
+MiHilo h = new MiHilo();   // MiHilo extends Thread
+h.run();
+@@
+`,o:["§run() se ejecuta en el hilo actual como un método normal; no se crea ningún hilo nuevo","§Se crea un hilo nuevo igual que con start()","§Error de compilación","§Se lanza IllegalThreadStateException"],c:0,e:`Solo start() crea el hilo y luego llama a run(). Llamar a run() directamente es una llamada normal.`,ap:"u1-crear"},
+{q:`¿Por qué se recomienda implementar Runnable en vez de heredar de Thread?`,o:["§Porque Java no tiene herencia múltiple y así la clase puede heredar de otra","§Porque Runnable es más rápido","§Porque Thread está deprecated","§Porque con Thread no se puede usar sleep()"],c:0,e:`Heredar de Thread «hipoteca» la herencia de la clase.`,ap:"u1-crear"},
+{q:`MiTarea implements Runnable. ¿Qué fragmento lanza correctamente el hilo?`,o:[`Thread t = new Thread(new MiTarea());
+t.start();`,`MiTarea t = new MiTarea();
+t.start();`,`Thread t = new MiTarea();
+t.start();`,`new MiTarea().run();`],c:0,e:`Un Runnable no es un hilo: hay que pasárselo a un Thread. (b) no compila: Runnable no tiene start().`,ap:"u1-crear"},
+{q:`Rango y valor por defecto de la prioridad de un hilo en Java:`,o:["§1 a 10, por defecto 5","§0 a 10, por defecto 0","§1 a 5, por defecto 3","§0 a 100, por defecto 50"],c:0,e:`MIN_PRIORITY 1, NORM_PRIORITY 5, MAX_PRIORITY 10.`,ap:"u1-prio"},
+{q:`¿Qué hace yield()?`,o:["§El hilo cede la CPU y pasa de Ejecución a Listo","§Duerme el hilo un tiempo","§Espera a que otro hilo muera","§Bloquea el hilo hasta un notify()"],c:0,e:`yield cede el paso; incluso puede volver a elegirse a sí mismo.`,ap:"u1-prio"},
+{q:`El main lanza 9 hilos que rellenan una matriz y quiere pintarla cuando todos acaben. ¿Qué usa?`,o:["§join() sobre cada hilo","§yield()","§sleep(1000) y esperar que haya dado tiempo","§setDaemon(true)"],c:0,e:`join() espera a que el hilo termine; es la única forma segura.`,ap:"u1-prio"},
+{q:`¿Qué afirmación sobre los hilos daemon es correcta?`,o:["§La JVM termina cuando solo quedan hilos daemon ejecutándose","§La JVM espera siempre a que terminen los daemon","§Se puede llamar a setDaemon(true) en cualquier momento","§Un daemon tiene prioridad máxima"],c:0,e:`setDaemon antes de start. Ej.: garbage collector.`,ap:"u1-prio"},
+{q:`Un hilo que tiene el cerrojo de un objeto ejecuta sleep(1000) dentro de un método synchronized. ¿Qué pasa con el cerrojo?`,o:["§Lo mantiene mientras duerme","§Lo libera hasta que despierta","§Lo pierde definitivamente","§Se lanza una excepción"],c:0,e:`sleep NO libera; wait SÍ libera.`,ap:"u1-sync"},
+{q:`¿Qué se puede marcar como synchronized en Java?`,o:["§Métodos y bloques de código","§Variables y métodos","§Clases y variables","§Solo clases"],c:0,e:`Nunca variables ni clases.`,ap:"u1-sync"},
+{q:`Una clase tiene un método synchronized a() y otro no sincronizado b(). Un hilo está dentro de a(). ¿Puede otro hilo ejecutar b() sobre el mismo objeto?`,o:["§Sí, el código no sincronizado no está protegido","§No, el objeto entero está bloqueado","§Solo si b() es static","§Solo si tiene más prioridad"],c:0,e:`Solo se protege el código sincronizado.`,ap:"u1-sync"},
+{q:`Dos personas retiran de una cuenta compartida. Sin synchronized el saldo acaba en -10. ¿Cómo se llama ese problema?`,o:["§Condición de carrera","§Interbloqueo","§Inanición","§Daemon"],c:0,e:`El resultado depende de quién «corra» más. Se arregla haciendo retirar() synchronized.`,ap:"u1-sync"},
+{q:`¿Qué hace wait()?`,o:["§El hilo libera el monitor y se duerme hasta que otro haga notify/notifyAll sobre el mismo objeto","§Duerme el hilo un tiempo fijo sin liberar el monitor","§Espera a que otro hilo termine","§Despierta a todos los hilos"],c:0,e:`wait suelta el cerrojo y espera aviso.`,ap:"u1-wait"},
+{q:`¿Qué ocurre si se llama a wait() fuera de un método o bloque synchronized?`,o:["§Se lanza IllegalMonitorStateException","§Funciona igual","§No compila","§El hilo muere"],c:0,e:`wait/notify/notifyAll requieren tener el monitor → código synchronized.`,ap:"u1-wait"},
+{q:`¿Por qué se pone wait() dentro de un while y no de un if?`,o:["§Porque al despertar hay que volver a comprobar la condición: el aviso no garantiza que se cumpla","§Porque if no compila con wait","§Para que el hilo no consuma CPU","§Porque while libera el cerrojo"],c:0,e:`Otro hilo puede haber cambiado el estado antes de que vuelvas a ejecutarte.`,ap:"u1-wait"},
+{q:`En TIC-TAC-TOC con 3 hilos y un turno compartido, ¿por qué se usa notifyAll() y no notify()?`,o:["§notify() podría despertar a un hilo que no tiene el turno y todos acabarían dormidos","§notify() no existe en Java","§notifyAll() es más rápido","§notify() libera el cerrojo y notifyAll() no"],c:0,e:`Con varios hilos esperando condiciones distintas, notifyAll es lo seguro.`,ap:"u1-wait"},
+{q:`¿Qué se puede asegurar de la salida de este main?
+@@
+h1.start();   // pinta "Hilo 1" 4 veces
+h2.start();   // pinta "Hilo 2" 4 veces
+System.out.println("Fin del hilo principal");
+@@
+`,o:["§Nada sobre el orden: las líneas pueden salir intercaladas de cualquier forma","§Siempre sale primero todo Hilo 1, luego Hilo 2 y al final Fin","§Fin siempre sale el último","§Fin siempre sale el primero"],c:0,e:`Hay 3 hilos (main + 2) y el planificador los intercala como quiera.`,ap:"u1-crear"}
+],
+/* ================= UT2 ================= */
+[
+{q:`¿Quién inventó los semáforos?`,o:["§Edsger W. Dijkstra","§James Gosling","§Alan Turing","§Linus Torvalds"],c:0,e:`Dijkstra, finales de los 60, inspirado en las señales de tren.`,ap:"u2-def"},
+{q:`¿En qué paquete está la clase Semaphore?`,o:[`java.util.concurrent`,`java.lang`,`java.io`,`java.util.sync`],c:0,e:`import java.util.concurrent.Semaphore;`,ap:"u2-java"},
+{q:`¿Qué hace acquire() si el semáforo tiene 0 permisos?`,o:["§Bloquea el hilo hasta que otro haga release()","§Devuelve false","§Deja el contador en -1 y continúa","§Lanza una excepción"],c:0,e:`El contador nunca baja de 0: el hilo espera.`,ap:"u2-java"},
+{q:`¿Qué muestra?
+@@
+Semaphore s = new Semaphore(0);
+s.release(10);
+System.out.println(s.availablePermits());
+@@
+`,o:["§10","§0","§1","§Lanza excepción porque no se hizo acquire antes"],c:0,e:`release no tiene tope: suma los permisos.`,ap:"u2-java"},
+{q:`¿Qué devuelve tryAcquire() si no hay permisos?`,o:["§false inmediatamente, sin bloquearse","§true y se bloquea","§null","§Espera 1 segundo y lanza excepción"],c:0,e:`Si hay permiso lo coge y devuelve true; si no, false al momento.`,ap:"u2-java"},
+{q:`¿Qué indica new Semaphore(2, true)?`,o:["§2 permisos y justo: los hilos se desbloquean en orden de llegada (FIFO)","§2 permisos y binario","§2 hilos bloqueados al inicio","§Que lanza excepción si se supera 2"],c:0,e:`fair = true → FIFO. Por defecto no es justo (más eficiente).`,ap:"u2-java"},
+{q:`Por defecto (constructor con un parámetro), un Semaphore es...`,o:["§No justo: despierta a los hilos en orden aleatorio","§Justo (FIFO)","§Binario","§De 1 permiso"],c:0,e:`No justo porque es más eficiente y normalmente no produce inanición.`,ap:"u2-java"},
+{q:`¿Qué método devuelve una estimación de cuántos hilos esperan un permiso?`,o:[`getQueueLength()`,`availablePermits()`,`getWaiting()`,`size()`],c:0,e:`availablePermits = permisos libres; getQueueLength = hilos esperando.`,ap:"u2-java"},
+{q:`¿Cómo se inicializa el semáforo para que HiloTardes (que hace acquire) espere a que HiloBuenas (que hace release) pinte primero?`,o:[`new Semaphore(0)`,`new Semaphore(1)`,`new Semaphore(2)`,`new Semaphore(-1)`],c:0,e:`Con 0 permisos el primer acquire se bloquea hasta el release.`,ap:"u2-orden"},
+{q:`Main: Semaphore(0). HiloTardes arranca primero y hace acquire() y luego pinta TARDES. HiloBuenas duerme 1 s, pinta BUENAS y hace release(). ¿Qué sale?`,o:["§BUENAS y luego TARDES, siempre","§TARDES y luego BUENAS","§Depende del planificador","§Solo BUENAS: TARDES queda bloqueado para siempre"],c:0,e:`El acquire de Tardes no pasa hasta el release de Buenas.`,ap:"u2-orden"},
+{q:`Un semáforo binario usado para el acceso exclusivo a variables compartidas se llama...`,o:["§mutex","§monitor","§daemon","§token"],c:0,e:`mutex = mutual exclusion → new Semaphore(1).`,ap:"u2-limite"},
+{q:`Quieres que como máximo 5 hilos estén a la vez en una sección. ¿Qué usas?`,o:[`Semaphore s = new Semaphore(5);
+s.acquire(); /* sección */ s.release();`,`Semaphore s = new Semaphore(0);
+s.acquire(5); /* sección */ s.release(5);`,`Semaphore s = new Semaphore(1);
+s.release(); /* sección */ s.acquire();`,`synchronized(5) { /* sección */ }`],c:0,e:`Semaphore(N) = hasta N dentro.`,ap:"u2-limite"},
+{q:`30 hilos iniciales hacen release() al terminar. ¿Qué hace el hilo final para esperarlos a todos (semáforo iniciado a 0)?`,o:[`sem.acquire(30);`,`sem.acquire();`,`sem.release(30);`,`sem.tryAcquire();`],c:0,e:`acquire(30) bloquea hasta que haya 30 permisos.`,ap:"u2-orden"},
+{q:`En los semáforos, ¿cuál es el equivalente a notifyAll()?`,o:["§No existe: hay que hacer release() tantas veces como hilos quieras despertar","§releaseAll()","§notifyAll() también funciona con Semaphore","§acquire(0)"],c:0,e:`Se suele llevar un contador de bloqueados y hacer release(bloqueados).`,ap:"u2-limite"},
+{q:`TIC y TAC con dos semáforos. TIC debe empezar. ¿Cómo se inicializan?`,o:["§semTic = new Semaphore(1); semTac = new Semaphore(0);","§semTic = new Semaphore(0); semTac = new Semaphore(1);","§Los dos a 1","§Los dos a 0"],c:0,e:`Quien empieza con 1; el otro con 0. Cada uno hace acquire del suyo y release del contrario.`,ap:"u2-orden"},
+{q:`En el productor-consumidor con buffer de 5, ¿valores iniciales de lleno (huecos), vacio (elementos) y mutex?`,o:["§lleno = 5, vacio = 0, mutex = 1","§lleno = 0, vacio = 5, mutex = 1","§lleno = 5, vacio = 5, mutex = 0","§lleno = 1, vacio = 1, mutex = 5"],c:0,e:`Al principio hay 5 huecos, 0 elementos, y la cola está libre.`,ap:"u2-prodcons"},
+{q:`¿Qué orden es correcto en el PRODUCTOR?`,o:[`lleno.acquire(); mutex.acquire();
+cola.offer(x);
+mutex.release(); vacio.release();`,`mutex.acquire(); lleno.acquire();
+cola.offer(x);
+vacio.release(); mutex.release();`,`vacio.acquire(); mutex.acquire();
+cola.offer(x);
+mutex.release(); lleno.release();`,`mutex.acquire();
+cola.offer(x);
+mutex.release();`],c:0,e:`Primero el de condición, luego mutex. (b) si el buffer está lleno se bloquea con el mutex cogido → interbloqueo. (c) es el consumidor.`,ap:"u2-prodcons"},
+{q:`¿Qué hace poll() de una Queue vacía?`,o:["§Devuelve null","§Lanza NoSuchElementException","§Se bloquea","§Devuelve el último elemento"],c:0,e:`poll → null; remove → NoSuchElementException.`,ap:"u2-prodcons"},
+{q:`¿Qué muestra?
+@@
+Semaphore s = new Semaphore(2);
+s.acquire();
+s.acquire();
+System.out.println(s.tryAcquire() + " " + s.availablePermits());
+@@
+`,o:["§false 0","§true 0","§false 2","§Se queda bloqueado"],c:0,e:`Dos acquire dejan 0 permisos; tryAcquire no bloquea y devuelve false.`,ap:"u2-java"},
+{q:`Comparado con un monitor (synchronized), ¿cuál es un riesgo típico de los semáforos?`,o:["§Olvidar hacer release() en algún camino del código y dejar a otros hilos bloqueados","§Que no se pueden usar con varios hilos","§Que siempre producen condiciones de carrera","§Que no permiten más de un hilo en la región crítica"],c:0,e:`El cerrojo de synchronized se libera solo al salir; el release del semáforo lo tienes que hacer tú.`,ap:"u2-vs"}
+]
+];
+/* ---------- motor del cuestionario estilo Moodle ---------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const QUIZ={};
+function initQuiz(k){
+  const qs=REP[k].map(q=>{const ord=shuffle([0,1,2,3]);return {q:q.q,o:ord.map(i=>q.o[i]),c:ord.indexOf(q.c),e:q.e,ap:q.ap};});
+  QUIZ[k]={qs,ans:Array(qs.length).fill(null),flag:Array(qs.length).fill(false),cur:0,state:"start"};
+  drawQuiz(k);
+}
+function el(k){return document.getElementById("quiz-"+k);}
+function drawQuiz(k){
+  const Z=QUIZ[k], box=el(k), n=Z.qs.length;
+  if(Z.state==="start"){
+    box.innerHTML=`<div class="card"><h2>Test UT${k+1}</h2>
+    <p>${n} preguntas · Cada acierto +1 · Cada fallo −1/3 · En blanco 0 · Las opciones se barajan en cada intento.</p>
+    <p>Las respuestas no se muestran hasta que pulses <b>«Enviar todo y terminar»</b>.</p>
+    <button class="btn" onclick="QUIZ[${k}].state='quiz';drawQuiz(${k})">Comenzar intento</button></div>`;
+    return;
+  }
+  const side=()=>{let g="";for(let i=0;i<n;i++){let c="";
+      if(Z.state==="done"){c=Z.ans[i]===null?"n":(Z.ans[i]===Z.qs[i].c?"g":"r");}
+      else{if(Z.ans[i]!==null)c="ans";}
+      if(Z.flag[i])c+=" flag"; if(Z.state!=="summary"&&i===Z.cur)c+=" cur";
+      g+=`<button class="${c}" onclick="goQ(${k},${i})">${i+1}</button>`;}
+    return `<div class="side"><h4>Navegación por el cuestionario</h4><div class="navgrid">${g}</div>
+    ${Z.state==="quiz"?`<button class="lnk" onclick="QUIZ[${k}].state='summary';drawQuiz(${k})">Terminar intento...</button>`:""}
+    ${Z.state==="done"?`<button class="lnk" onclick="initQuiz(${k})">Nuevo intento</button>`:""}</div>`;};
+  if(Z.state==="quiz"){
+    const i=Z.cur,q=Z.qs[i];
+    let opts="";q.o.forEach((o,j)=>{opts+=`<label class="opt ${Z.ans[i]===j?'sel':''}"><input type="radio" name="q${k}" ${Z.ans[i]===j?'checked':''} onchange="pick(${k},${j})"><span class="l">${L[j]}.</span><div class="ob">${optHtml(o)}</div></label>`;});
+    box.innerHTML=`<div class="quiz"><div>
+      <div class="q qcard"><div class="qinfo"><b>Pregunta ${i+1}</b><span class="st n">${Z.ans[i]===null?'Sin responder aún':'Respuesta guardada'}</span><br>Se puntúa como 1,00<br><button class="flagbtn" onclick="QUIZ[${k}].flag[${i}]=!QUIZ[${k}].flag[${i}];drawQuiz(${k})">${Z.flag[i]?'⚑ Quitar marca':'⚐ Marcar pregunta'}</button></div>
+      <div class="qbody">${rich(q.q)}<p style="font-weight:600;margin:10px 0 4px">Seleccione una:</p>${opts}
+      ${Z.ans[i]!==null?`<button class="clear" onclick="QUIZ[${k}].ans[${i}]=null;drawQuiz(${k})">Borrar mi elección</button>`:""}</div></div>
+      <div class="qnav"><button class="btn sec" ${i===0?'disabled':''} onclick="goQ(${k},${i-1})">◀ Página anterior</button>
+      ${i<n-1?`<button class="btn" onclick="goQ(${k},${i+1})">Página siguiente ▶</button>`:`<button class="btn" onclick="QUIZ[${k}].state='summary';drawQuiz(${k})">Terminar intento...</button>`}</div>
+      </div>${side()}</div>`;
+  }
+  else if(Z.state==="summary"){
+    let rows="";for(let i=0;i<n;i++)rows+=`<tr><td><a href="javascript:goQ(${k},${i})">${i+1}</a>${Z.flag[i]?' ⚑':''}</td><td>${Z.ans[i]===null?'<span style="color:#c62828">Sin responder aún</span>':'Respuesta guardada'}</td></tr>`;
+    const blank=Z.ans.filter(a=>a===null).length;
+    box.innerHTML=`<div class="quiz"><div class="card"><h2>Test UT${k+1} · Resumen del intento</h2>
+      <table class="t1"><tr><th>Pregunta</th><th>Estado</th></tr>${rows}</table>
+      ${blank?`<div class="tip">Tienes ${blank} pregunta(s) sin responder (cuentan 0).</div>`:""}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      <button class="btn sec" onclick="QUIZ[${k}].state='quiz';drawQuiz(${k})">Volver al intento</button>
+      <button class="btn" onclick="if(confirm('Una vez enviado no podrás cambiar tus respuestas. ¿Enviar todo y terminar?')){QUIZ[${k}].state='done';drawQuiz(${k})}">Enviar todo y terminar</button></div></div>${side()}</div>`;
+  }
+  else{
+    let ok=0,bad=0,bl=0;Z.qs.forEach((q,i)=>{if(Z.ans[i]===null)bl++;else if(Z.ans[i]===q.c)ok++;else bad++;});
+    const pts=Math.max(0,ok-bad/3), nota=pts/n*10;
+    const f=x=>x.toFixed(2).replace(".",",");
+    let rev="";
+    Z.qs.forEach((q,i)=>{const a=Z.ans[i],st=a===null?"n":(a===q.c?"g":"r");
+      const lab={n:"Sin contestar",g:"Correcta",r:"Incorrecta"}[st],sc={n:"0,00",g:"1,00",r:"-0,33"}[st];
+      let op="";q.o.forEach((o,j)=>{let cls="",bd="";if(j===q.c){cls="correct";bd='<span class="badge g">✔ Correcta</span>';}
+        if(j===a){if(a!==q.c)cls="wrong";bd+='<span class="badge '+(a===q.c?'b':'r')+'">Tu respuesta</span>';}
+        op+=`<div class="opt ${cls}"><span class="l">${L[j]}.</span><div class="ob">${optHtml(o)}</div><div>${bd}</div></div>`;});
+      rev+=`<div class="q" id="rv${k}_${i}"><div class="qinfo"><b>Pregunta ${i+1}</b><span class="st ${st}">${lab}</span><br>Se puntúa ${sc} sobre 1,00</div><div class="qbody">${rich(q.q)}${op}
+      <div class="why"><h4>Retroalimentación</h4><p style="margin:0">${esc(q.e).replace(/‹([^›]*)›/g,'<code>$1</code>')}</p><p style="margin:6px 0 0">📘 Apuntes: <a href="#${q.ap}">${APN[q.ap]}</a></p></div></div></div>`;});
+    box.innerHTML=`<div class="quiz"><div><div class="card res"><h2>Test UT${k+1} · Resultado</h2>
+      <table><tr><td>Estado</td><td>Finalizado</td></tr><tr><td>Aciertos / fallos / blanco</td><td>${ok} / ${bad} / ${bl}</td></tr>
+      <tr><td>Puntos</td><td>${f(pts)} / ${n},00</td></tr><tr><td>Calificación</td><td><span class="big" style="color:${nota>=5?'#2e7d32':'#c62828'}">${f(nota)}</span> de 10,00 (${f(nota*10)}%)</td></tr></table>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="initQuiz(${k})">Nuevo intento</button></div></div>
+      ${rev}</div>${side()}</div>`;
+  }
+}
+function pick(k,j){QUIZ[k].ans[QUIZ[k].cur]=j;drawQuiz(k);}
+function goQ(k,i){const Z=QUIZ[k];if(Z.state==="done"){document.getElementById("rv"+k+"_"+i).scrollIntoView({behavior:"smooth"});return;}Z.state="quiz";Z.cur=i;drawQuiz(k);window.scrollTo(0,0);}
+
+initQuiz(0);initQuiz(1);
+</script>
+</body>
+</html>

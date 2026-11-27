@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ACADT · RA1 (UT1) · Recuperación</title>
+<style>
+:root{
+  --bg:#f4f6f9; --card:#fff; --ink:#1d2430; --muted:#5d6878; --line:#dfe4ea;
+  --brand:#0f6cbf; --brand2:#0a4f8c; --ok:#2e7d32; --okbg:#e8f5e9; --bad:#c62828; --badbg:#fdecea;
+  --warn:#b26a00; --warnbg:#fff4e0; --code:#1e1f29; --codeink:#e6e6e6;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header.top{background:linear-gradient(90deg,var(--brand2),var(--brand));color:#fff;padding:18px 24px}
+header.top h1{margin:0;font-size:1.35rem}
+header.top p{margin:4px 0 0;opacity:.85;font-size:.92rem}
+nav.tabs{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px;padding:8px 16px}
+nav.tabs button{border:0;background:transparent;padding:9px 16px;border-radius:8px;font-size:.95rem;cursor:pointer;color:var(--muted);font-weight:600}
+nav.tabs button:hover{background:#eef3f8;color:var(--ink)}
+nav.tabs button.active{background:var(--brand);color:#fff}
+nav.tabs .sep{width:1px;background:var(--line);margin:4px 6px}
+main{max-width:1100px;margin:0 auto;padding:22px 16px 80px}
+.view{display:none}.view.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+h2{margin:0 0 12px;font-size:1.3rem;color:var(--brand2)}
+h3{margin:18px 0 8px;font-size:1.05rem}
+.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.toc a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink);background:#fafbfd;font-weight:600;font-size:.93rem}
+.toc a:hover{border-color:var(--brand);color:var(--brand)}
+pre.code{background:var(--code);color:var(--codeink);padding:12px 14px;border-radius:8px;overflow:auto;font-size:.86rem;line-height:1.45;margin:8px 0;font-family:"JetBrains Mono",Consolas,"Courier New",monospace;white-space:pre}
+code{background:#eef1f5;padding:1px 5px;border-radius:4px;font-family:Consolas,"Courier New",monospace;font-size:.88em}
+.k{color:#ff79c6}.s{color:#f1fa8c}.c{color:#7f8aa3;font-style:italic}.t{color:#8be9fd}.n{color:#bd93f9}.tag{color:#ff79c6}.attr{color:#50fa7b}
+table.t1{border-collapse:collapse;width:100%;font-size:.9rem;margin:8px 0}
+table.t1 th,table.t1 td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+table.t1 th{background:#eef3f8}
+.tip{background:var(--warnbg);border-left:4px solid var(--warn);padding:10px 14px;border-radius:6px;margin:10px 0;font-size:.93rem}
+.ok{background:var(--okbg);border-left:4px solid var(--ok);padding:10px 14px;border-radius:6px;margin:10px 0;font-size:.93rem}
+.bad{background:var(--badbg);border-left:4px solid var(--bad);padding:10px 14px;border-radius:6px;margin:10px 0;font-size:.93rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid2>*{min-width:0}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+figure{margin:12px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:.83rem;color:var(--muted);margin-top:4px}
+/* ---- examen revisión ---- */
+.sum{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.pill{padding:6px 12px;border-radius:20px;background:#eef3f8;font-size:.88rem;font-weight:600}
+.pill.r{background:var(--badbg);color:var(--bad)}.pill.g{background:var(--okbg);color:var(--ok)}
+.q{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:16px;display:flex;overflow:hidden}
+.qinfo{width:130px;flex:none;background:#f1f4f8;padding:14px;font-size:.82rem;border-right:1px solid var(--line)}
+.qinfo b{display:block;font-size:1rem;margin-bottom:6px}
+.qinfo .st{font-weight:700}
+.qinfo .st.g{color:var(--ok)}.qinfo .st.r{color:var(--bad)}.qinfo .st.n{color:var(--muted)}
+.qbody{padding:16px 18px;flex:1;min-width:0}
+@media(max-width:700px){.q{flex-direction:column}.qinfo{width:auto;border-right:0;border-bottom:1px solid var(--line)}}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:7px 0;background:#fff}
+.opt .l{font-weight:700;min-width:22px;padding-top:2px}
+.opt .ob{flex:1;min-width:0}
+.opt pre.code{margin:0}
+.opt.correct{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.badge{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;white-space:nowrap}
+.badge.g{background:var(--ok);color:#fff}.badge.r{background:var(--bad);color:#fff}.badge.b{background:var(--brand);color:#fff}
+.why{margin-top:10px;padding:10px 14px;border-radius:8px;background:#f3f7fc;border:1px solid #d6e4f3;font-size:.92rem}
+.why h4{margin:0 0 4px;font-size:.92rem;color:var(--brand2)}
+.why a{color:var(--brand)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn{border:1px solid var(--brand);background:var(--brand);color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:.92rem;font-weight:600}
+.btn:hover{background:var(--brand2)}
+.btn.sec{background:#fff;color:var(--brand)}
+.btn.sec:hover{background:#eef3f8}
+.btn:disabled{opacity:.4;cursor:default}
+/* ---- quiz moodle ---- */
+.quiz{display:grid;grid-template-columns:1fr 250px;gap:18px;align-items:start}
+@media(max-width:850px){.quiz{grid-template-columns:1fr}.quiz .side{order:-1}}
+.side{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;position:sticky;top:64px}
+.side h4{margin:0 0 10px;font-size:.92rem}
+.navgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.navgrid button{height:38px;border:1px solid #b9c3cf;background:#fff;border-radius:4px;cursor:pointer;font-weight:600;position:relative;font-size:.85rem}
+.navgrid button.ans{background:#cfd8e3}
+.navgrid button.cur{outline:2px solid var(--brand);outline-offset:1px}
+.navgrid button.flag::after{content:"";position:absolute;top:0;right:0;border-style:solid;border-width:0 10px 10px 0;border-color:transparent var(--bad) transparent transparent}
+.navgrid button.g{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+.navgrid button.r{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.navgrid button.n{background:#f0f0f0;color:#999}
+.side .lnk{display:block;margin-top:12px;color:var(--brand);cursor:pointer;font-size:.9rem;text-decoration:underline;background:none;border:0;padding:0}
+.qcard .qinfo .flagbtn{margin-top:8px;font-size:.78rem;cursor:pointer;color:var(--brand);background:none;border:0;padding:0;text-decoration:underline}
+.qcard .opt{cursor:pointer}
+.qcard .opt:hover{border-color:#9fb6cf}
+.qcard .opt.sel{border-color:var(--brand);background:#eaf2fb}
+.qcard .opt input{margin-top:5px}
+.qnav{display:flex;justify-content:space-between;margin-top:12px;gap:8px}
+.clear{font-size:.83rem;color:var(--brand);cursor:pointer;background:none;border:0;text-decoration:underline;padding:0;margin-top:6px}
+.res{font-size:1rem}
+.res table td{padding:6px 12px;border-bottom:1px solid var(--line)}
+.res table td:first-child{font-weight:700;background:#f6f8fb;width:200px}
+.big{font-size:2rem;font-weight:800}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Acceso a Datos · RA1 (UT1) · Ficheros, XML y JSON</h1>
+  <p>Recuperación · Apuntes + examen corregido + 4 simulacros (20 preguntas, 3 mal restan 1 bien)</p>
+</header>
+<nav class="tabs" id="tabs">
+  <button data-v="apuntes" class="active">📘 Apuntes</button>
+  <button data-v="examen">📝 Examen</button>
+  <span class="sep"></span>
+  <button data-v="r1">Repaso 1</button>
+  <button data-v="r2">Repaso 2</button>
+  <button data-v="r3">Repaso 3</button>
+  <button data-v="r4">Repaso 4</button>
+</nav>
+<main>
+
+<!-- ===================================================== APUNTES ===================================================== -->
+<section class="view active" id="v-apuntes">
+
+<div class="card">
+<h2>Índice</h2>
+<div class="toc">
+  <a href="#ap-file">1. Clase File</a>
+  <a href="#ap-texto">2. Ficheros de texto</a>
+  <a href="#ap-bin">3. Binarios: DataStream</a>
+  <a href="#ap-obj">4. Objetos: serialización</a>
+  <a href="#ap-dom">5. XML con DOM</a>
+  <a href="#ap-sax">6. XML con SAX</a>
+  <a href="#ap-xstream">7. XStream</a>
+  <a href="#ap-json">8. JSON con Gson</a>
+  <a href="#ap-chuleta">9. Chuleta final y trampas</a>
+</div>
+<div class="tip"><b>Cómo puntúa el examen:</b> cada acierto +1, cada fallo −0,33, en blanco 0. Si dudas entre 2 opciones, contestar compensa (esperas +0,33). Si no tienes ni idea entre 4, mejor dejarla en blanco.</div>
+</div>
+
+<!-- 1 FILE -->
+<div class="card" id="ap-file">
+<h2>1. La clase <code>File</code> (java.io)</h2>
+<p>Un <code>File</code> es solo una <b>ruta</b>, no el fichero en sí. <b>Instanciar un File no crea nada en disco.</b> Las rutas relativas se resuelven respecto a la <b>carpeta del proyecto</b> (en IntelliJ, la raíz del proyecto).</p>
+<figure>
+<svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,Arial" font-size="13">
+<rect x="10" y="10" width="190" height="150" rx="10" fill="#eef3f8" stroke="#0f6cbf"/>
+<text x="105" y="32" text-anchor="middle" font-weight="700">Proyecto (raíz)</text>
+<text x="30" y="60">📁 2DAM</text><text x="50" y="84">📁 AD</text><text x="70" y="108">📄 P1.txt</text>
+<text x="30" y="140">📄 practica1.txt ← ¡aquí!</text>
+<rect x="230" y="20" width="400" height="60" rx="8" fill="#e8f5e9" stroke="#2e7d32"/>
+<text x="242" y="42">✔ f.renameTo(new File("2DAM/AD/practica1.txt"))</text>
+<text x="242" y="64" fill="#2e7d32">Renombra y se queda en 2DAM/AD</text>
+<rect x="230" y="95" width="400" height="60" rx="8" fill="#fdecea" stroke="#c62828"/>
+<text x="242" y="117">✘ f.renameTo(new File("practica1.txt"))</text>
+<text x="242" y="139" fill="#c62828">Renombra Y MUEVE a la raíz del proyecto</text>
+</svg>
+<figcaption>renameTo necesita la ruta completa de destino; si no, también mueve el fichero.</figcaption>
+</figure>
+<table class="t1">
+<tr><th>Método</th><th>Qué hace</th><th>Ojo</th></tr>
+<tr><td><code>new File("ruta")</code> / <code>new File(dir, "nombre")</code></td><td>Crea el objeto ruta</td><td>No crea nada en disco</td></tr>
+<tr><td><code>exists()</code></td><td>¿Existe?</td><td>boolean</td></tr>
+<tr><td><code>createNewFile()</code></td><td>Crea fichero vacío</td><td>Lanza IOException; false si ya existía; falla si la carpeta padre no existe</td></tr>
+<tr><td><code>mkdir()</code></td><td>Crea UNA carpeta</td><td>El padre debe existir</td></tr>
+<tr><td><code>mkdirs()</code></td><td>Crea toda la ruta de carpetas</td><td>Crea los padres que falten</td></tr>
+<tr><td><code>delete()</code></td><td>Borra fichero o carpeta</td><td>Una carpeta solo si está vacía</td></tr>
+<tr><td><code>renameTo(File destino)</code></td><td>Renombra / mueve</td><td>Destino con ruta completa</td></tr>
+<tr><td><code>listFiles()</code> / <code>list()</code></td><td>Contenido de un directorio (File[] / String[])</td><td>null si no es directorio</td></tr>
+<tr><td><code>isFile()</code> / <code>isDirectory()</code></td><td>Tipo</td><td></td></tr>
+<tr><td><code>getName()</code>, <code>getPath()</code>, <code>getAbsolutePath()</code>, <code>getParent()</code>, <code>length()</code></td><td>Info</td><td>length() en bytes</td></tr>
+</table>
+<h3>Crear carpeta + fichero (Pregunta 13)</h3>
+<script type="text/x-code" data-lang="java">File dir = new File("2DAM/AD");
+dir.mkdir();                       // 1º la carpeta
+File f = new File(dir, "P1.txt");
+f.createNewFile();                 // 2º el fichero (throws IOException)</script>
+<h3>Listado recursivo (Pregunta 19)</h3>
+<script type="text/x-code" data-lang="java">static void listar(File dir) {
+    for (File f : dir.listFiles()) {
+        System.out.println(f.getAbsolutePath()); // se muestra TODO (ficheros y carpetas)
+        if (f.isDirectory()) listar(f);          // recursión con f, NO con dir
+    }
+}</script>
+<div class="bad">Errores típicos: <code>listar(dir)</code> → recursión infinita (StackOverflowError). <code>if (f.isFile()) listar(f)</code> → listFiles() de un fichero devuelve null → NullPointerException.</div>
+</div>
+
+<!-- 2 TEXTO -->
+<div class="card" id="ap-texto">
+<h2>2. Ficheros de texto</h2>
+<figure>
+<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,Arial" font-size="13">
+<rect x="10" y="20" width="140" height="44" rx="8" fill="#fff4e0" stroke="#b26a00"/><text x="80" y="47" text-anchor="middle">📄 fichero.txt</text>
+<rect x="190" y="20" width="130" height="44" rx="8" fill="#eef3f8" stroke="#0f6cbf"/><text x="255" y="47" text-anchor="middle">FileWriter</text>
+<rect x="360" y="20" width="130" height="44" rx="8" fill="#e8f5e9" stroke="#2e7d32"/><text x="425" y="47" text-anchor="middle">PrintWriter</text>
+<text x="520" y="47">println()</text>
+<line x1="190" y1="42" x2="150" y2="42" stroke="#333" marker-end="url(#a)"/><line x1="360" y1="42" x2="320" y2="42" stroke="#333" marker-end="url(#a)"/>
+<rect x="10" y="90" width="140" height="44" rx="8" fill="#fff4e0" stroke="#b26a00"/><text x="80" y="117" text-anchor="middle">📄 fichero.txt</text>
+<rect x="190" y="90" width="130" height="44" rx="8" fill="#eef3f8" stroke="#0f6cbf"/><text x="255" y="117" text-anchor="middle">FileReader</text>
+<rect x="360" y="90" width="130" height="44" rx="8" fill="#e8f5e9" stroke="#2e7d32"/><text x="425" y="117" text-anchor="middle">BufferedReader</text>
+<text x="520" y="117">readLine()</text>
+<line x1="150" y1="112" x2="190" y2="112" stroke="#333" marker-end="url(#a)"/><line x1="320" y1="112" x2="360" y2="112" stroke="#333" marker-end="url(#a)"/>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#333"/></marker></defs>
+</svg>
+<figcaption>Escribir (arriba) y leer (abajo): un flujo "envuelve" a otro.</figcaption>
+</figure>
+<h3>Sobrescribir vs añadir (Pregunta 12)</h3>
+<div class="grid2">
+<div><script type="text/x-code" data-lang="java">new FileWriter(f)        // BORRA y escribe desde 0
+new FileWriter(f, true)  // AÑADE al final (append)</script></div>
+<div><table class="t1"><tr><th>Paso</th><th>Contenido</th></tr>
+<tr><td>FileWriter(f) → "uno"</td><td>uno</td></tr>
+<tr><td>FileWriter(f) → "dos"</td><td>dos <i>(uno borrado)</i></td></tr>
+<tr><td>FileWriter(f, true) → "tres"</td><td>dos<br>tres</td></tr></table></div>
+</div>
+<h3>write() vs println() (Pregunta 28)</h3>
+<p><code>FileWriter.write("x")</code> escribe exactamente la cadena, <b>sin espacios ni saltos</b>. Para saltos: <code>write("x\n")</code>, <code>bw.newLine()</code> o <code>PrintWriter.println()</code>.</p>
+<script type="text/x-code" data-lang="java">FileWriter fw = new FileWriter("provincias.txt");
+for (String p : provincias) fw.write(p);   // → CáceresBadajozToledo
+fw.close();                                 // ¡sin close() puede quedar vacío!</script>
+<h3>Leer línea a línea y buscar una palabra (Pregunta 21)</h3>
+<script type="text/x-code" data-lang="java">BufferedReader br = new BufferedReader(new FileReader(f));
+String linea; int n = 0;
+while ((linea = br.readLine()) != null) {      // readLine() devuelve null al final
+    n++;                                       // cuenta TODAS las líneas
+    if (linea.toLowerCase().contains(palabra.toLowerCase()))
+        System.out.println("Línea " + n + ": " + linea);
+}
+br.close();</script>
+<div class="tip"><code>equalsIgnoreCase</code> compara la línea ENTERA; para "contiene" sin mayúsculas: pasar ambos a <code>toLowerCase()</code> + <code>contains</code>.</div>
+</div>
+
+<!-- 3 BINARIOS -->
+<div class="card" id="ap-bin">
+<h2>3. Ficheros binarios: <code>DataOutputStream</code> / <code>DataInputStream</code></h2>
+<p>Guardan tipos primitivos y String en binario. <b>Regla de oro: se lee en el MISMO orden y con los MISMOS tipos con que se escribió.</b></p>
+<figure>
+<svg viewBox="0 0 640 110" xmlns="http://www.w3.org/2000/svg" font-family="Consolas,monospace" font-size="12">
+<text x="10" y="18" font-family="Segoe UI" font-weight="700">tiempo.dat por dentro (registro = UTF + double + double)</text>
+<g transform="translate(10,30)">
+<rect width="120" height="34" fill="#e3ecf7" stroke="#0f6cbf"/><text x="60" y="22" text-anchor="middle">UTF "01/10"</text>
+<rect x="120" width="80" height="34" fill="#e8f5e9" stroke="#2e7d32"/><text x="160" y="22" text-anchor="middle">12.5</text>
+<rect x="200" width="80" height="34" fill="#e8f5e9" stroke="#2e7d32"/><text x="240" y="22" text-anchor="middle">27.0</text>
+<rect x="280" width="120" height="34" fill="#e3ecf7" stroke="#0f6cbf"/><text x="340" y="22" text-anchor="middle">UTF "02/10"</text>
+<rect x="400" width="80" height="34" fill="#e8f5e9" stroke="#2e7d32"/><text x="440" y="22" text-anchor="middle">14.0</text>
+<rect x="480" width="80" height="34" fill="#e8f5e9" stroke="#2e7d32"/><text x="520" y="22" text-anchor="middle">29.5</text>
+<rect x="560" width="60" height="34" fill="#fdecea" stroke="#c62828"/><text x="590" y="22" text-anchor="middle">EOF</text>
+</g>
+<text x="10" y="92" font-family="Segoe UI">readUTF → readDouble → readDouble → readUTF → … → al leer en EOF salta EOFException</text>
+</svg>
+</figure>
+<table class="t1"><tr><th>Escribir</th><th>Leer</th><th>Bytes</th></tr>
+<tr><td>writeInt</td><td>readInt</td><td>4</td></tr>
+<tr><td>writeDouble</td><td>readDouble</td><td>8</td></tr>
+<tr><td>writeBoolean</td><td>readBoolean</td><td>1</td></tr>
+<tr><td>writeUTF</td><td>readUTF</td><td>2 (longitud) + texto</td></tr>
+<tr><td>writeChars</td><td>— (no hay readChars; NO es compatible con readUTF)</td><td>2 por carácter</td></tr>
+</table>
+<h3>Escribir (Pregunta 30)</h3>
+<script type="text/x-code" data-lang="java">DataOutputStream dos = new DataOutputStream(new FileOutputStream(f)); // se construye sobre un FileOutputStream, NO sobre File
+for (int i = 0; i < nombres.length; i++) {
+    dos.writeUTF(nombres[i]);
+    dos.writeInt(notas[i]);
+}
+dos.close();</script>
+<h3>Leer hasta el final: patrón try fuera + while(true) dentro (Pregunta 2)</h3>
+<script type="text/x-code" data-lang="java">DataInputStream dis = new DataInputStream(new FileInputStream("tiempo.dat"));
+try {
+    while (true) {                       // bucle infinito
+        String fecha = dis.readUTF();    // mismo orden que al escribir
+        double min = dis.readDouble();
+        double max = dis.readDouble();
+        System.out.println(fecha + ": " + min + " - " + max);
+    }
+} catch (EOFException e) {               // al llegar al final sale del bucle
+    System.out.println("Fin");
+}
+dis.close();</script>
+<div class="bad"><b>Trampas:</b><br>
+• <code>while (dis.readUTF() != null)</code> → la condición ya CONSUME un dato y desalinea la lectura (eso es el patrón de readLine, no de binarios).<br>
+• <code>while(true){ try{...} catch(EOFException){...} }</code> → el catch está DENTRO del bucle: nunca termina.<br>
+• Leer en otro orden (double antes que UTF) → datos basura o excepción.</div>
+</div>
+
+<!-- 4 OBJETOS -->
+<div class="card" id="ap-obj">
+<h2>4. Ficheros de objetos (serialización)</h2>
+<p>Se guardan objetos enteros con <code>ObjectOutputStream.writeObject()</code> y se leen con <code>ObjectInputStream.readObject()</code>. La clase debe <b><code>implements Serializable</code></b>; si no → <code>NotSerializableException</code> (Pregunta 29).</p>
+<script type="text/x-code" data-lang="java">public class Alumno implements Serializable {
+    private String nombre;
+    private int calificacion;
+    private transient String clave;   // transient = NO se guarda (al leer queda null / 0)
+}
+
+// Escribir
+ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+oos.writeObject(new Alumno("Pepe", 10));
+oos.close();
+
+// Leer todos
+ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+try {
+    while (true) {
+        Alumno a = (Alumno) ois.readObject();   // devuelve Object → cast
+        System.out.println(a.getNombre());
+    }
+} catch (EOFException e) {
+    System.out.println("Fin");
+} catch (ClassNotFoundException e) {            // readObject puede lanzarla
+    e.printStackTrace();
+}
+ois.close();</script>
+<h3>Añadir objetos a un fichero existente → <code>StreamCorruptedException</code> (Pregunta 20)</h3>
+<p>Cada <code>ObjectOutputStream</code> escribe una <b>cabecera</b> al crearse. Si abres en modo añadir con un ObjectOutputStream normal, el fichero tiene varias cabeceras y al leer salta <code>StreamCorruptedException</code>.</p>
+<figure>
+<svg viewBox="0 0 640 120" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,Arial" font-size="12">
+<text x="10" y="16" font-weight="700" fill="#c62828">✘ Mal: cabecera en cada alta</text>
+<g transform="translate(10,24)"><rect width="70" height="28" fill="#fdecea" stroke="#c62828"/><text x="35" y="18" text-anchor="middle">CAB</text>
+<rect x="70" width="90" height="28" fill="#eef3f8" stroke="#0f6cbf"/><text x="115" y="18" text-anchor="middle">Contacto1</text>
+<rect x="160" width="70" height="28" fill="#fdecea" stroke="#c62828"/><text x="195" y="18" text-anchor="middle">CAB</text>
+<rect x="230" width="90" height="28" fill="#eef3f8" stroke="#0f6cbf"/><text x="275" y="18" text-anchor="middle">Contacto2</text>
+<text x="340" y="18" fill="#c62828">→ StreamCorruptedException</text></g>
+<text x="10" y="78" font-weight="700" fill="#2e7d32">✔ Bien: cabecera solo al crear el fichero</text>
+<g transform="translate(10,86)"><rect width="70" height="28" fill="#e8f5e9" stroke="#2e7d32"/><text x="35" y="18" text-anchor="middle">CAB</text>
+<rect x="70" width="90" height="28" fill="#eef3f8" stroke="#0f6cbf"/><text x="115" y="18" text-anchor="middle">Contacto1</text>
+<rect x="160" width="90" height="28" fill="#eef3f8" stroke="#0f6cbf"/><text x="205" y="18" text-anchor="middle">Contacto2</text>
+<rect x="250" width="90" height="28" fill="#eef3f8" stroke="#0f6cbf"/><text x="295" y="18" text-anchor="middle">Contacto3</text></g>
+</svg>
+</figure>
+<script type="text/x-code" data-lang="java">public class MyObjectOutputStream extends ObjectOutputStream {
+    public MyObjectOutputStream(OutputStream out) throws IOException { super(out); }
+    @Override
+    protected void writeStreamHeader() throws IOException { /* no escribe cabecera */ }
+}
+
+if (f.exists())   // ya hay cabecera → añadir SIN cabecera
+    oos = new MyObjectOutputStream(new FileOutputStream(f, true));
+else              // fichero nuevo → con cabecera
+    oos = new ObjectOutputStream(new FileOutputStream(f));</script>
+<div class="tip">Truco: "si existe → My + true; si no existe → normal". La versión invertida crea el fichero SIN cabecera.</div>
+</div>
+
+<!-- 5 DOM -->
+<div class="card" id="ap-dom">
+<h2>5. XML con DOM</h2>
+<p>DOM carga <b>todo el XML en memoria como un árbol</b> de nodos (<code>Document</code> → <code>Element</code> → <code>Text</code>/atributos). Permite leer y crear/modificar.</p>
+<div class="grid2">
+<div><script type="text/x-code" data-lang="xml"><libros>
+  <libro ISBN="111-1">
+    <titulo>Acceso a Datos</titulo>
+    <autor>Alicia Ramos</autor>
+  </libro>
+</libros></script></div>
+<figure>
+<svg viewBox="0 0 330 190" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,Arial" font-size="12">
+<rect x="115" y="5" width="100" height="28" rx="6" fill="#0f6cbf"/><text x="165" y="24" fill="#fff" text-anchor="middle">Document</text>
+<rect x="115" y="50" width="100" height="28" rx="6" fill="#e3ecf7" stroke="#0f6cbf"/><text x="165" y="69" text-anchor="middle">&lt;libros&gt;</text>
+<rect x="115" y="95" width="100" height="28" rx="6" fill="#e3ecf7" stroke="#0f6cbf"/><text x="165" y="114" text-anchor="middle">&lt;libro&gt;</text>
+<rect x="230" y="95" width="95" height="28" rx="6" fill="#fff4e0" stroke="#b26a00"/><text x="277" y="114" text-anchor="middle">@ISBN=111-1</text>
+<rect x="20" y="140" width="100" height="28" rx="6" fill="#e3ecf7" stroke="#0f6cbf"/><text x="70" y="159" text-anchor="middle">&lt;titulo&gt;</text>
+<rect x="200" y="140" width="100" height="28" rx="6" fill="#e3ecf7" stroke="#0f6cbf"/><text x="250" y="159" text-anchor="middle">&lt;autor&gt;</text>
+<text x="70" y="186" text-anchor="middle" fill="#2e7d32">"Acceso a Datos"</text><text x="250" y="186" text-anchor="middle" fill="#2e7d32">"Alicia Ramos"</text>
+<path d="M165 33V50M165 78V95M215 109H230M150 123L70 140M180 123L250 140" stroke="#555" fill="none"/>
+</svg>
+<figcaption>Atributo (getAttribute) ≠ elemento hijo (getElementsByTagName)</figcaption>
+</figure>
+</div>
+<h3>Leer</h3>
+<script type="text/x-code" data-lang="java">DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+DocumentBuilder builder = factory.newDocumentBuilder();
+Document doc = builder.parse(new File("Libros.xml"));
+doc.getDocumentElement().normalize();               // limpia nodos de texto
+
+NodeList libros = doc.getElementsByTagName("libro"); // todos los <libro>
+for (int i = 0; i < libros.getLength(); i++) {
+    Element libro = (Element) libros.item(i);
+    String isbn   = libro.getAttribute("ISBN");                                     // ATRIBUTO
+    String titulo = libro.getElementsByTagName("titulo").item(0).getTextContent(); // HIJO → item(0)
+    System.out.println(isbn + " - " + titulo);
+}</script>
+<div class="bad"><b>Trampas (Preguntas 5 y 14):</b><br>
+• Dentro de cada elemento, el hijo se coge con <code>.item(0)</code> (es el primero y único), NO con <code>.item(i)</code> → NullPointerException en la 2ª vuelta.<br>
+• <code>doc.getElementsByTagName("nombre").item(0)</code> busca en TODO el documento → siempre sale el primero (Antonio, Antonio).<br>
+• <code>empleado.getTextContent()</code> devuelve el texto de TODOS sus hijos juntos (id+nombre+apellido).<br>
+• <code>getAttribute("titulo")</code> cuando titulo es un elemento → devuelve "" (cadena vacía).<br>
+• <code>getNodeName()</code> devuelve el nombre de la etiqueta ("libro").</div>
+<h3>Crear un XML</h3>
+<script type="text/x-code" data-lang="java">Document doc = builder.newDocument();
+Element raiz = doc.createElement("empleados");
+doc.appendChild(raiz);
+
+Element empleado = doc.createElement("empleado");
+raiz.appendChild(empleado);
+empleado.setAttribute("id", "1");                 // <empleado id="1">  setAttribute(NOMBRE, VALOR)
+
+Element nombre = doc.createElement("nombre");     // 1. crear elemento
+Text texto = doc.createTextNode("Antonio");       // 2. crear texto
+nombre.appendChild(texto);                        // 3. texto dentro de <nombre>
+empleado.appendChild(nombre);                     // 4. <nombre> dentro de <empleado>
+
+// Volcar a fichero (Pregunta 9)
+Source origen = new DOMSource(doc);
+Result resultado = new StreamResult(new File("Empleados.xml"));
+Transformer transformador = TransformerFactory.newInstance().newTransformer();
+transformador.setOutputProperty(OutputKeys.INDENT, "yes");  // opcional: sangría
+transformador.transform(origen, resultado);                  // ← SIN ESTO NO SE ESCRIBE NADA</script>
+<div class="tip">Atributo: <code>libro.setAttribute("ISBN", isbn)</code> → <code>&lt;libro ISBN="..."&gt;</code>. Crear un elemento hijo "ISBN" daría <code>&lt;ISBN&gt;...&lt;/ISBN&gt;</code>, que NO es un atributo.</div>
+</div>
+
+<!-- 6 SAX -->
+<div class="card" id="ap-sax">
+<h2>6. XML con SAX</h2>
+<p>SAX <b>no carga el árbol</b>: recorre el fichero de forma secuencial y lanza <b>eventos</b> que tú capturas en una clase que <code>extends DefaultHandler</code>. Solo lectura, muy poca memoria.</p>
+<figure>
+<svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" font-family="Consolas,monospace" font-size="12">
+<text x="10" y="20">&lt;alumnos&gt;</text><text x="200" y="20" fill="#0f6cbf">startElement alumnos</text>
+<text x="25" y="40">&lt;alumno&gt;</text><text x="200" y="40" fill="#0f6cbf">startElement alumno</text>
+<text x="40" y="60">&lt;nombre&gt;Ana</text><text x="200" y="60" fill="#0f6cbf">startElement nombre</text><text x="400" y="60" fill="#2e7d32">characters "Ana"</text>
+<text x="40" y="80">&lt;/nombre&gt;</text><text x="200" y="80" fill="#c62828">endElement nombre</text>
+<text x="40" y="100">&lt;nota&gt;7</text><text x="200" y="100" fill="#0f6cbf">startElement nota</text><text x="400" y="100" fill="#2e7d32">characters "7"</text>
+<text x="40" y="120">&lt;/nota&gt;</text><text x="200" y="120" fill="#c62828">endElement nota</text>
+<text x="25" y="140">&lt;/alumno&gt;</text><text x="200" y="140" fill="#c62828">endElement alumno</text>
+<text x="10" y="160">&lt;/alumnos&gt;</text><text x="200" y="160" fill="#c62828">endElement alumnos</text>
+<text x="10" y="190" font-family="Segoe UI" fill="#555">Los eventos salen en el orden en que se leen las etiquetas → los cierres en orden inverso al anidamiento.</text>
+</svg>
+</figure>
+<table class="t1"><tr><th>Método</th><th>Cuándo se llama</th></tr>
+<tr><td><code>startDocument()</code></td><td>1 vez al empezar</td></tr>
+<tr><td><code>startElement(uri, localName, qName, attributes)</code></td><td>Cada etiqueta de apertura (qName = nombre; attributes.getValue("x"))</td></tr>
+<tr><td><code>characters(char[] ch, int start, int length)</code></td><td>Texto entre etiquetas (también espacios/saltos) → <code>new String(ch, start, length)</code></td></tr>
+<tr><td><code>endElement(uri, localName, qName)</code></td><td>Cada etiqueta de cierre</td></tr>
+<tr><td><code>endDocument()</code></td><td>1 vez al terminar</td></tr></table>
+<h3>Construir una lista de objetos (Pregunta 16)</h3>
+<script type="text/x-code" data-lang="java">class EmpleadoHandler extends DefaultHandler {
+    List<Empleado> lista = new ArrayList<>();
+    Empleado actual;
+    String etiqueta = "";
+
+    public void startElement(String uri, String localName, String qName, Attributes atts) {
+        etiqueta = qName;
+        if (qName.equals("empleado")) actual = new Empleado();      // CREAR al abrir
+    }
+    public void characters(char[] ch, int start, int length) {
+        String texto = new String(ch, start, length).trim();
+        if (texto.isEmpty()) return;
+        if (etiqueta.equals("nombre")) actual.setNombre(texto);
+        else if (etiqueta.equals("sueldo")) actual.setSueldo(Double.parseDouble(texto));
+    }
+    public void endElement(String uri, String localName, String qName) {
+        if (qName.equals("empleado")) lista.add(actual);            // AÑADIR al cerrar
+        etiqueta = "";
+    }
+}
+
+SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+EmpleadoHandler h = new EmpleadoHandler();
+parser.parse(new File("empleados.xml"), h);</script>
+<table class="t1"><tr><th></th><th>DOM</th><th>SAX</th></tr>
+<tr><td>Memoria</td><td>Todo el árbol</td><td>Casi nada</td></tr>
+<tr><td>Acceso</td><td>Aleatorio, ir y volver</td><td>Secuencial, solo hacia delante</td></tr>
+<tr><td>Escribir/modificar</td><td>Sí</td><td>No (solo lectura)</td></tr></table>
+</div>
+
+<!-- 7 XSTREAM -->
+<div class="card" id="ap-xstream">
+<h2>7. XStream (objetos Java ⇄ XML)</h2>
+<p>XStream convierte un objeto en XML (<code>toXML</code>) y al revés (<code>fromXML</code>). <b>Cada atributo de la clase genera un elemento hijo con su nombre</b>; si el atributo es un objeto, sus campos se anidan dentro.</p>
+<table class="t1"><tr><th>Método</th><th>Efecto</th></tr>
+<tr><td><code>new XStream(new DomDriver("UTF-8"))</code></td><td>Crear</td></tr>
+<tr><td><code>addPermission(AnyTypePermission.ANY)</code></td><td>Permiso para <b>leer</b> (fromXML); sin él → ForbiddenClassException</td></tr>
+<tr><td><code>alias("etiqueta", Clase.class)</code></td><td>Nombre de la etiqueta de una CLASE. Sin alias: nombre completo de la clase (paquete.Clase; en el paquete por defecto, "Producto")</td></tr>
+<tr><td><code>addImplicitCollection(Clase.class, "atributo")</code></td><td>Quita la etiqueta envoltorio de la lista. Recibe el nombre del <b>ATRIBUTO Java</b>, no de la etiqueta</td></tr>
+<tr><td><code>omitField(Clase.class, "atributo")</code></td><td>No incluye ese atributo. Al leer, ese campo queda null (String) o 0 (int)</td></tr>
+<tr><td><code>toXML(obj)</code> / <code>toXML(obj, outputStream)</code></td><td>Devuelve String / escribe en fichero</td></tr>
+<tr><td><code>(Clase) fromXML(inputStream)</code></td><td>Lee (cast)</td></tr></table>
+<figure>
+<svg viewBox="0 0 660 230" xmlns="http://www.w3.org/2000/svg" font-family="Consolas,monospace" font-size="12">
+<rect x="5" y="5" width="320" height="220" rx="8" fill="#fdecea" stroke="#c62828"/>
+<text x="15" y="25" font-family="Segoe UI" font-weight="700" fill="#c62828">Solo alias (sin colección implícita)</text>
+<text x="15" y="50">&lt;Contactos&gt;</text><text x="30" y="70" fill="#c62828" font-weight="700">&lt;lista&gt;</text>
+<text x="45" y="90">&lt;DatosContacto&gt;</text><text x="60" y="110">&lt;nombre&gt;Ana&lt;/nombre&gt;</text>
+<text x="60" y="130">&lt;email&gt;ana@mail.com&lt;/email&gt;</text>
+<text x="45" y="150">&lt;/DatosContacto&gt;</text><text x="30" y="170" fill="#c62828" font-weight="700">&lt;/lista&gt;</text><text x="15" y="190">&lt;/Contactos&gt;</text>
+<rect x="335" y="5" width="320" height="220" rx="8" fill="#e8f5e9" stroke="#2e7d32"/>
+<text x="345" y="25" font-family="Segoe UI" font-weight="700" fill="#2e7d32">+ addImplicitCollection(.., "lista")</text>
+<text x="345" y="50">&lt;Contactos&gt;</text>
+<text x="360" y="70">&lt;DatosContacto&gt;</text><text x="375" y="90">&lt;nombre&gt;Ana&lt;/nombre&gt;</text>
+<text x="375" y="110">&lt;email&gt;ana@mail.com&lt;/email&gt;</text>
+<text x="360" y="130">&lt;/DatosContacto&gt;</text><text x="345" y="150">&lt;/Contactos&gt;</text>
+<text x="345" y="185" font-family="Segoe UI" fill="#2e7d32">Sin &lt;lista&gt;. Para LEER este XML hay que</text>
+<text x="345" y="203" font-family="Segoe UI" fill="#2e7d32">volver a poner addImplicitCollection.</text>
+</svg>
+</figure>
+<h3>Escribir (Pregunta 15)</h3>
+<script type="text/x-code" data-lang="java">XStream xstream = new XStream(new DomDriver("UTF-8"));
+xstream.alias("DatosContacto", Contacto.class);
+xstream.alias("Contactos", ListaContactos.class);
+xstream.addImplicitCollection(ListaContactos.class, "lista");
+xstream.omitField(Contacto.class, "telefono");
+xstream.toXML(listaContactos, new FileOutputStream("Contactos.xml"));</script>
+<h3>Leer (Preguntas 7, 25, 27)</h3>
+<script type="text/x-code" data-lang="java">XStream xstream = new XStream(new DomDriver("UTF-8"));
+xstream.addPermission(AnyTypePermission.ANY);                 // permiso
+xstream.alias("DatosContacto", Contacto.class);               // misma config que al escribir
+xstream.alias("Contactos", ListaContactos.class);
+xstream.addImplicitCollection(ListaContactos.class, "lista"); // si falta → UnknownFieldException: No such field ListaContactos.DatosContacto
+ListaContactos contactos = (ListaContactos) xstream.fromXML(new FileInputStream("Contactos.xml"));
+Contacto c = contactos.getListaContactos().get(0);
+System.out.println(c.getNombre() + " - " + c.getTelefono());   // Ana - null  (se omitió al escribir)</script>
+<h3>Objetos anidados (Pregunta 8)</h3>
+<div class="grid2">
+<script type="text/x-code" data-lang="java">class Cliente { String nombre; String email; }
+class Linea   { String articulo; int cantidad; }
+class Pedido  { int numero; Cliente cliente; List<Linea> lineas; }
+
+xstream.alias("pedido", Pedido.class);
+xstream.alias("cliente", Cliente.class);
+xstream.alias("linea", Linea.class);
+xstream.addImplicitCollection(Pedido.class, "lineas");</script>
+<script type="text/x-code" data-lang="xml"><pedido>
+  <numero>7</numero>          <!-- int → elemento, NO atributo -->
+  <cliente>                   <!-- objeto → sus campos anidados -->
+    <nombre>Ana</nombre>
+    <email>ana@mail.com</email>
+  </cliente>
+  <linea>                     <!-- sin <lineas> (implícita) -->
+    <articulo>Raton</articulo>
+    <cantidad>2</cantidad>
+  </linea>
+  <linea>
+    <articulo>Teclado</articulo>
+    <cantidad>1</cantidad>
+  </linea>
+</pedido></script>
+</div>
+</div>
+
+<!-- 8 JSON -->
+<div class="card" id="ap-json">
+<h2>8. JSON con Gson</h2>
+<p>JSON: objetos <code>{ "clave": valor }</code> y arrays <code>[ ... ]</code>. Claves y textos entre comillas; números y booleanos sin comillas.</p>
+<h3>Gson: objeto ⇄ JSON de golpe</h3>
+<script type="text/x-code" data-lang="java">Gson gson = new Gson();
+String json = gson.toJson(p);        // {"nombre":"Teclado","precio":19.99,"stock":5}  ← compacto, 1 línea
+
+Gson bonito = new GsonBuilder().setPrettyPrinting().create();
+bonito.toJson(p);                    // con saltos de línea y sangría
+
+Empleado e = gson.fromJson(json, Empleado.class);   // un objeto
+
+// Una LISTA: hace falta TypeToken (List<Empleado>.class no compila)
+Type tipo = new TypeToken<List<Empleado>>() {}.getType();
+List<Empleado> empleados = gson.fromJson(json, tipo);</script>
+<div class="tip"><b>Gson solo ve el objeto Java</b>: usa los nombres de los ATRIBUTOS (<code>lista</code>, <code>titulo</code>...). No sabe nada de alias de XStream ni de cómo era el XML (Pregunta 22). Por defecto <b>omite los atributos null</b> y los <code>transient</code>.</div>
+<h3>JsonWriter: escribir pieza a pieza (Preguntas 10 y 17)</h3>
+<div class="grid2">
+<script type="text/x-code" data-lang="java">JsonWriter writer = new JsonWriter(new FileWriter("workers.json"));
+writer.beginArray();                          // [   ← UNA vez, fuera del bucle
+for (Empleado emp : empleados) {
+    writer.beginObject();                     //  {
+    writer.name("nombre").value(emp.getNombre());
+    writer.name("edad").value(emp.getEdad());
+    writer.name("puestos");                   //  "puestos":
+    writer.beginArray();                      //  [
+    for (String p : emp.getPuestos()) writer.value(p);
+    writer.endArray();                        //  ]
+    writer.endObject();                       //  }
+}
+writer.endArray();                            // ]
+writer.close();</script>
+<figure>
+<svg viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg" font-family="Consolas,monospace" font-size="13">
+<text x="10" y="25" fill="#c62828">[</text><text x="40" y="25" fill="#555" font-family="Segoe UI" font-size="11">beginArray</text>
+<text x="25" y="50" fill="#0f6cbf">{</text><text x="55" y="50" fill="#555" font-family="Segoe UI" font-size="11">beginObject</text>
+<text x="40" y="75">"nombre":"Ana",</text><text x="40" y="100">"puestos":</text>
+<text x="125" y="100" fill="#c62828">["Gerente","Jefa"]</text>
+<text x="25" y="125" fill="#0f6cbf">}</text><text x="55" y="125" fill="#555" font-family="Segoe UI" font-size="11">endObject</text>
+<text x="10" y="150" fill="#c62828">]</text><text x="40" y="150" fill="#555" font-family="Segoe UI" font-size="11">endArray</text>
+<text x="10" y="180" font-family="Segoe UI" font-size="11" fill="#555">Dentro de un objeto, todo valor necesita name()</text>
+</svg>
+</figure>
+</div>
+<h3>JsonReader + Gson: leer (Preguntas 3 y 11)</h3>
+<div class="grid2">
+<div><b>Fichero con ARRAY</b> <code>[{...},{...}]</code>
+<script type="text/x-code" data-lang="java">JsonReader reader = new JsonReader(new FileReader("empleados.json"));
+reader.beginArray();                 // consume "["
+while (reader.hasNext()) {           // ¿quedan elementos?
+    Empleado emp = gson.fromJson(reader, Empleado.class);
+    System.out.println(emp.getNombre());
+}
+reader.endArray();</script></div>
+<div><b>Fichero con UN objeto</b> <code>{...}</code>
+<script type="text/x-code" data-lang="java">Empleado emp = gson.fromJson(reader, Empleado.class);
+System.out.println(emp.getNombre());
+// No hay array: ni beginArray ni bucle.
+// beginObject() aquí haría que Gson ya no
+// encontrase el "{" → error.</script></div>
+</div>
+<div class="bad">beginObject() sobre un fichero que empieza por <code>[</code> → IllegalStateException. Sin beginArray(), hasNext() se pregunta en el nivel superior y fromJson recibe el array entero → falla.</div>
+<h3>JsonReader a mano (por si cae)</h3>
+<script type="text/x-code" data-lang="java">reader.beginObject();
+while (reader.hasNext()) {
+    String clave = reader.nextName();
+    if (clave.equals("nombre")) nombre = reader.nextString();
+    else if (clave.equals("edad")) edad = reader.nextInt();
+    else reader.skipValue();
+}
+reader.endObject();</script>
+</div>
+
+<!-- 9 CHULETA -->
+<div class="card" id="ap-chuleta">
+<h2>9. Chuleta final y trampas del examen</h2>
+<table class="t1">
+<tr><th>Si ves...</th><th>Piensa...</th></tr>
+<tr><td>renameTo con solo el nombre</td><td>También MUEVE a la raíz del proyecto</td></tr>
+<tr><td>new File(...) y nada más</td><td>No crea nada en disco</td></tr>
+<tr><td>FileWriter(f) sin true</td><td>Borra lo anterior</td></tr>
+<tr><td>write() en bucle</td><td>Todo seguido, sin saltos</td></tr>
+<tr><td>DataInputStream</td><td>Mismo orden y tipos + try{ while(true) } catch(EOFException)</td></tr>
+<tr><td>NotSerializableException</td><td>implements Serializable</td></tr>
+<tr><td>StreamCorruptedException al añadir</td><td>if existe → MyObjectOutputStream(fos, true) else ObjectOutputStream</td></tr>
+<tr><td>ISBN="..." dentro de la etiqueta</td><td>Atributo → getAttribute / setAttribute(nombre, valor)</td></tr>
+<tr><td>Hijo dentro de cada elemento del bucle</td><td>elemento.getElementsByTagName("x").item(0)</td></tr>
+<tr><td>No se genera el XML</td><td>Falta transformer.transform(origen, resultado)</td></tr>
+<tr><td>SAX</td><td>Eventos en orden de lectura; crear en startElement, añadir en endElement</td></tr>
+<tr><td>XStream sin etiqueta envoltorio</td><td>addImplicitCollection(Clase, "nombreAtributo")</td></tr>
+<tr><td>XStream omitField y luego leer</td><td>Campo = null (String) / 0 (int)</td></tr>
+<tr><td>XStream sin alias</td><td>Etiqueta = nombre de la clase</td></tr>
+<tr><td>new Gson().toJson</td><td>Compacto, 1 línea; números sin comillas</td></tr>
+<tr><td>Gson de un objeto cargado con XStream</td><td>Nombres de atributos Java (lista, ...)</td></tr>
+<tr><td>Leer List con Gson</td><td>TypeToken&lt;List&lt;X&gt;&gt;(){}.getType()</td></tr>
+<tr><td>JsonReader + array</td><td>beginArray() + while(hasNext()) + fromJson</td></tr>
+<tr><td>JsonWriter array de objetos</td><td>beginArray fuera del bucle, beginObject/endObject dentro</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ===================================================== EXAMEN ===================================================== -->
+<section class="view" id="v-examen">
+<div class="card">
+<h2>Examen RA1 · Tu intento (28/10/2026)</h2>
+<div class="sum">
+<span class="pill">Duración: 54 min 28 s</span>
+<span class="pill">Puntos: 7,33 / 30</span>
+<span class="pill r">Calificación: 2,44 / 10</span>
+<span class="pill g">13 correctas</span>
+<span class="pill r">17 incorrectas</span>
+</div>
+<div class="tip">Tus fallos se concentran en <b>XStream</b> (7, 8, 15, 25, 26), <b>Gson/JSON</b> (3, 22, 23, 24) y <b>DOM</b> (4, 14, 18). Empieza repasando esas secciones de los apuntes.</div>
+<div class="filters">
+<button class="btn" id="fAll">Ver todas</button>
+<button class="btn sec" id="fBad">Solo las falladas</button>
+</div>
+</div>
+<div id="examList"></div>
+</section>
+
+<section class="view" id="v-r1"></section>
+<section class="view" id="v-r2"></section>
+<section class="view" id="v-r3"></section>
+<section class="view" id="v-r4"></section>
+</main>
+
+<script>
+/* ======================= utilidades ======================= */
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const JAVA_KW = "public|private|protected|static|void|class|new|return|if|else|for|while|try|catch|throws|throw|extends|implements|int|double|boolean|char|long|true|false|null|import|final|transient|this|super|break|continue";
+function hlJava(src){
+  const re = new RegExp('(\\/\\/[^\\n]*|\\/\\*[\\s\\S]*?\\*\\/)|("(?:[^"\\\\\\n]|\\\\.)*")|\\b('+JAVA_KW+')\\b|(@\\w+)|\\b([A-Z]\\w*)\\b|\\b(\\d+(?:\\.\\d+)?)\\b','g');
+  let out="",last=0,m;
+  while((m=re.exec(src))){
+    out+=esc(src.slice(last,m.index));
+    const t=esc(m[0]);
+    if(m[1]) out+='<span class="c">'+t+'</span>';
+    else if(m[2]) out+='<span class="s">'+t+'</span>';
+    else if(m[3]||m[4]) out+='<span class="k">'+t+'</span>';
+    else if(m[5]) out+='<span class="t">'+t+'</span>';
+    else out+='<span class="n">'+t+'</span>';
+    last=re.lastIndex;
+  }
+  return out+esc(src.slice(last));
+}
+function hlXml(src){
+  const re=/(<!--[\s\S]*?-->)|(<\/?)([\w:]+)|([\w:]+)(=)("[^"]*")|(\/?>)/g;
+  let out="",last=0,m;
+  while((m=re.exec(src))){
+    out+=esc(src.slice(last,m.index));
+    if(m[1]) out+='<span class="c">'+esc(m[1])+'</span>';
+    else if(m[2]) out+='<span class="tag">'+esc(m[2]+m[3])+'</span>';
+    else if(m[4]) out+='<span class="attr">'+esc(m[4])+'</span>='+'<span class="s">'+esc(m[6])+'</span>';
+    else out+='<span class="tag">'+esc(m[7])+'</span>';
+    last=re.lastIndex;
+  }
+  return out+esc(src.slice(last));
+}
+function codeBlock(src){
+  src=src.replace(/^\n+|\s+$/g,"");
+  const isXml=/^\s*</.test(src);
+  return '<pre class="code">'+(isXml?hlXml(src):hlJava(src))+'</pre>';
+}
+// texto: ‹x› = código en línea ; @@ en línea propia separa texto / bloque de código
+function rich(s){
+  const parts=s.split(/\n?^@@$\n?/m);
+  return parts.map((p,i)=> i%2 ? codeBlock(p) : '<p>'+esc(p.trim()).replace(/‹([^›]*)›/g,'<code>$1</code>').replace(/\n/g,'<br>')+'</p>').join("");
+}
+// opción: "§" al principio = texto; si no, código
+function optHtml(o){ return o.startsWith("§") ? '<div>'+esc(o.slice(1)).replace(/‹([^›]*)›/g,'<code>$1</code>')+'</div>' : codeBlock(o); }
+const L="abcd";
+
+/* snippets de apuntes */
+document.querySelectorAll('script[type="text/x-code"]').forEach(s=>{
+  const d=document.createElement("div");
+  d.innerHTML=s.dataset.lang==="xml"?'<pre class="code">'+hlXml(s.textContent.replace(/^\n+|\s+$/g,""))+'</pre>':codeBlock(s.textContent);
+  s.replaceWith(d.firstChild);
+});
+
+/* pestañas */
+const tabs=document.querySelectorAll("#tabs button");
+function show(v){
+  tabs.forEach(b=>b.classList.toggle("active",b.dataset.v===v));
+  document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id==="v-"+v));
+  window.scrollTo(0,0);
+}
+tabs.forEach(b=>b.onclick=()=>show(b.dataset.v));
+document.addEventListener("click",e=>{
+  const a=e.target.closest('a[href^="#ap-"]');
+  if(a){ e.preventDefault(); show("apuntes"); setTimeout(()=>document.querySelector(a.getAttribute("href")).scrollIntoView({behavior:"smooth"}),30); }
+});
+</script>
+
+<script>
+/* ======================= EXAMEN REAL ======================= */
+/* tu = tu respuesta, c = correcta, fb = retroalimentación de tu opción (si fallaste), e = explicación, ap = sección apuntes */
+const EXAM=[
+{q:`Se quiere que el fichero ‹2DAM/AD/P1.txt› pase a llamarse ‹practica1.txt›, sin cambiar de carpeta y conservando su contenido. ¿Qué fragmento lo consigue?`,
+o:[`File f = new File("2DAM/AD/P1.txt");
+f.renameTo(new File("2DAM/AD/practica1.txt"));`,`File f = new File("2DAM/AD/P1.txt");
+new File("2DAM/AD/practica1.txt").createNewFile();
+f.delete();`,`File f = new File("2DAM/AD/practica1.txt");
+f.renameTo(new File("2DAM/AD/P1.txt"));`,`File f = new File("2DAM/AD/P1.txt");
+f.renameTo(new File("practica1.txt"));`],tu:3,c:0,
+fb:`El destino solo lleva el nombre, así que se resuelve respecto a la carpeta del proyecto: el fichero se renombra, pero también se mueve.`,
+e:`‹renameTo› recibe el File de DESTINO con la ruta completa. (b) crea un fichero vacío nuevo y borra el original → pierdes el contenido. (c) está al revés (renombra practica1 → P1). (d) lo mueve a la raíz del proyecto.`,ap:"ap-file"},
+
+{q:`El fichero tiempo.dat se ha generado así:
+@@
+DataOutputStream dos = new DataOutputStream(new FileOutputStream("tiempo.dat"));
+dos.writeUTF("01/10"); dos.writeDouble(12.5); dos.writeDouble(27.0);
+dos.writeUTF("02/10"); dos.writeDouble(14.0); dos.writeDouble(29.5);
+dos.close();
+@@
+¿Qué fragmento muestra todos los registros y termina correctamente? (dis es un DataInputStream sobre tiempo.dat.)`,
+o:[`try {
+    while (dis.readUTF() != null) {
+        String fecha = dis.readUTF();
+        double min = dis.readDouble();
+        double max = dis.readDouble();
+        System.out.println(fecha + ": " + min + " - " + max);
+    }
+} catch (EOFException e) {
+    System.out.println("Fin");
+}`,`while (true) {
+    try {
+        String fecha = dis.readUTF();
+        double min = dis.readDouble();
+        double max = dis.readDouble();
+        System.out.println(fecha + ": " + min + " - " + max);
+    } catch (EOFException e) {
+        System.out.println("Fin");
+    }
+}`,`try {
+    while (true) {
+        String fecha = dis.readUTF();
+        double min = dis.readDouble();
+        double max = dis.readDouble();
+        System.out.println(fecha + ": " + min + " - " + max);
+    }
+} catch (EOFException e) {
+    System.out.println("Fin");
+}`,`try {
+    while (true) {
+        double min = dis.readDouble();
+        double max = dis.readDouble();
+        String fecha = dis.readUTF();
+        System.out.println(fecha + ": " + min + " - " + max);
+    }
+} catch (EOFException e) {
+    System.out.println("Fin");
+}`],tu:0,c:2,
+fb:`Se traslada el patrón de readLine(): la condición consume la fecha y la lectura queda desalineada.`,
+e:`Patrón de binarios: ‹try› FUERA, ‹while(true)› DENTRO, y leer en el MISMO orden (UTF, double, double). (b) tiene el catch dentro del bucle → bucle infinito imprimiendo «Fin». (d) lee en otro orden.`,ap:"ap-bin"},
+
+{q:`El fichero empleados.json contiene este array:
+@@
+[{"nombre":"Pepe","edad":20},{"nombre":"Maria","edad":30}]
+@@
+reader es un JsonReader sobre el fichero, gson es un objeto Gson y la clase Empleado tiene los atributos nombre y edad con sus getters. ¿Qué fragmento muestra Pepe y Maria, uno por línea?`,
+o:[`reader.beginArray();
+while (reader.hasNext()) {
+    Empleado emp = gson.fromJson(reader, Empleado.class);
+    System.out.println(emp.getNombre());
+}`,`reader.beginObject();
+while (reader.hasNext()) {
+    Empleado emp = gson.fromJson(reader, Empleado.class);
+    System.out.println(emp.getNombre());
+}`,`while (reader.hasNext()) {
+    Empleado emp = gson.fromJson(reader, Empleado.class);
+    System.out.println(emp.getNombre());
+}`,`reader.beginArray();
+Empleado emp = gson.fromJson(reader, Empleado.class);
+System.out.println(emp.getNombre());`],tu:1,c:0,
+fb:`El fichero empieza por un array, no por un objeto: beginObject() lanza una IllegalStateException.`,
+e:`El fichero empieza por ‹[› → ‹beginArray()›; luego ‹while(hasNext())› y un ‹fromJson› por elemento. (c) no abre el array. (d) solo lee el primero (Pepe).`,ap:"ap-json"},
+
+{q:`Se quiere generar ‹<libro ISBN="239-87-9964-088-4">›. libro es el Element del libro, doc es el Document e isbn vale "239-87-9964-088-4". ¿Qué instrucción lo consigue?`,
+o:[`libro.setAttribute("ISBN", isbn);`,`Element e = doc.createElement("ISBN");
+e.appendChild(doc.createTextNode(isbn));
+libro.appendChild(e);`,`libro.appendChild(doc.createTextNode("ISBN=" + isbn));`,`libro.setAttribute(isbn, "ISBN");`],tu:2,c:0,
+fb:`Añade el texto ISBN=239-87-... como contenido del elemento, no como atributo.`,
+e:`Lo que va DENTRO de la etiqueta de apertura es un atributo → ‹setAttribute(NOMBRE, VALOR)›. (b) crea un hijo ‹<ISBN>...</ISBN>›. (d) tiene los parámetros al revés.`,ap:"ap-dom"},
+
+{q:`El fichero Libros.xml contiene:
+@@
+<libros>
+  <libro ISBN="111-1">
+    <titulo>Acceso a Datos</titulo>
+    <autor>Alicia Ramos</autor>
+  </libro>
+  <libro ISBN="222-2">
+    <titulo>Bases de Datos</titulo>
+    <autor>Luis Gil</autor>
+  </libro>
+</libros>
+@@
+Dentro de un bucle que recorre los libros, libro es cada Element libro y titulo ya contiene el texto de su elemento <titulo>. ¿Qué instrucción muestra estas dos líneas?
+@@
+111-1 - Acceso a Datos
+222-2 - Bases de Datos
+@@
+`,
+o:[`System.out.println(libro.getAttribute("ISBN") + " - " + titulo);`,`System.out.println(libro.getAttribute("ISBN") + " - " + libro.getAttribute("titulo"));`,`System.out.println(libro.getElementsByTagName("ISBN").item(0).getTextContent() + " - " + titulo);`,`System.out.println(libro.getNodeName() + " - " + titulo);`],tu:0,c:0,
+e:`ISBN es atributo → ‹getAttribute("ISBN")›. (b) titulo NO es atributo → "" . (c) no hay elemento <ISBN> → item(0) es null → NullPointerException. (d) getNodeName() devuelve "libro".`,ap:"ap-dom"},
+
+{q:`Se parsea con SAX este fichero alumnos.xml:
+@@
+<alumnos>
+  <alumno>
+    <nombre>Ana</nombre>
+    <nota>7</nota>
+  </alumno>
+</alumnos>
+@@
+El manejador (que extiende DefaultHandler) solo redefine estos dos métodos:
+@@
+public void startElement(String uri, String localName, String qName, Attributes attributes) {
+    System.out.println("Inicio: " + qName);
+}
+public void endElement(String uri, String localName, String qName) {
+    System.out.println("Fin: " + qName);
+}
+@@
+¿Qué se muestra por pantalla?`,
+o:[`Inicio: alumnos
+Inicio: alumno
+Inicio: nombre
+Fin: nombre
+Inicio: nota
+Fin: nota
+Fin: alumno
+Fin: alumnos`,`Inicio: alumnos
+Inicio: alumno
+Inicio: nombre
+Inicio: nota
+Fin: alumnos
+Fin: alumno
+Fin: nombre
+Fin: nota`,`Inicio: nombre
+Fin: nombre
+Inicio: nota
+Fin: nota`,`Inicio: alumnos
+Fin: alumnos
+Inicio: alumno
+Fin: alumno
+Inicio: nombre
+Fin: nombre
+Inicio: nota
+Fin: nota`],tu:1,c:0,
+fb:`Los eventos se producen según se lee el fichero; no se procesan primero todas las aperturas y después todos los cierres.`,
+e:`SAX lee el XML de arriba abajo: cada vez que encuentra una apertura → startElement; cada cierre → endElement. Solo tienes que leer el XML línea a línea.`,ap:"ap-sax"},
+
+{q:`La clase Contacto tiene los atributos nombre, apellidos, email y telefono, todos String. Un programa guardó en Contactos.xml el contacto Ana, Gil, ana@mail.com, 600111222 con XStream, usando ‹xstream.omitField(Contacto.class, "telefono")›. Después, otro programa lee ese fichero con la configuración adecuada (permiso, alias y colección implícita) y ejecuta:
+@@
+Contacto c = contactos.getListaContactos().get(0);
+System.out.println(c.getNombre() + " - " + c.getTelefono());
+@@
+¿Qué se muestra por pantalla?`,
+o:["§Ana - 600111222","§Ana - null","§Ana - ","§Se lanza una excepción porque falta <telefono> en el XML"],tu:2,c:1,
+fb:`Un atributo String sin asignar vale null, no la cadena vacía.`,
+e:`omitField hace que <telefono> no se escriba. Al leer, ese atributo no se asigna → un String sin asignar vale ‹null›. No falta nada «obligatorio»: XStream simplemente no lo rellena.`,ap:"ap-xstream"},
+
+{q:`Se tienen estas clases:
+@@
+class Cliente { String nombre; String email; }
+class Linea { String articulo; int cantidad; }
+class Pedido { int numero; Cliente cliente; List<Linea> lineas; }
+@@
+El objeto pedido tiene el número 7, el cliente Ana (ana@mail.com) y dos líneas: Raton (cantidad 2) y Teclado (cantidad 1). Se ejecuta:
+@@
+xstream.alias("pedido", Pedido.class);
+xstream.alias("cliente", Cliente.class);
+xstream.alias("linea", Linea.class);
+xstream.addImplicitCollection(Pedido.class, "lineas");
+System.out.println(xstream.toXML(pedido));
+@@
+¿Qué se muestra por pantalla?`,
+o:[`<pedido>
+  <numero>7</numero>
+  <cliente>
+    <nombre>Ana</nombre>
+    <email>ana@mail.com</email>
+  </cliente>
+  <lineas>
+    <linea>
+      <articulo>Raton</articulo>
+      <cantidad>2</cantidad>
+    </linea>
+    <linea>
+      <articulo>Teclado</articulo>
+      <cantidad>1</cantidad>
+    </linea>
+  </lineas>
+</pedido>`,`<pedido>
+  <numero>7</numero>
+  <cliente>
+    <nombre>Ana</nombre>
+    <email>ana@mail.com</email>
+  </cliente>
+  <linea>
+    <articulo>Raton</articulo>
+    <cantidad>2</cantidad>
+  </linea>
+  <linea>
+    <articulo>Teclado</articulo>
+    <cantidad>1</cantidad>
+  </linea>
+</pedido>`,`<pedido>
+  <numero>7</numero>
+  <nombre>Ana</nombre>
+  <email>ana@mail.com</email>
+  <linea>
+    <articulo>Raton</articulo>
+    <cantidad>2</cantidad>
+  </linea>
+  <linea>
+    <articulo>Teclado</articulo>
+    <cantidad>1</cantidad>
+  </linea>
+</pedido>`,`<pedido numero="7">
+  <cliente>
+    <nombre>Ana</nombre>
+    <email>ana@mail.com</email>
+  </cliente>
+  <linea>
+    <articulo>Raton</articulo>
+    <cantidad>2</cantidad>
+  </linea>
+  <linea>
+    <articulo>Teclado</articulo>
+    <cantidad>1</cantidad>
+  </linea>
+</pedido>`],tu:0,c:1,
+fb:`addImplicitCollection hace que no aparezca la etiqueta <lineas>.`,
+e:`Tres reglas: (1) cada atributo → elemento hijo (numero NO es atributo XML); (2) un atributo objeto (cliente) → sus campos anidados dentro de <cliente>; (3) colección implícita → desaparece <lineas>.`,ap:"ap-xstream"},
+
+{q:`Un programa construye correctamente el Document registroEmpleados con todos sus empleados y termina con estas líneas, pero al ejecutarlo no aparece el fichero Empleados.xml:
+@@
+Source origen = new DOMSource(registroEmpleados);
+Result resultado = new StreamResult(new File("Empleados.xml"));
+Transformer transformador = TransformerFactory.newInstance().newTransformer();
+@@
+¿Qué falta?`,
+o:[`registroEmpleados.close();`,`registroEmpleados.getDocumentElement().normalize();`,`transformador.transform(origen, resultado);`,`new File("Empleados.xml").createNewFile();`],tu:2,c:2,
+e:`Origen, resultado y Transformer solo PREPARAN. El volcado real lo hace ‹transform(origen, resultado)›. Document no tiene close().`,ap:"ap-dom"},
+
+{q:`Se quiere escribir este JSON:
+@@
+[{"nombre":"Ana","puestos":["Gerente","Jefa"]}]
+@@
+El código empieza con:
+@@
+writer.beginArray();
+writer.beginObject();
+writer.name("nombre").value(emp.getNombre());
+@@
+y termina con:
+@@
+writer.endObject();
+writer.endArray();
+@@
+writer es un JsonWriter y emp.getPuestos() devuelve una List<String> con Gerente y Jefa. ¿Qué fragmento va en medio?`,
+o:[`writer.name("puestos").value(emp.getPuestos().toString());`,`writer.name("puestos");
+writer.beginArray();
+for (String p : emp.getPuestos()) writer.value(p);
+writer.endArray();`,`writer.name("puestos");
+writer.beginObject();
+for (String p : emp.getPuestos()) writer.value(p);
+writer.endObject();`,`writer.beginArray();
+for (String p : emp.getPuestos()) writer.value(p);
+writer.endArray();`],tu:1,c:1,
+e:`Dentro de un objeto todo valor necesita ‹name()›, y una lista es un array → beginArray/value/endArray. (a) escribiría un String "[Gerente, Jefa]".`,ap:"ap-json"},
+
+{q:`El fichero empleado.json contiene un solo empleado, no un array:
+@@
+{"nombre":"Pepe","edad":20}
+@@
+reader es un JsonReader sobre ese fichero, gson es un objeto Gson y la clase Empleado tiene los atributos nombre y edad con sus getters. ¿Qué fragmento lee el empleado y muestra Pepe?`,
+o:[`reader.beginObject();
+while (reader.hasNext()) {
+    Empleado emp = gson.fromJson(reader, Empleado.class);
+    System.out.println(emp.getNombre());
+}`,`Empleado emp = gson.fromJson(reader, Empleado.class);
+System.out.println(emp.getNombre());`,`Type tipo = new TypeToken<List<Empleado>>() {}.getType();
+List<Empleado> empleados = gson.fromJson(reader, tipo);
+System.out.println(empleados.get(0).getNombre());`,`reader.beginArray();
+Empleado emp = gson.fromJson(reader, Empleado.class);
+System.out.println(emp.getNombre());`],tu:1,c:1,
+e:`Hay un objeto directamente → un ‹fromJson(reader, Empleado.class)› y listo. Nada de arrays ni bucles.`,ap:"ap-json"},
+
+{q:`El fichero datos.txt no existe antes de ejecutar este código (el main declara throws IOException). ¿Qué se muestra por pantalla?
+@@
+File f = new File("datos.txt");
+PrintWriter pw = new PrintWriter(new FileWriter(f));
+pw.println("uno");
+pw.close();
+pw = new PrintWriter(new FileWriter(f));
+pw.println("dos");
+pw.close();
+pw = new PrintWriter(new FileWriter(f, true));
+pw.println("tres");
+pw.close();
+
+BufferedReader br = new BufferedReader(new FileReader(f));
+String linea;
+while ((linea = br.readLine()) != null) {
+    System.out.println(linea);
+}
+br.close();
+@@
+`,
+o:["§tres","§dos / tres (en dos líneas)","§uno / dos / tres (en tres líneas)","§uno / tres (en dos líneas)"],tu:0,c:1,
+fb:`Con el parámetro true la información se añade al final, no se sobrescribe.`,
+e:`1ª apertura (sin true): «uno». 2ª (sin true): BORRA → «dos». 3ª (con true): AÑADE → «dos, tres».`,ap:"ap-texto"},
+
+{q:`La carpeta 2DAM ya existe en el proyecto. ¿Qué fragmento crea dentro de ella la carpeta AD y, dentro de AD, el fichero vacío P1.txt? (El método declara throws IOException.)`,
+o:[`File dir = new File("2DAM/AD");
+dir.mkdir();
+File f = new File(dir, "P1.txt");
+f.createNewFile();`,`File f = new File("2DAM/AD", "P1.txt");
+f.createNewFile();`,`File dir = new File("2DAM/AD");
+dir.mkdir();
+File f = new File(dir, "P1.txt");`,`File dir = new File("2DAM/AD");
+dir.createNewFile();
+File f = new File(dir, "P1.txt");
+f.mkdir();`],tu:0,c:0,
+e:`Primero la carpeta (‹mkdir›), luego el fichero (‹createNewFile›). (b) AD no existe → IOException. (c) nunca crea el fichero. (d) crea un FICHERO llamado AD.`,ap:"ap-file"},
+
+{q:`El fichero Empleados.xml contiene dos elementos <empleado>, cada uno con <id>, <nombre> y <apellido>: Antonio Morales y Marta Ruiz. Se ha obtenido ‹NodeList empleados = doc.getElementsByTagName("empleado");›. ¿Qué bucle muestra exactamente Antonio y Marta, uno por línea?`,
+o:[`for (int i = 0; i < empleados.getLength(); i++) {
+    Element empleado = (Element) empleados.item(i);
+    System.out.println(empleado.getElementsByTagName("nombre").item(0).getTextContent());
+}`,`for (int i = 0; i < empleados.getLength(); i++) {
+    Element empleado = (Element) empleados.item(i);
+    System.out.println(empleado.getElementsByTagName("nombre").item(i).getTextContent());
+}`,`for (int i = 0; i < empleados.getLength(); i++) {
+    Element empleado = (Element) empleados.item(i);
+    System.out.println(empleado.getTextContent());
+}`,`for (int i = 0; i < empleados.getLength(); i++) {
+    Element empleado = (Element) empleados.item(i);
+    System.out.println(doc.getElementsByTagName("nombre").item(0).getTextContent());
+}`],tu:1,c:0,
+fb:`Cada empleado tiene un solo nombre: en la segunda vuelta item(1) devuelve null y se lanza una NullPointerException.`,
+e:`‹i› sirve para recorrer los empleados; dentro de cada empleado su <nombre> es el primero → ‹item(0)›. (c) saca id+nombre+apellido juntos. (d) busca en todo el doc → «Antonio» dos veces.`,ap:"ap-dom"},
+
+{q:`Se dispone de la clase Contacto (atributos nombre, apellidos, email y telefono) y de la clase ListaContactos, con el atributo private List<Contacto> lista. El objeto listaContactos contiene un único contacto: Ana, Gil, ana@mail.com, 600111222. Se ejecuta:
+@@
+XStream xstream = new XStream(new DomDriver("UTF-8"));
+xstream.alias("DatosContacto", Contacto.class);
+xstream.alias("Contactos", ListaContactos.class);
+xstream.addImplicitCollection(ListaContactos.class, "lista");
+xstream.omitField(Contacto.class, "telefono");
+xstream.toXML(listaContactos, new FileOutputStream("Contactos.xml"));
+@@
+¿Qué contiene Contactos.xml?`,
+o:[`<Contactos>
+  <lista>
+    <DatosContacto>
+      <nombre>Ana</nombre>
+      <apellidos>Gil</apellidos>
+      <email>ana@mail.com</email>
+    </DatosContacto>
+  </lista>
+</Contactos>`,`<ListaContactos>
+  <Contacto>
+    <nombre>Ana</nombre>
+    <apellidos>Gil</apellidos>
+    <email>ana@mail.com</email>
+  </Contacto>
+</ListaContactos>`,`<Contactos>
+  <DatosContacto>
+    <nombre>Ana</nombre>
+    <apellidos>Gil</apellidos>
+    <email>ana@mail.com</email>
+  </DatosContacto>
+</Contactos>`,`<Contactos>
+  <DatosContacto>
+    <nombre>Ana</nombre>
+    <apellidos>Gil</apellidos>
+    <email>ana@mail.com</email>
+    <telefono>600111222</telefono>
+  </DatosContacto>
+</Contactos>`],tu:1,c:2,
+fb:`Con alias las etiquetas de las clases pasan a llamarse Contactos y DatosContacto.`,
+e:`Aplica cada línea: alias → <Contactos> y <DatosContacto>; implícita → sin <lista>; omitField → sin <telefono>. Solo (c) cumple las tres.`,ap:"ap-xstream"},
+
+{q:`Se quiere leer con SAX un fichero con varios elementos <empleado> (cada uno con <nombre> y <sueldo>) y obtener una List<Empleado> con un objeto por empleado. El manejador tiene un atributo Empleado actual y en characters() rellena el nombre o el sueldo de actual según la etiqueta que se esté leyendo. ¿Dónde hay que crear el objeto y dónde añadirlo a la lista?`,
+o:["§Crearlo y añadirlo a la lista en characters() cada vez que llega texto","§Crearlo en startDocument y añadirlo en endDocument","§Crearlo en startElement cuando qName es \"empleado\" y añadirlo en endElement cuando qName es \"empleado\"","§Crearlo en endElement cuando qName es \"empleado\" y añadirlo justo después"],tu:2,c:2,
+e:`Se abre <empleado> → new Empleado(); characters rellena; se cierra </empleado> → ya tiene todo → lista.add(actual).`,ap:"ap-sax"},
+
+{q:`Se quiere escribir en workers.json un array con todos los empleados de la lista empleados, por ejemplo:
+@@
+[{"nombre":"Pepe","edad":20},{"nombre":"Maria","edad":30}]
+@@
+writer es un JsonWriter sobre el fichero. ¿Qué fragmento lo consigue?`,
+o:[`for (Empleado emp : empleados) {
+    writer.beginObject();
+    writer.name("nombre").value(emp.getNombre());
+    writer.name("edad").value(emp.getEdad());
+    writer.endObject();
+}`,`writer.beginArray();
+for (Empleado emp : empleados) {
+    writer.beginObject();
+    writer.name("nombre").value(emp.getNombre());
+    writer.name("edad").value(emp.getEdad());
+    writer.endObject();
+}
+writer.endArray();`,`writer.beginArray();
+for (Empleado emp : empleados) {
+    writer.beginObject();
+    writer.name("nombre").value(emp.getNombre());
+    writer.name("edad").value(emp.getEdad());
+    writer.endObject();
+    writer.endArray();
+}`,`for (Empleado emp : empleados) {
+    writer.beginArray();
+    writer.beginObject();
+    writer.name("nombre").value(emp.getNombre());
+    writer.name("edad").value(emp.getEdad());
+    writer.endObject();
+    writer.endArray();
+}`],tu:1,c:1,
+e:`El array se abre UNA vez antes del bucle y se cierra después. Un JSON solo puede tener un valor de primer nivel.`,ap:"ap-json"},
+
+{q:`doc es el Document y empleado es un elemento ya añadido a la raíz. ¿Qué fragmento consigue que dentro de empleado aparezca ‹<nombre>Antonio</nombre>›?`,
+o:[`Element nombre = doc.createElement("nombre");
+Text texto = doc.createTextNode("Antonio");
+nombre.appendChild(texto);`,`Element nombre = doc.createElement("nombre");
+Text texto = doc.createTextNode("Antonio");
+nombre.appendChild(texto);
+empleado.appendChild(nombre);`,`Element nombre = doc.createElement("Antonio");
+Text texto = doc.createTextNode("nombre");
+nombre.appendChild(texto);
+empleado.appendChild(nombre);`,`Element nombre = doc.createElement("nombre");
+Text texto = doc.createTextNode("Antonio");
+empleado.appendChild(texto);
+empleado.appendChild(nombre);`],tu:2,c:1,
+fb:`Están intercambiados el nombre de la etiqueta y el texto: se obtiene <Antonio>nombre</Antonio>.`,
+e:`4 pasos: createElement("nombre") → createTextNode("Antonio") → nombre.appendChild(texto) → empleado.appendChild(nombre). (a) se queda sin colgar de empleado. (d) pone el texto en empleado y <nombre/> vacío.`,ap:"ap-dom"},
+
+{q:`Se quiere un método que muestre la ruta absoluta de todos los archivos y carpetas de un directorio, incluido el contenido de todas sus subcarpetas. ¿Qué implementación lo consigue?`,
+o:[`static void listar(File dir) {
+    for (File f : dir.listFiles()) {
+        System.out.println(f.getAbsolutePath());
+        if (f.isFile()) listar(f);
+    }
+}`,`static void listar(File dir) {
+    for (File f : dir.listFiles()) {
+        System.out.println(f.getAbsolutePath());
+        if (f.isDirectory()) listar(dir);
+    }
+}`,`static void listar(File dir) {
+    for (File f : dir.listFiles()) {
+        if (f.isDirectory()) {
+            System.out.println(f.getAbsolutePath());
+            listar(f);
+        }
+    }
+}`,`static void listar(File dir) {
+    for (File f : dir.listFiles()) {
+        System.out.println(f.getAbsolutePath());
+        if (f.isDirectory()) listar(f);
+    }
+}`],tu:3,c:3,
+e:`Se imprime todo y solo se baja en las carpetas, llamando con ‹f›. (c) no imprime los ficheros.`,ap:"ap-file"},
+
+{q:`Un programa guarda un Contacto (serializable) cada vez que el usuario da uno de alta, abriendo y cerrando el flujo en cada alta. Al leer el fichero después de varias altas salta una StreamCorruptedException. Se dispone de esta clase:
+@@
+public class MyObjectOutputStream extends ObjectOutputStream {
+    public MyObjectOutputStream(OutputStream out) throws IOException {
+        super(out);
+    }
+    @Override
+    protected void writeStreamHeader() throws IOException {
+        // No escribe cabecera
+    }
+}
+@@
+¿Qué forma de crear el flujo permite leer después todos los contactos sin errores?`,
+o:[`if (f.exists())
+    oos = new MyObjectOutputStream(new FileOutputStream(f, true));
+else
+    oos = new ObjectOutputStream(new FileOutputStream(f));`,`oos = new MyObjectOutputStream(new FileOutputStream(f, true));`,`oos = new ObjectOutputStream(new FileOutputStream(f, true));`,`if (f.exists())
+    oos = new ObjectOutputStream(new FileOutputStream(f, true));
+else
+    oos = new MyObjectOutputStream(new FileOutputStream(f));`],tu:3,c:0,
+fb:`La condición está invertida: el fichero se crea sin cabecera y las altas siguientes sí la añaden.`,
+e:`La cabecera va UNA vez, al crear el fichero (ObjectOutputStream normal). Si ya existe → MyObjectOutputStream (sin cabecera) en modo añadir (true). (b) nunca escribe cabecera. (c) escribe una en cada alta.`,ap:"ap-obj"},
+
+{q:`El fichero quijote.txt contiene estas cuatro líneas:
+@@
+En un lugar de la Mancha,
+vivía un Hidalgo
+de los de lanza en astillero,
+nuestro hidalgo madrugaba.
+@@
+¿Qué fragmento muestra exactamente esta salida, ignorando mayúsculas y minúsculas? (br es un BufferedReader sobre el fichero y palabra vale "hidalgo".)
+@@
+Línea 2: vivía un Hidalgo
+Línea 4: nuestro hidalgo madrugaba.
+@@
+`,
+o:[`String linea; int n = 0;
+while ((linea = br.readLine()) != null) {
+    n++;
+    if (linea.contains(palabra))
+        System.out.println("Línea " + n + ": " + linea);
+}`,`String linea; int n = 0;
+while ((linea = br.readLine()) != null) {
+    n++;
+    if (linea.toLowerCase().contains(palabra.toLowerCase()))
+        System.out.println("Línea " + n + ": " + linea);
+}`,`String linea; int n = 0;
+while ((linea = br.readLine()) != null) {
+    if (linea.toLowerCase().contains(palabra.toLowerCase())) {
+        n++;
+        System.out.println("Línea " + n + ": " + linea);
+    }
+}`,`String linea; int n = 0;
+while ((linea = br.readLine()) != null) {
+    n++;
+    if (linea.equalsIgnoreCase(palabra))
+        System.out.println("Línea " + n + ": " + linea);
+}`],tu:1,c:1,
+e:`Contador en cada línea leída + toLowerCase en ambos + contains. (c) numeraría 1 y 2. (d) compara la línea completa.`,ap:"ap-texto"},
+
+{q:`Se lee este fichero libros.xml:
+@@
+<libros>
+  <libro>
+    <titulo>Acceso a Datos</titulo>
+    <autor>Alicia Ramos</autor>
+  </libro>
+  <libro>
+    <titulo>Bases de Datos</titulo>
+    <autor>Luis Gil</autor>
+  </libro>
+</libros>
+@@
+La clase ListaLibros tiene el atributo List<Libro> lista y Libro tiene los atributos titulo y autor. El fichero se carga en el objeto listaLibros con XStream, usando alias("libros", ListaLibros.class), alias("libro", Libro.class) y addImplicitCollection(ListaLibros.class, "lista"). Después se ejecuta:
+@@
+System.out.println(new Gson().toJson(listaLibros));
+@@
+¿Qué se muestra por pantalla?`,
+o:[`{"libros":[{"titulo":"Acceso a Datos","autor":"Alicia Ramos"},{"titulo":"Bases de Datos","autor":"Luis Gil"}]}`,`{"libros":{"libro":[{"titulo":"Acceso a Datos","autor":"Alicia Ramos"},{"titulo":"Bases de Datos","autor":"Luis Gil"}]}}`,`{"lista":[{"titulo":"Acceso a Datos","autor":"Alicia Ramos"},{"titulo":"Bases de Datos","autor":"Luis Gil"}]}`,`[{"titulo":"Acceso a Datos","autor":"Alicia Ramos"},{"titulo":"Bases de Datos","autor":"Luis Gil"}]`],tu:1,c:2,
+fb:`Gson no copia la estructura del XML original: serializa el objeto Java con los nombres de sus atributos.`,
+e:`listaLibros es un OBJETO (→ ‹{}›) con un atributo llamado ‹lista› (→ "lista":[...]). Gson no sabe nada de los alias de XStream. (d) sería si serializaras directamente la List.`,ap:"ap-json"},
+
+{q:`La variable json contiene este array con dos empleados:
+@@
+[{"nombre":"Pepe","apellidos":"Lopez","edad":20,"puestos":["Gerente"]},{"nombre":"Maria","apellidos":"Gutierrez","edad":30,"puestos":["Jefa RR.HH"]}]
+@@
+gson es un objeto Gson y la clase Empleado tiene los atributos nombre, apellidos, edad y puestos. ¿Qué fragmento obtiene correctamente una List<Empleado>?`,
+o:[`List<Empleado> empleados = gson.fromJson(json, List.class);`,`Type tipo = new TypeToken<List<Empleado>>() {}.getType();
+List<Empleado> empleados = gson.fromJson(json, tipo);`,`List<Empleado> empleados = gson.fromJson(json, ArrayList<Empleado>.class);`,`Empleado empleados = gson.fromJson(json, Empleado.class);`],tu:2,c:1,
+fb:`No compila: no se puede usar .class sobre un tipo genérico; precisamente para eso existe TypeToken.`,
+e:`Para listas → ‹TypeToken›. (a) compila pero no crea Empleados (crea mapas). (c) no compila. (d) el JSON es un array, no un objeto.`,ap:"ap-json"},
+
+{q:`La clase Producto tiene los atributos String nombre, double precio e int stock. ¿Qué muestra este código?
+@@
+Producto p = new Producto("Teclado", 19.99, 5);
+Gson gson = new Gson();
+System.out.println(gson.toJson(p));
+@@
+`,
+o:[`{nombre:"Teclado",precio:19.99,stock:5}`,`{"nombre":"Teclado","precio":"19.99","stock":"5"}`,`{
+  "nombre": "Teclado",
+  "precio": 19.99,
+  "stock": 5
+}`,`{"nombre":"Teclado","precio":19.99,"stock":5}`],tu:2,c:3,
+fb:`El formato con saltos de línea y sangría solo se obtiene creando el objeto con new GsonBuilder().setPrettyPrinting().create().`,
+e:`new Gson() → compacto en una línea; claves y textos con comillas; números sin ellas.`,ap:"ap-json"},
+
+{q:`Se quiere leer este fichero blog.xml:
+@@
+<blog>
+  <titulo>Mi blog</titulo>
+  <entrada>
+    <autor>Ana</autor>
+    <texto>Hola</texto>
+  </entrada>
+  <entrada>
+    <autor>Luis</autor>
+    <texto>Adios</texto>
+  </entrada>
+</blog>
+@@
+Las clases son Entrada (atributos String autor, texto) y Blog (atributos String titulo y List<Entrada> entradas). El objeto xstream ya tiene el permiso de deserialización. ¿Qué configuración permite obtener el blog con (Blog) xstream.fromXML(...)?`,
+o:[`xstream.alias("blog", Blog.class);
+xstream.alias("entrada", Entrada.class);`,`xstream.alias("blog", Blog.class);
+xstream.alias("entrada", Entrada.class);
+xstream.addImplicitCollection(Blog.class, "entradas");`,`xstream.alias("blog", Blog.class);
+xstream.addImplicitCollection(Blog.class, "entradas");`,`xstream.alias("blog", Blog.class);
+xstream.alias("entrada", Entrada.class);
+xstream.addImplicitCollection(Blog.class, "entrada");`],tu:3,c:1,
+fb:`addImplicitCollection recibe el nombre del atributo de la clase (entradas), no el de la etiqueta; como Blog no tiene un atributo entrada, se produce un error.`,
+e:`Alias para las dos clases + colección implícita con el nombre del ATRIBUTO Java (‹entradas›). (a) no hay <entradas> envoltorio → error. (c) falta el alias de Entrada.`,ap:"ap-xstream"},
+
+{q:`La clase Producto, que está en el paquete por defecto, tiene los atributos String nombre, double precio e int stock. Para el objeto new Producto("Teclado", 19.99, 5) se quiere obtener con xstream.toXML(...) este XML:
+@@
+<producto>
+  <nombre>Teclado</nombre>
+  <precio>19.99</precio>
+</producto>
+@@
+¿Qué configuración lo consigue?`,
+o:[`xstream.omitField(Producto.class, "stock");`,`xstream.alias("producto", Producto.class);`,`xstream.alias("producto", Producto.class);
+xstream.addImplicitCollection(Producto.class, "stock");`,`xstream.alias("producto", Producto.class);
+xstream.omitField(Producto.class, "stock");`],tu:0,c:3,
+fb:`Sin alias, la etiqueta raíz toma el nombre de la clase: se genera <Producto>.`,
+e:`Hacen falta DOS cosas: minúscula → alias; sin stock → omitField. (a) daría <Producto>. (b) incluiría <stock>.`,ap:"ap-xstream"},
+
+{q:`La clase ListaContactos tiene un atributo private List<Contacto> lista. El fichero Contactos.xml contiene:
+@@
+<Contactos>
+  <DatosContacto>
+    <nombre>Ana</nombre>
+    <apellidos>Gil</apellidos>
+    <email>ana@mail.com</email>
+  </DatosContacto>
+</Contactos>
+@@
+Se intenta leer con este código:
+@@
+XStream xstream = new XStream(new DomDriver("UTF-8"));
+xstream.addPermission(AnyTypePermission.ANY);
+xstream.alias("DatosContacto", Contacto.class);
+xstream.alias("Contactos", ListaContactos.class);
+ListaContactos contactos = (ListaContactos) xstream.fromXML(new FileInputStream("Contactos.xml"));
+@@
+Se lanza UnknownFieldException: No such field ListaContactos.DatosContacto. ¿Qué hay que añadir antes de fromXML?`,
+o:[`xstream.addImplicitCollection(ListaContactos.class, "lista");`,`XStream xstream = new XStream();`,"§Hacer que Contacto implemente Serializable",`xstream.omitField(Contacto.class, "telefono");`],tu:0,c:0,
+e:`XStream busca un atributo llamado DatosContacto en ListaContactos porque no sabe que los <DatosContacto> van a la lista implícita. Hay que decírselo igual que al escribir.`,ap:"ap-xstream"},
+
+{q:`¿Qué contiene el fichero provincias.txt al terminar este código?
+@@
+File f = new File("provincias.txt");
+FileWriter fw = new FileWriter(f);
+String[] provincias = {"Cáceres", "Badajoz", "Toledo"};
+for (int i = 0; i < provincias.length; i++) {
+    fw.write(provincias[i]);
+}
+fw.close();
+@@
+`,
+o:["§Solo Toledo","§Cada provincia en una línea distinta","§Cáceres Badajoz Toledo, separadas por espacios","§CáceresBadajozToledo en una sola línea"],tu:3,c:3,
+e:`write() escribe la cadena tal cual, sin separadores. Se abre una sola vez, así que no se sobrescribe nada dentro del bucle.`,ap:"ap-texto"},
+
+{q:`Se dispone de esta clase:
+@@
+public class Alumno {
+    private String nombre;
+    private int calificacion;
+    // constructor, getters y setters
+}
+@@
+Al ejecutar ‹oos.writeObject(new Alumno("Pepe", 10));› se lanza ‹java.io.NotSerializableException: Alumno›. ¿Qué cambio lo soluciona?`,
+o:["§Crear el flujo con ‹new FileOutputStream(f, true)›","§Añadir un ‹catch (ClassNotFoundException e)› alrededor de writeObject","§Declarar la clase como ‹public class Alumno implements Serializable›","§Declarar los atributos como public para que ObjectOutputStream pueda acceder a ellos"],tu:2,c:2,
+e:`Para escribir con ObjectOutputStream la clase debe implementar Serializable.`,ap:"ap-obj"},
+
+{q:`El fichero alumnos.dat se leerá con este código:
+@@
+DataInputStream dis = new DataInputStream(new FileInputStream(f));
+try {
+    while (true) {
+        System.out.println(dis.readUTF() + " ha obtenido un " + dis.readInt());
+    }
+} catch (EOFException e) {
+    dis.close();
+}
+@@
+Dados ‹String[] nombres = {"Ana", "Luis"}› e ‹int[] notas = {7, 5}›, ¿qué fragmento genera el fichero para que se lea correctamente?`,
+o:[`DataOutputStream dos = new DataOutputStream(new FileOutputStream(f));
+for (int i = 0; i < nombres.length; i++) {
+    dos.writeInt(notas[i]);
+    dos.writeUTF(nombres[i]);
+}
+dos.close();`,`DataOutputStream dos = new DataOutputStream(new FileOutputStream(f));
+for (int i = 0; i < nombres.length; i++) {
+    dos.writeChars(nombres[i]);
+    dos.writeInt(notas[i]);
+}
+dos.close();`,`DataOutputStream dos = new DataOutputStream(new FileOutputStream(f));
+for (int i = 0; i < nombres.length; i++) {
+    dos.writeUTF(nombres[i]);
+    dos.writeInt(notas[i]);
+}
+dos.close();`,`DataOutputStream dos = new DataOutputStream(f);
+for (int i = 0; i < nombres.length; i++) {
+    dos.writeUTF(nombres[i]);
+    dos.writeInt(notas[i]);
+}
+dos.close();`],tu:2,c:2,
+e:`writeUTF↔readUTF, writeInt↔readInt, mismo orden. (b) writeChars no es compatible con readUTF. (d) DataOutputStream no acepta un File.`,ap:"ap-bin"}
+];
+
+const APN={"ap-file":"1. Clase File","ap-texto":"2. Ficheros de texto","ap-bin":"3. Binarios","ap-obj":"4. Serialización","ap-dom":"5. DOM","ap-sax":"6. SAX","ap-xstream":"7. XStream","ap-json":"8. JSON/Gson"};
+
+function renderExam(onlyBad){
+  const box=document.getElementById("examList"); let h="";
+  EXAM.forEach((q,i)=>{
+    const ok=q.tu===q.c;
+    if(onlyBad&&ok) return;
+    h+=`<div class="q"><div class="qinfo"><b>Pregunta ${i+1}</b><span class="st ${ok?'g':'r'}">${ok?'Correcta':'Incorrecta'}</span><br>${ok?'1,00':'-0,33'} sobre 1,00</div><div class="qbody">${rich(q.q)}`;
+    q.o.forEach((o,j)=>{
+      let cls="",bd="";
+      if(j===q.c){cls="correct";bd+='<span class="badge g">✔ Correcta</span>';}
+      if(j===q.tu){ if(!ok)cls="wrong"; bd+='<span class="badge '+(ok?'b':'r')+'">Tu respuesta</span>';}
+      h+=`<div class="opt ${cls}"><span class="l">${L[j]}.</span><div class="ob">${optHtml(o)}</div><div>${bd}</div></div>`;
+    });
+    h+=`<div class="why">`;
+    if(!ok&&q.fb) h+=`<h4>❌ Por qué fallaste</h4><p style="margin:0 0 8px">${esc(q.fb)}</p>`;
+    h+=`<h4>✅ Por qué la correcta es la ${L[q.c]}</h4><p style="margin:0">${esc(q.e).replace(/‹([^›]*)›/g,'<code>$1</code>')}</p><p style="margin:6px 0 0">📘 Apuntes: <a href="#${q.ap}">${APN[q.ap]}</a></p></div></div></div>`;
+  });
+  box.innerHTML=h;
+}
+renderExam(false);
+document.getElementById("fAll").onclick=e=>{renderExam(false);e.target.className="btn";document.getElementById("fBad").className="btn sec";};
+document.getElementById("fBad").onclick=e=>{renderExam(true);e.target.className="btn";document.getElementById("fAll").className="btn sec";};
+</script>
+
+<script>
+/* ======================= REPASOS ======================= */
+/* c = índice de la correcta en o[] (las opciones se barajan al empezar) */
+const REP=[
+/* ---------------- REPASO 1 ---------------- */
+[
+{q:`La carpeta "datos" NO existe. ¿Qué ocurre al ejecutar este código? (el método declara throws IOException)
+@@
+File f = new File("datos/notas.txt");
+f.createNewFile();
+@@
+`,o:["§Se crea la carpeta datos y dentro el fichero notas.txt","§Se lanza una IOException porque la carpeta padre no existe","§No ocurre nada y createNewFile() devuelve false","§Se crea notas.txt en la raíz del proyecto"],c:1,
+e:`createNewFile() no crea carpetas. Si el directorio padre no existe lanza IOException. Habría que hacer antes ‹new File("datos").mkdir()›.`,ap:"ap-file"},
+{q:`¿Qué diferencia hay entre ‹mkdir()› y ‹mkdirs()›?`,o:["§mkdir() crea solo la última carpeta (el padre debe existir); mkdirs() crea también todas las carpetas padre que falten","§mkdir() crea ficheros y mkdirs() carpetas","§Son equivalentes","§mkdirs() borra la carpeta si ya existía y la vuelve a crear"],c:0,
+e:`mkdir crea un único nivel; mkdirs crea toda la ruta (‹new File("a/b/c").mkdirs()›).`,ap:"ap-file"},
+{q:`¿Qué muestra este código si el fichero "info.txt" no existe en disco?
+@@
+File f = new File("info.txt");
+System.out.println(f.exists());
+@@
+`,o:["§true, porque se acaba de crear","§false","§Lanza FileNotFoundException","§null"],c:1,
+e:`Instanciar un File no crea nada en disco: solo representa la ruta.`,ap:"ap-file"},
+{q:`Partiendo de que "log.txt" no existe, ¿qué contiene al final?
+@@
+FileWriter fw = new FileWriter("log.txt", true);
+fw.write("A");
+fw.close();
+fw = new FileWriter("log.txt");
+fw.write("B");
+fw.close();
+fw = new FileWriter("log.txt", true);
+fw.write("C");
+fw.close();
+@@
+`,o:["§ABC","§BC","§C","§AC"],c:1,
+e:`1º (true, el fichero no existía): «A». 2º sin true: borra → «B». 3º con true: añade → «BC». write no mete saltos.`,ap:"ap-texto"},
+{q:`¿Qué valor devuelve ‹readLine()› de un BufferedReader cuando ya no quedan líneas?`,o:["§Una cadena vacía \"\"","§null","§Lanza EOFException","§-1"],c:1,
+e:`readLine() devuelve null al final; por eso el bucle es ‹while((linea = br.readLine()) != null)›. EOFException es de los flujos binarios.`,ap:"ap-texto"},
+{q:`¿Qué fragmento escribe cada nombre del array en una línea distinta del fichero?`,o:[`PrintWriter pw = new PrintWriter(new FileWriter("n.txt"));
+for (String n : nombres) pw.println(n);
+pw.close();`,`FileWriter fw = new FileWriter("n.txt");
+for (String n : nombres) fw.write(n);
+fw.close();`,`for (String n : nombres) {
+    PrintWriter pw = new PrintWriter(new FileWriter("n.txt"));
+    pw.println(n);
+    pw.close();
+}`,`PrintWriter pw = new PrintWriter(new FileWriter("n.txt"));
+for (String n : nombres) pw.print(n);
+pw.close();`],c:0,
+e:`println añade salto de línea. (b) y (d) quedan todo seguido. (c) abre sin true en cada vuelta → solo queda el último.`,ap:"ap-texto"},
+{q:`Un fichero se escribió así: ‹dos.writeInt(id); dos.writeUTF(nombre); dos.writeDouble(sueldo);› (varios registros). ¿Qué lectura es correcta dentro del ‹while(true)›?`,o:[`int id = dis.readInt();
+String nombre = dis.readUTF();
+double sueldo = dis.readDouble();`,`String nombre = dis.readUTF();
+int id = dis.readInt();
+double sueldo = dis.readDouble();`,`int id = dis.readInt();
+String nombre = dis.readLine();
+double sueldo = dis.readDouble();`,`int id = dis.readInt();
+String nombre = dis.readUTF();
+float sueldo = dis.readFloat();`],c:0,
+e:`Mismo orden y mismos tipos: Int, UTF, Double.`,ap:"ap-bin"},
+{q:`¿Qué excepción indica que un DataInputStream ha llegado al final del fichero?`,o:["§FileNotFoundException","§EOFException","§NullPointerException","§StreamCorruptedException"],c:1,
+e:`Al intentar leer más allá del final, readXxx() lanza EOFException; se captura con un try que envuelve al while(true).`,ap:"ap-bin"},
+{q:`La clase Alumno implementa Serializable y tiene el atributo ‹private transient String password;›. Se guarda un alumno con password "1234" y luego se lee. ¿Qué vale password en el objeto leído?`,o:["§\"1234\"","§null","§\"\" (cadena vacía)","§Se lanza NotSerializableException"],c:1,
+e:`transient = no se serializa. Al leer, el atributo toma su valor por defecto: null para objetos, 0 para números.`,ap:"ap-obj"},
+{q:`¿Qué hay que hacer con el resultado de ‹ois.readObject()›?`,o:["§Nada, ya devuelve un Alumno","§Hacer un cast: (Alumno) ois.readObject()","§Convertirlo con toString()","§Pasarlo a Gson"],c:1,
+e:`readObject() devuelve Object → cast a la clase. Además puede lanzar ClassNotFoundException.`,ap:"ap-obj"},
+{q:`En DOM, ¿qué hace ‹doc.getElementsByTagName("autor")›?`,o:["§Devuelve solo el primer <autor> del documento","§Devuelve una NodeList con TODOS los <autor> del documento, a cualquier profundidad","§Devuelve solo los <autor> hijos directos de la raíz","§Devuelve el texto del primer <autor>"],c:1,
+e:`Busca en todo el árbol (todos los descendientes). Por eso dentro de un bucle hay que llamarlo sobre el elemento concreto, no sobre doc.`,ap:"ap-dom"},
+{q:`Se tiene ‹<alumno curso="2DAM"><nombre>Ana</nombre></alumno>› y alumno es su Element. ¿Qué instrucción obtiene "2DAM"?`,o:[`alumno.getAttribute("curso")`,`alumno.getElementsByTagName("curso").item(0).getTextContent()`,`alumno.getTextContent()`,`alumno.getNodeName()`],c:0,
+e:`curso es atributo → getAttribute. (b) no hay elemento <curso> → NPE. (c) devuelve "Ana". (d) devuelve "alumno".`,ap:"ap-dom"},
+{q:`Se ha creado ‹Element raiz = doc.createElement("empleados");› con ‹doc = builder.newDocument()›. ¿Qué falta para que raiz sea el elemento raíz del documento?`,o:[`doc.appendChild(raiz);`,`raiz.appendChild(doc);`,`doc.setAttribute("raiz", "empleados");`,"§Nada: createElement ya lo añade al documento"],c:0,
+e:`createElement solo crea el nodo «suelto». Hay que colgarlo: doc.appendChild(raiz).`,ap:"ap-dom"},
+{q:`En SAX, ¿en qué método se recibe el texto que hay entre <nombre> y </nombre>?`,o:["§startElement","§characters","§endElement","§startDocument"],c:1,
+e:`characters(char[] ch, int start, int length) → new String(ch, start, length).`,ap:"ap-sax"},
+{q:`¿Qué afirmación sobre SAX es correcta?`,o:["§Carga todo el XML en memoria como un árbol","§Recorre el XML de forma secuencial lanzando eventos y no permite modificarlo","§Permite volver atrás a un nodo ya leído","§Necesita un Transformer para leer"],c:1,
+e:`SAX: secuencial, por eventos, solo lectura, poca memoria. DOM es el del árbol.`,ap:"ap-sax"},
+{q:`Clase ‹Coche› (paquete por defecto) con atributos ‹String marca; int km;›. Sin ninguna configuración, ¿qué produce ‹xstream.toXML(new Coche("Seat", 1000))›?`,o:[`<Coche>
+  <marca>Seat</marca>
+  <km>1000</km>
+</Coche>`,`<coche marca="Seat" km="1000"/>`,`<coche>
+  <marca>Seat</marca>
+  <km>1000</km>
+</coche>`,`<Coche marca="Seat">
+  <km>1000</km>
+</Coche>`],c:0,
+e:`Sin alias la etiqueta es el nombre de la clase (Coche). Cada atributo → elemento hijo.`,ap:"ap-xstream"},
+{q:`¿Qué recibe como segundo parámetro ‹addImplicitCollection(Clase.class, ???)›?`,o:["§El nombre de la etiqueta de cada elemento de la lista","§El nombre del atributo Java que es la colección","§El nombre de la clase de los elementos","§El alias de la clase contenedora"],c:1,
+e:`El nombre del ATRIBUTO de la clase (p.ej. "lista", "entradas"), no el de la etiqueta del XML.`,ap:"ap-xstream"},
+{q:`Al hacer ‹xstream.fromXML(...)› con una versión reciente de XStream salta ‹ForbiddenClassException›. ¿Qué falta?`,o:[`xstream.addPermission(AnyTypePermission.ANY);`,`xstream.omitField(...)`,"§Que la clase implemente Serializable",`xstream.toXML(...)`],c:0,
+e:`Para deserializar, XStream exige permisos: addPermission(AnyTypePermission.ANY).`,ap:"ap-xstream"},
+{q:`Clase Alumno con ‹String nombre; int edad;›. ¿Qué muestra ‹new Gson().toJson(new Alumno("Ana", 19))›?`,o:[`{"nombre":"Ana","edad":19}`,`{"nombre":"Ana","edad":"19"}`,`{nombre:Ana,edad:19}`,`["Ana",19]`],c:0,
+e:`Claves y textos con comillas, números sin ellas, compacto.`,ap:"ap-json"},
+{q:`¿Cómo se obtiene JSON con saltos de línea y sangría con Gson?`,o:[`new GsonBuilder().setPrettyPrinting().create()`,`new Gson(true)`,`gson.toJson(obj, true)`,`new Gson().pretty()`],c:0,
+e:`GsonBuilder + setPrettyPrinting() + create().`,ap:"ap-json"}
+],
+/* ---------------- REPASO 2 ---------------- */
+[
+{q:`¿Qué devuelve ‹dir.listFiles()› si ‹dir› es un FICHERO y no una carpeta?`,o:["§Un array vacío","§null","§Un array con el propio fichero","§Lanza IOException"],c:1,
+e:`listFiles() devuelve null si no es un directorio → si lo recorres con for-each, NullPointerException.`,ap:"ap-file"},
+{q:`La carpeta "fotos" contiene 3 ficheros. ¿Qué devuelve ‹new File("fotos").delete()›?`,o:["§true y borra la carpeta con todo","§false: una carpeta solo se borra si está vacía","§Lanza IOException","§true y borra solo los ficheros"],c:1,
+e:`delete() sobre una carpeta no vacía no hace nada y devuelve false.`,ap:"ap-file"},
+{q:`¿Qué método devuelve el tamaño de un fichero en bytes?`,o:[`f.length()`,`f.size()`,`f.getSize()`,`f.bytes()`],c:0,
+e:`File.length() devuelve los bytes (long).`,ap:"ap-file"},
+{q:`¿Qué fragmento cuenta las líneas de un fichero de texto?`,o:[`int n = 0;
+while (br.readLine() != null) n++;`,`int n = 0;
+while (br.readLine() != "") n++;`,`int n = 0;
+while (true) { br.readLine(); n++; }`,`int n = br.length();`],c:0,
+e:`readLine() devuelve null al final. (b) compara con "" (y con != entre Strings). (c) nunca termina (readLine no lanza EOF, devuelve null).`,ap:"ap-texto"},
+{q:`¿Qué contiene "s.txt"?
+@@
+BufferedWriter bw = new BufferedWriter(new FileWriter("s.txt"));
+bw.write("Hola");
+bw.newLine();
+bw.write("Adios");
+@@
+(el programa termina sin cerrar bw)`,o:["§Hola y Adios en dos líneas","§HolaAdios","§Probablemente nada: sin close()/flush() el buffer no se vuelca","§Solo Hola"],c:2,
+e:`Los escritores con buffer guardan los datos en memoria; sin close() o flush() pueden no llegar al fichero. ¡Cierra siempre!`,ap:"ap-texto"},
+{q:`¿Qué fragmento muestra solo las líneas que contienen "error" (sin importar mayúsculas)?`,o:[`while ((l = br.readLine()) != null)
+    if (l.toLowerCase().contains("error")) System.out.println(l);`,`while ((l = br.readLine()) != null)
+    if (l.equalsIgnoreCase("error")) System.out.println(l);`,`while ((l = br.readLine()) != null)
+    if (l.contains("ERROR")) System.out.println(l);`,`while ((l = br.readLine()) != null)
+    if (l == "error") System.out.println(l);`],c:0,
+e:`toLowerCase + contains. equalsIgnoreCase compara la línea entera.`,ap:"ap-texto"},
+{q:`¿Cuál es la forma correcta de crear un DataOutputStream sobre "datos.dat"?`,o:[`new DataOutputStream(new FileOutputStream("datos.dat"))`,`new DataOutputStream(new File("datos.dat"))`,`new DataOutputStream(new FileWriter("datos.dat"))`,`new DataOutputStream("datos.dat")`],c:0,
+e:`DataOutputStream envuelve un OutputStream (FileOutputStream). No acepta File, String ni Writer.`,ap:"ap-bin"},
+{q:`Se escribió con ‹dos.writeUTF("Ana"); dos.writeInt(7);›. ¿Qué pasa si se lee con ‹dis.readInt()› y después ‹dis.readUTF()›?`,o:["§Funciona igual, el orden da igual","§Los datos se leen mal (basura) o salta una excepción","§Devuelve null","§Java reordena las lecturas automáticamente"],c:1,
+e:`Un binario no tiene marcas de tipo: si cambias el orden interpretas bytes con el tipo equivocado.`,ap:"ap-bin"},
+{q:`Se guardan objetos Persona con ObjectOutputStream y Persona tiene un atributo ‹Direccion dir;›. Direccion NO implementa Serializable. ¿Qué ocurre?`,o:["§Se guarda todo bien","§Se lanza NotSerializableException: Direccion","§Se guarda Persona y dir queda null","§Error de compilación"],c:1,
+e:`Todos los objetos que contiene también deben ser serializables (o marcarse transient).`,ap:"ap-obj"},
+{q:`Se abre ‹new ObjectOutputStream(new FileOutputStream(f, true))› en cada alta. Al leer, ¿qué excepción aparece tras el primer objeto?`,o:["§EOFException","§StreamCorruptedException","§NotSerializableException","§ClassCastException"],c:1,
+e:`Cada ObjectOutputStream nuevo escribe una cabecera; varias cabeceras en medio → StreamCorruptedException.`,ap:"ap-obj"},
+{q:`¿Qué método de MyObjectOutputStream se redefine para no escribir cabecera?`,o:[`writeStreamHeader()`,`writeObject()`,`close()`,`flush()`],c:0,
+e:`Se sobrescribe writeStreamHeader() dejándolo vacío.`,ap:"ap-obj"},
+{q:`Se tiene ‹<empleado><id>1</id><nombre>Ana</nombre></empleado>› y empleado es su Element. ¿Qué muestra ‹empleado.getTextContent()›? (sin espacios en el XML)`,o:["§Ana","§1Ana","§empleado","§null"],c:1,
+e:`getTextContent de un elemento concatena el texto de TODOS sus descendientes.`,ap:"ap-dom"},
+{q:`¿Qué devuelve ‹libro.getAttribute("editorial")› si <libro> no tiene ese atributo?`,o:["§null","§\"\" (cadena vacía)","§Lanza NullPointerException","§\"editorial\""],c:1,
+e:`En DOM, getAttribute devuelve la cadena vacía si el atributo no existe.`,ap:"ap-dom"},
+{q:`¿Qué fragmento genera ‹<titulo>Dune</titulo>› dentro del elemento libro?`,o:[`Element t = doc.createElement("titulo");
+t.appendChild(doc.createTextNode("Dune"));
+libro.appendChild(t);`,`libro.setAttribute("titulo", "Dune");`,`Element t = doc.createElement("Dune");
+t.appendChild(doc.createTextNode("titulo"));
+libro.appendChild(t);`,`libro.appendChild(doc.createTextNode("titulo=Dune"));`],c:0,
+e:`Elemento + nodo texto dentro + colgarlo del padre. (b) crea un atributo.`,ap:"ap-dom"},
+{q:`Un manejador SAX solo redefine startElement e imprime qName. Para ‹<a><b/><c><d/></c></a>›, ¿qué sale?`,o:["§a b c d","§a c b d","§d c b a","§a b d c"],c:0,
+e:`startElement se lanza al encontrar cada apertura en orden de lectura: a, b, c, d.`,ap:"ap-sax"},
+{q:`En el manejador SAX que construye una lista de Libro, ¿dónde se hace ‹lista.add(actual)›?`,o:["§En startElement cuando qName es \"libro\"","§En endElement cuando qName es \"libro\"","§En characters","§En startDocument"],c:1,
+e:`Al cerrarse </libro> el objeto ya tiene todos sus datos.`,ap:"ap-sax"},
+{q:`Clase Equipo con ‹String nombre; List<Jugador> jugadores;›. Con ‹alias("equipo", Equipo.class)› y ‹alias("jugador", Jugador.class)› pero SIN colección implícita, ¿cómo queda la lista?`,o:[`<equipo>
+  <nombre>Cacereño</nombre>
+  <jugadores>
+    <jugador>...</jugador>
+    <jugador>...</jugador>
+  </jugadores>
+</equipo>`,`<equipo>
+  <nombre>Cacereño</nombre>
+  <jugador>...</jugador>
+  <jugador>...</jugador>
+</equipo>`,`<equipo nombre="Cacereño">
+  <jugador>...</jugador>
+</equipo>`,`<Equipo>
+  <jugadores>...</jugadores>
+</Equipo>`],c:0,
+e:`Sin colección implícita aparece la etiqueta del atributo (<jugadores>) envolviendo los elementos.`,ap:"ap-xstream"},
+{q:`Se escribe con ‹omitField(Alumno.class, "nota")› (nota es int) y se lee el XML. ¿Qué vale nota en el objeto leído?`,o:["§0","§null","§Se lanza excepción","§-1"],c:0,
+e:`No se asigna → valor por defecto del tipo: int → 0 (String → null).`,ap:"ap-xstream"},
+{q:`El fichero contiene ‹[{"n":"A"},{"n":"B"}]›. ¿Qué se necesita para leerlo con Gson en una List<Item> directamente desde un String?`,o:[`Type t = new TypeToken<List<Item>>(){}.getType();
+List<Item> l = gson.fromJson(json, t);`,`List<Item> l = gson.fromJson(json, Item.class);`,`List<Item> l = gson.fromJson(json, List<Item>.class);`,`List<Item> l = gson.toJson(json);`],c:0,
+e:`Listas → TypeToken. List<Item>.class no compila.`,ap:"ap-json"},
+{q:`Con JsonWriter, ¿qué fragmento escribe ‹{"ciudad":"Plasencia","cp":10600}›?`,o:[`writer.beginObject();
+writer.name("ciudad").value("Plasencia");
+writer.name("cp").value(10600);
+writer.endObject();`,`writer.beginArray();
+writer.value("ciudad").value("Plasencia");
+writer.endArray();`,`writer.beginObject();
+writer.value("Plasencia");
+writer.value(10600);
+writer.endObject();`,`writer.name("ciudad").value("Plasencia");
+writer.name("cp").value(10600);`],c:0,
+e:`Objeto: beginObject, pares name().value(), endObject. (c) faltan los name. (d) falta abrir el objeto.`,ap:"ap-json"}
+],
+/* ---------------- REPASO 3 ---------------- */
+[
+{q:`¿Qué muestra este código si "a.txt" existe en la raíz del proyecto?
+@@
+File f = new File("a.txt");
+System.out.println(f.getName());
+@@
+`,o:["§a.txt","§La ruta absoluta completa","§a","§null"],c:0,
+e:`getName() devuelve solo el nombre. getAbsolutePath() da la ruta completa.`,ap:"ap-file"},
+{q:`Se quiere MOVER "docs/x.txt" a la carpeta "backup" (que existe) sin cambiarle el nombre. ¿Qué instrucción?`,o:[`new File("docs/x.txt").renameTo(new File("backup/x.txt"));`,`new File("backup").renameTo(new File("docs/x.txt"));`,`new File("docs/x.txt").renameTo(new File("backup"));`,`new File("docs/x.txt").move("backup");`],c:0,
+e:`renameTo con la ruta completa de destino sirve también para mover.`,ap:"ap-file"},
+{q:`¿Qué listado muestra SOLO los ficheros (no las carpetas) de un directorio, sin entrar en subcarpetas?`,o:[`for (File f : dir.listFiles())
+    if (f.isFile()) System.out.println(f.getName());`,`for (File f : dir.listFiles())
+    if (f.isDirectory()) System.out.println(f.getName());`,`for (File f : dir.listFiles())
+    System.out.println(f.getName());`,`for (File f : dir.listFiles())
+    if (f.exists()) listar(f);`],c:0,
+e:`isFile() filtra los ficheros.`,ap:"ap-file"},
+{q:`¿Qué clase se usa para leer un fichero de texto línea a línea de forma eficiente?`,o:["§BufferedReader (envolviendo un FileReader)","§DataInputStream","§ObjectInputStream","§FileWriter"],c:0,
+e:`BufferedReader.readLine().`,ap:"ap-texto"},
+{q:`¿Qué se muestra? (n.txt contiene 3 líneas: uno, dos, tres)
+@@
+BufferedReader br = new BufferedReader(new FileReader("n.txt"));
+String l;
+while ((l = br.readLine()) != null) {
+    br.readLine();
+    System.out.println(l);
+}
+@@
+`,o:["§uno / tres","§uno / dos / tres","§dos","§uno"],c:0,
+e:`Cada vuelta lee 2 líneas pero solo imprime la primera: imprime «uno» (se salta «dos»), luego «tres» (el readLine extra devuelve null y se descarta).`,ap:"ap-texto"},
+{q:`¿Cuántos bytes ocupa un fichero en el que solo se ha hecho ‹dos.writeInt(5); dos.writeDouble(2.5);›?`,o:["§12","§2","§8","§16"],c:0,
+e:`int = 4 bytes, double = 8 bytes → 12.`,ap:"ap-bin"},
+{q:`¿Qué fragmento lee correctamente TODOS los int de un fichero binario?`,o:[`try {
+    while (true) System.out.println(dis.readInt());
+} catch (EOFException e) { }`,`while (dis.readInt() != -1) System.out.println(dis.readInt());`,`while (dis.readInt() != null) System.out.println(dis.readInt());`,`for (int i = 0; i < dis.length(); i++) System.out.println(dis.readInt());`],c:0,
+e:`try fuera + while(true) + catch EOFException. (b) y (c) consumen un dato en la condición; readInt devuelve int, no null.`,ap:"ap-bin"},
+{q:`¿Qué método de DataOutputStream escribe una cadena que luego se puede leer con readUTF()?`,o:[`writeUTF`,`writeChars`,`writeBytes`,`writeString`],c:0,
+e:`writeUTF guarda la longitud + el texto; es la pareja de readUTF.`,ap:"ap-bin"},
+{q:`¿Qué opción lee correctamente un único objeto Producto de "p.dat"?`,o:[`ObjectInputStream ois = new ObjectInputStream(new FileInputStream("p.dat"));
+Producto p = (Producto) ois.readObject();`,`ObjectInputStream ois = new ObjectInputStream(new FileInputStream("p.dat"));
+Producto p = ois.readObject();`,`DataInputStream dis = new DataInputStream(new FileInputStream("p.dat"));
+Producto p = (Producto) dis.readObject();`,`ObjectInputStream ois = new ObjectInputStream("p.dat");
+Producto p = (Producto) ois.readObject();`],c:0,
+e:`ObjectInputStream sobre FileInputStream y cast. (b) no compila sin cast. (c) DataInputStream no tiene readObject.`,ap:"ap-obj"},
+{q:`Primera alta de contactos: el fichero NO existe. Con el patrón correcto, ¿qué flujo se usa?`,o:[`new ObjectOutputStream(new FileOutputStream(f))`,`new MyObjectOutputStream(new FileOutputStream(f, true))`,`new MyObjectOutputStream(new FileOutputStream(f))`,`new ObjectOutputStream(new FileOutputStream(f, true))`],c:0,
+e:`Si no existe → ObjectOutputStream normal (escribe la cabecera una vez).`,ap:"ap-obj"},
+{q:`¿Qué instrucción guarda el Document en disco?`,o:[`transformer.transform(new DOMSource(doc), new StreamResult(new File("x.xml")));`,`doc.save("x.xml");`,`new File("x.xml").write(doc);`,`builder.parse(doc, "x.xml");`],c:0,
+e:`Transformer.transform(origen, resultado). Document no tiene save.`,ap:"ap-dom"},
+{q:`¿Qué hace ‹setOutputProperty(OutputKeys.INDENT, "yes")› sobre el Transformer?`,o:["§Que el XML generado salga con sangría y saltos de línea","§Que se escriba el fichero","§Que se valide el XML","§Que se añadan atributos"],c:0,
+e:`Solo formatea; quien escribe es transform().`,ap:"ap-dom"},
+{q:`XML: ‹<clase><alumno>Ana</alumno><alumno>Luis</alumno></clase>›. ¿Qué bucle muestra Ana y Luis?`,o:[`NodeList l = doc.getElementsByTagName("alumno");
+for (int i = 0; i < l.getLength(); i++)
+    System.out.println(l.item(i).getTextContent());`,`NodeList l = doc.getElementsByTagName("alumno");
+for (int i = 0; i < l.getLength(); i++)
+    System.out.println(l.item(0).getTextContent());`,`NodeList l = doc.getElementsByTagName("clase");
+for (int i = 0; i < l.getLength(); i++)
+    System.out.println(l.item(i).getTextContent());`,`NodeList l = doc.getElementsByTagName("alumno");
+for (int i = 1; i <= l.getLength(); i++)
+    System.out.println(l.item(i).getTextContent());`],c:0,
+e:`Aquí el bucle recorre los propios <alumno> → item(i). (b) Ana dos veces. (c) «AnaLuis». (d) empieza en 1 y se sale del rango.`,ap:"ap-dom"},
+{q:`En SAX, ¿cuántas veces se llama a ‹startDocument()› al parsear un fichero?`,o:["§Una","§Una por cada elemento","§Ninguna si no se redefine","§Dos"],c:0,
+e:`startDocument y endDocument se llaman una vez cada uno.`,ap:"ap-sax"},
+{q:`Dentro de ‹characters(char[] ch, int start, int length)›, ¿cómo se obtiene el texto?`,o:[`new String(ch, start, length)`,`ch.toString()`,`String.valueOf(ch)`,`new String(ch)`],c:0,
+e:`El array puede contener más cosas: hay que usar start y length.`,ap:"ap-sax"},
+{q:`Se lee un XML con XStream sin haber puesto ‹alias("contacto", Contacto.class)› y el XML usa la etiqueta <contacto>. ¿Qué ocurre?`,o:["§Error: XStream no sabe a qué clase corresponde <contacto>","§Lo lee bien igualmente","§Crea los objetos con todos los campos a null","§Lo convierte en String"],c:0,
+e:`Sin alias, XStream espera el nombre de la clase. Al leer hay que repetir la misma configuración que al escribir.`,ap:"ap-xstream"},
+{q:`¿Qué configuración genera ‹<alumnos><alumno>...</alumno><alumno>...</alumno></alumnos>› para la clase ListaAlumnos (atributo ‹List<Alumno> alumnos›)?`,o:[`xstream.alias("alumnos", ListaAlumnos.class);
+xstream.alias("alumno", Alumno.class);
+xstream.addImplicitCollection(ListaAlumnos.class, "alumnos");`,`xstream.alias("alumnos", ListaAlumnos.class);
+xstream.alias("alumno", Alumno.class);`,`xstream.alias("alumno", Alumno.class);
+xstream.addImplicitCollection(ListaAlumnos.class, "alumno");`,`xstream.addImplicitCollection(ListaAlumnos.class, "alumnos");`],c:0,
+e:`Alias de las dos clases + implícita con el nombre del atributo. Sin implícita: <alumnos><alumnos><alumno>…`,ap:"ap-xstream"},
+{q:`Clase Persona con ‹String nombre; String email;›, email vale null. ¿Qué muestra ‹new Gson().toJson(p)›?`,o:[`{"nombre":"Ana"}`,`{"nombre":"Ana","email":null}`,`{"nombre":"Ana","email":""}`,"§Lanza NullPointerException"],c:0,
+e:`Por defecto Gson omite los atributos null (salvo que uses GsonBuilder().serializeNulls()).`,ap:"ap-json"},
+{q:`JSON: ‹{"nombre":"Ana","edad":20,"ciudad":"Plasencia"}›. La clase Alumno solo tiene nombre y edad. ¿Qué hace ‹gson.fromJson(json, Alumno.class)›?`,o:["§Crea el Alumno con nombre y edad e ignora ciudad","§Lanza excepción por el campo desconocido","§Devuelve null","§Añade un atributo ciudad a la clase"],c:0,
+e:`Gson ignora las claves que no corresponden a ningún atributo.`,ap:"ap-json"},
+{q:`Fichero: ‹[{"id":1},{"id":2},{"id":3}]›. ¿Cuántas veces entra en el bucle?
+@@
+reader.beginArray();
+while (reader.hasNext()) {
+    Item it = gson.fromJson(reader, Item.class);
+}
+reader.endArray();
+@@
+`,o:["§3","§1","§0","§4"],c:0,
+e:`hasNext() es true mientras queden elementos en el array: 3.`,ap:"ap-json"}
+],
+/* ---------------- REPASO 4 ---------------- */
+[
+{q:`¿Qué fragmento crea la ruta completa "A/B/C" aunque no exista ninguna de las carpetas?`,o:[`new File("A/B/C").mkdirs();`,`new File("A/B/C").mkdir();`,`new File("A/B/C").createNewFile();`,`new File("A").mkdir(); new File("C").mkdir();`],c:0,
+e:`mkdirs crea todos los padres que falten; mkdir fallaría (devolvería false).`,ap:"ap-file"},
+{q:`¿Qué devuelve ‹createNewFile()› si el fichero YA existe?`,o:["§false","§true y lo vacía","§Lanza IOException","§true y crea una copia"],c:0,
+e:`No sobrescribe: devuelve false.`,ap:"ap-file"},
+{q:`¿Qué hace ‹new File(dir, "P1.txt")› si dir es ‹new File("2DAM/AD")›?`,o:["§Representa la ruta 2DAM/AD/P1.txt (sin crear nada)","§Crea el fichero P1.txt","§Crea la carpeta AD","§Mueve P1.txt a dir"],c:0,
+e:`El constructor (padre, nombre) solo construye la ruta.`,ap:"ap-file"},
+{q:`Partiendo de un fichero vacío "v.txt", ¿qué contiene?
+@@
+PrintWriter pw = new PrintWriter(new FileWriter("v.txt", true));
+pw.print("a");
+pw.println("b");
+pw.print("c");
+pw.close();
+@@
+`,o:["§ab en la 1ª línea y c en la 2ª","§a, b y c en tres líneas","§abc","§a en la 1ª línea y bc en la 2ª"],c:0,
+e:`print no salta línea; println escribe y salta: «ab⏎c».`,ap:"ap-texto"},
+{q:`¿Qué ocurre al crear ‹new FileReader("noexiste.txt")›?`,o:["§Se lanza FileNotFoundException","§Se crea el fichero vacío","§readLine() devolverá null","§Nada hasta que se lee"],c:0,
+e:`Leer un fichero inexistente → FileNotFoundException. (En cambio FileWriter sí lo crea.)`,ap:"ap-texto"},
+{q:`¿Qué ocurre al crear ‹new FileWriter("nuevo.txt")› si el fichero no existe (y su carpeta sí)?`,o:["§Se crea el fichero","§FileNotFoundException","§Devuelve null","§Solo se crea al hacer write"],c:0,
+e:`FileWriter crea el fichero si no existe (o lo vacía si existe).`,ap:"ap-texto"},
+{q:`Un fichero se escribió así (2 registros): ‹dos.writeUTF(nombre); dos.writeBoolean(aprobado);›. ¿Qué muestra todos los registros?`,o:[`try {
+    while (true)
+        System.out.println(dis.readUTF() + " " + dis.readBoolean());
+} catch (EOFException e) { }`,`try {
+    while (true)
+        System.out.println(dis.readBoolean() + " " + dis.readUTF());
+} catch (EOFException e) { }`,`while (true) {
+    try {
+        System.out.println(dis.readUTF() + " " + dis.readBoolean());
+    } catch (EOFException e) { }
+}`,`System.out.println(dis.readUTF() + " " + dis.readBoolean());`],c:0,
+e:`Mismo orden, try fuera. (c) no termina nunca. (d) solo lee el primero.`,ap:"ap-bin"},
+{q:`¿Qué hace ‹new FileOutputStream(f, true)›?`,o:["§Abre el fichero para añadir al final","§Abre el fichero en modo lectura","§Borra el contenido","§Crea el fichero sin cabecera"],c:0,
+e:`El segundo parámetro true es «append», igual que en FileWriter.`,ap:"ap-bin"},
+{q:`¿Qué excepción comprobada obliga a capturar o declarar ‹readObject()› además de IOException?`,o:["§ClassNotFoundException","§EOFException","§NotSerializableException","§NullPointerException"],c:0,
+e:`readObject() throws IOException, ClassNotFoundException.`,ap:"ap-obj"},
+{q:`¿Qué patrón es correcto para añadir objetos a un fichero que puede existir?`,o:[`if (f.exists()) oos = new MyObjectOutputStream(new FileOutputStream(f, true));
+else oos = new ObjectOutputStream(new FileOutputStream(f));`,`if (f.exists()) oos = new ObjectOutputStream(new FileOutputStream(f, true));
+else oos = new MyObjectOutputStream(new FileOutputStream(f));`,`oos = new ObjectOutputStream(new FileOutputStream(f, true));`,`oos = new MyObjectOutputStream(new FileOutputStream(f));`],c:0,
+e:`Existe → sin cabecera y añadiendo. No existe → con cabecera.`,ap:"ap-obj"},
+{q:`Se quiere ‹<pelicula anio="1999">Matrix</pelicula>›. p es el Element <pelicula> recién creado. ¿Qué falta?`,o:[`p.setAttribute("anio", "1999");
+p.appendChild(doc.createTextNode("Matrix"));`,`p.setAttribute("1999", "anio");
+p.appendChild(doc.createTextNode("Matrix"));`,`p.appendChild(doc.createElement("anio"));
+p.setAttribute("Matrix", "texto");`,`p.appendChild(doc.createTextNode("anio=1999 Matrix"));`],c:0,
+e:`setAttribute(nombre, valor) para el atributo + nodo texto para el contenido.`,ap:"ap-dom"},
+{q:`Al recorrer ‹raiz.getChildNodes()› aparecen nodos "#text" además de los elementos. ¿Por qué?`,o:["§Los saltos de línea y espacios entre etiquetas también son nodos de texto","§El XML está mal formado","§Falta el Transformer","§getChildNodes solo devuelve texto"],c:0,
+e:`getChildNodes incluye nodos de texto; se filtra con ‹getNodeType() == Node.ELEMENT_NODE›. getElementsByTagName solo devuelve elementos.`,ap:"ap-dom"},
+{q:`Libro tiene ‹<titulo>› y ‹<autor>›. Dentro del bucle, libro es cada Element. ¿Qué obtiene el autor?`,o:[`libro.getElementsByTagName("autor").item(0).getTextContent()`,`libro.getAttribute("autor")`,`doc.getElementsByTagName("autor").item(0).getTextContent()`,`libro.getElementsByTagName("autor").getTextContent()`],c:0,
+e:`Hijo del elemento concreto → item(0). (c) siempre el primer autor del doc. (d) NodeList no tiene getTextContent.`,ap:"ap-dom"},
+{q:`Fichero ‹<lista><item>A</item><item>B</item></lista>›. Manejador SAX que imprime "S:"+qName en startElement y "E:"+qName en endElement. ¿Qué sale?`,o:["§S:lista S:item E:item S:item E:item E:lista","§S:lista S:item S:item E:item E:item E:lista","§S:item E:item S:item E:item","§S:lista E:lista S:item E:item S:item E:item"],c:0,
+e:`En orden de lectura; cada item se abre y se cierra antes del siguiente.`,ap:"ap-sax"},
+{q:`¿Qué clase hay que extender para crear un manejador SAX?`,o:["§DefaultHandler","§DocumentBuilder","§SAXParserFactory","§Transformer"],c:0,
+e:`class MiHandler extends DefaultHandler y se pasa a parser.parse(fichero, handler).`,ap:"ap-sax"},
+{q:`Clase Libro con ‹String titulo; double precio; int paginas;›. Se quiere ‹<libro><titulo>Dune</titulo><precio>9.5</precio></libro>›. ¿Qué configuración?`,o:[`xstream.alias("libro", Libro.class);
+xstream.omitField(Libro.class, "paginas");`,`xstream.alias("libro", Libro.class);`,`xstream.omitField(Libro.class, "paginas");`,`xstream.alias("libro", Libro.class);
+xstream.addImplicitCollection(Libro.class, "paginas");`],c:0,
+e:`alias para la minúscula + omitField para quitar paginas.`,ap:"ap-xstream"},
+{q:`Clase Tienda con ‹String nombre; Direccion dir;› y Direccion con ‹String calle;›. Con ‹alias("tienda", Tienda.class)›, ¿cómo aparece la dirección?`,o:[`<tienda>
+  <nombre>Toys</nombre>
+  <dir>
+    <calle>Sol</calle>
+  </dir>
+</tienda>`,`<tienda>
+  <nombre>Toys</nombre>
+  <calle>Sol</calle>
+</tienda>`,`<tienda nombre="Toys" calle="Sol"/>`,`<tienda>
+  <nombre>Toys</nombre>
+  <Direccion>
+    <calle>Sol</calle>
+  </Direccion>
+</tienda>`],c:0,
+e:`Un atributo objeto genera un elemento con el NOMBRE DEL ATRIBUTO (dir) y sus campos anidados dentro.`,ap:"ap-xstream"},
+{q:`Se carga un XML con XStream en el objeto ‹blog› (clase Blog: ‹String titulo; List<Entrada> entradas;›) y luego ‹new Gson().toJson(blog)›. ¿Qué claves aparecen en el JSON?`,o:["§titulo y entradas (nombres de los atributos Java)","§blog y entrada (etiquetas del XML)","§Ninguna: Gson no puede con objetos de XStream","§Solo entradas"],c:0,
+e:`Gson solo ve el objeto Java: usa los nombres de sus atributos.`,ap:"ap-json"},
+{q:`¿Qué escribe este código?
+@@
+writer.beginArray();
+writer.value("rojo");
+writer.value("verde");
+writer.endArray();
+@@
+`,o:[`["rojo","verde"]`,`{"rojo","verde"}`,`{"value":"rojo","value":"verde"}`,"§Error: falta name()"],c:0,
+e:`Dentro de un array los valores van sin nombre.`,ap:"ap-json"},
+{q:`Fichero ‹{"nombre":"Luis","edad":40}›. ¿Qué fragmento lee el objeto con JsonReader a mano?`,o:[`reader.beginObject();
+while (reader.hasNext()) {
+    String k = reader.nextName();
+    if (k.equals("nombre")) nombre = reader.nextString();
+    else if (k.equals("edad")) edad = reader.nextInt();
+}
+reader.endObject();`,`reader.beginArray();
+while (reader.hasNext()) {
+    nombre = reader.nextString();
+}
+reader.endArray();`,`reader.beginObject();
+nombre = reader.nextString();
+edad = reader.nextInt();
+reader.endObject();`,`while (reader.hasNext()) {
+    nombre = reader.nextName();
+}`],c:0,
+e:`Objeto → beginObject, y por cada par nextName() + nextXxx(). (c) se salta los nombres.`,ap:"ap-json"}
+]
+];
+
+/* ---------- motor del cuestionario estilo Moodle ---------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const QUIZ={};
+function initQuiz(k){
+  const qs=REP[k].map(q=>{const ord=shuffle([0,1,2,3]);return {q:q.q,o:ord.map(i=>q.o[i]),c:ord.indexOf(q.c),e:q.e,ap:q.ap};});
+  QUIZ[k]={qs,ans:Array(qs.length).fill(null),flag:Array(qs.length).fill(false),cur:0,state:"start"};
+  drawQuiz(k);
+}
+function el(k){return document.getElementById("v-r"+(k+1));}
+function drawQuiz(k){
+  const Z=QUIZ[k], box=el(k), n=Z.qs.length;
+  if(Z.state==="start"){
+    box.innerHTML=`<div class="card"><h2>Repaso ${k+1} · Examen RA1</h2>
+    <p>${n} preguntas · Cada acierto +1 · Cada fallo −1/3 · En blanco 0 · Las opciones se barajan en cada intento.</p>
+    <p>Las respuestas no se muestran hasta que pulses <b>«Enviar todo y terminar»</b>.</p>
+    <button class="btn" onclick="QUIZ[${k}].state='quiz';drawQuiz(${k})">Comenzar intento</button></div>`;
+    return;
+  }
+  const side=()=>{let g="";for(let i=0;i<n;i++){let c="";
+      if(Z.state==="done"){c=Z.ans[i]===null?"n":(Z.ans[i]===Z.qs[i].c?"g":"r");}
+      else{if(Z.ans[i]!==null)c="ans";}
+      if(Z.flag[i])c+=" flag"; if(Z.state!=="summary"&&i===Z.cur)c+=" cur";
+      g+=`<button class="${c}" onclick="goQ(${k},${i})">${i+1}</button>`;}
+    return `<div class="side"><h4>Navegación por el cuestionario</h4><div class="navgrid">${g}</div>
+    ${Z.state==="quiz"?`<button class="lnk" onclick="QUIZ[${k}].state='summary';drawQuiz(${k})">Terminar intento...</button>`:""}
+    ${Z.state==="done"?`<button class="lnk" onclick="initQuiz(${k})">Nuevo intento</button>`:""}</div>`;};
+  if(Z.state==="quiz"){
+    const i=Z.cur,q=Z.qs[i];
+    let opts="";q.o.forEach((o,j)=>{opts+=`<label class="opt ${Z.ans[i]===j?'sel':''}"><input type="radio" name="q${k}" ${Z.ans[i]===j?'checked':''} onchange="pick(${k},${j})"><span class="l">${L[j]}.</span><div class="ob">${optHtml(o)}</div></label>`;});
+    box.innerHTML=`<div class="quiz"><div>
+      <div class="q qcard"><div class="qinfo"><b>Pregunta ${i+1}</b><span class="st n">${Z.ans[i]===null?'Sin responder aún':'Respuesta guardada'}</span><br>Se puntúa como 1,00<br><button class="flagbtn" onclick="QUIZ[${k}].flag[${i}]=!QUIZ[${k}].flag[${i}];drawQuiz(${k})">${Z.flag[i]?'⚑ Quitar marca':'⚐ Marcar pregunta'}</button></div>
+      <div class="qbody">${rich(q.q)}<p style="font-weight:600;margin:10px 0 4px">Seleccione una:</p>${opts}
+      ${Z.ans[i]!==null?`<button class="clear" onclick="QUIZ[${k}].ans[${i}]=null;drawQuiz(${k})">Borrar mi elección</button>`:""}</div></div>
+      <div class="qnav"><button class="btn sec" ${i===0?'disabled':''} onclick="goQ(${k},${i-1})">◀ Página anterior</button>
+      ${i<n-1?`<button class="btn" onclick="goQ(${k},${i+1})">Página siguiente ▶</button>`:`<button class="btn" onclick="QUIZ[${k}].state='summary';drawQuiz(${k})">Terminar intento...</button>`}</div>
+      </div>${side()}</div>`;
+  }
+  else if(Z.state==="summary"){
+    let rows="";for(let i=0;i<n;i++)rows+=`<tr><td><a href="javascript:goQ(${k},${i})">${i+1}</a>${Z.flag[i]?' ⚑':''}</td><td>${Z.ans[i]===null?'<span style="color:#c62828">Sin responder aún</span>':'Respuesta guardada'}</td></tr>`;
+    const blank=Z.ans.filter(a=>a===null).length;
+    box.innerHTML=`<div class="quiz"><div class="card"><h2>Repaso ${k+1} · Resumen del intento</h2>
+      <table class="t1"><tr><th>Pregunta</th><th>Estado</th></tr>${rows}</table>
+      ${blank?`<div class="tip">Tienes ${blank} pregunta(s) sin responder (cuentan 0).</div>`:""}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      <button class="btn sec" onclick="QUIZ[${k}].state='quiz';drawQuiz(${k})">Volver al intento</button>
+      <button class="btn" onclick="if(confirm('Una vez enviado no podrás cambiar tus respuestas. ¿Enviar todo y terminar?')){QUIZ[${k}].state='done';drawQuiz(${k})}">Enviar todo y terminar</button></div></div>${side()}</div>`;
+  }
+  else{
+    let ok=0,bad=0,bl=0;Z.qs.forEach((q,i)=>{if(Z.ans[i]===null)bl++;else if(Z.ans[i]===q.c)ok++;else bad++;});
+    const pts=Math.max(0,ok-bad/3), nota=pts/n*10;
+    const f=x=>x.toFixed(2).replace(".",",");
+    let rev="";
+    Z.qs.forEach((q,i)=>{const a=Z.ans[i],st=a===null?"n":(a===q.c?"g":"r");
+      const lab={n:"Sin contestar",g:"Correcta",r:"Incorrecta"}[st],sc={n:"0,00",g:"1,00",r:"-0,33"}[st];
+      let op="";q.o.forEach((o,j)=>{let cls="",bd="";if(j===q.c){cls="correct";bd='<span class="badge g">✔ Correcta</span>';}
+        if(j===a){if(a!==q.c)cls="wrong";bd+='<span class="badge '+(a===q.c?'b':'r')+'">Tu respuesta</span>';}
+        op+=`<div class="opt ${cls}"><span class="l">${L[j]}.</span><div class="ob">${optHtml(o)}</div><div>${bd}</div></div>`;});
+      rev+=`<div class="q" id="rv${k}_${i}"><div class="qinfo"><b>Pregunta ${i+1}</b><span class="st ${st}">${lab}</span><br>Se puntúa ${sc} sobre 1,00</div><div class="qbody">${rich(q.q)}${op}
+      <div class="why"><h4>Retroalimentación</h4><p style="margin:0">${esc(q.e).replace(/‹([^›]*)›/g,'<code>$1</code>')}</p><p style="margin:6px 0 0">📘 Apuntes: <a href="#${q.ap}">${APN[q.ap]}</a></p></div></div></div>`;});
+    box.innerHTML=`<div class="quiz"><div><div class="card res"><h2>Repaso ${k+1} · Resultado</h2>
+      <table><tr><td>Estado</td><td>Finalizado</td></tr><tr><td>Aciertos / fallos / blanco</td><td>${ok} / ${bad} / ${bl}</td></tr>
+      <tr><td>Puntos</td><td>${f(pts)} / ${n},00</td></tr><tr><td>Calificación</td><td><span class="big" style="color:${nota>=5?'#2e7d32':'#c62828'}">${f(nota)}</span> de 10,00 (${f(nota*10)}%)</td></tr></table>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="initQuiz(${k})">Nuevo intento</button>${k<3?`<button class="btn sec" onclick="document.querySelector('#tabs button[data-v=r${k+2}]').click()">Ir al Repaso ${k+2}</button>`:""}</div></div>
+      ${rev}</div>${side()}</div>`;
+  }
+}
+function pick(k,j){QUIZ[k].ans[QUIZ[k].cur]=j;drawQuiz(k);}
+function goQ(k,i){const Z=QUIZ[k];if(Z.state==="done"){document.getElementById("rv"+k+"_"+i).scrollIntoView({behavior:"smooth"});return;}Z.state="quiz";Z.cur=i;drawQuiz(k);window.scrollTo(0,0);}
+for(let k=0;k<4;k++)initQuiz(k);
+</script>
+</body>
+</html>
